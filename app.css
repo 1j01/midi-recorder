@@ -1,0 +1,20 @@
+html,
+body {
+	font-family: Helvetica, sans-serif;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	background: #1B1B1B;
+	color: white;
+}
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+@media (max-width: 75em) and (max-height: 55em), print {
+	#fork-me-on-github {
+		display: none;
+	}
+}
