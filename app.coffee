@@ -12,6 +12,8 @@ navigator.requestMIDIAccess().then onsuccesscallback, onerrorcallback
 notes = []
 current_notes = new Map
 
+current_pitch_bend_value = 0
+
 smi.on 'noteOn', (data)->
 	{event, key, velocity} = data
 	old_note = current_notes.get(key)
@@ -21,7 +23,7 @@ smi.on 'noteOn', (data)->
 		# console.log("double noteOn?")
 		# note = old_note
 		return
-	note = {key, velocity, start_time}
+	note = {key, velocity, start_time, pitch_bends: [{time: start_time, value: current_pitch_bend_value}]}
 	current_notes.set(key, note)
 	notes.push(note)
 	# console.log(event, note)
@@ -34,6 +36,17 @@ smi.on 'noteOff', (data)->
 		note.end_time = performance.now()
 		note.length = note.end_time - note.start_time
 	current_notes.delete(key)
+
+smi.on 'pitchWheel', (data)->
+	{event, value} = data
+	current_pitch_bend_value = value
+	# note = current_notes.get(key)
+	# if note
+	current_notes.forEach (note, key)->
+		# console.log key, note
+		# note.pitch_bends ?= []
+		note.pitch_bends.push({time: performance.now(), value: value})
+		# console.log(event, note)
 
 canvas = document.createElement "canvas"
 ctx = canvas.getContext "2d"
@@ -50,20 +63,24 @@ do animate = ->
 	ctx.save()
 	ctx.translate(0, canvas.height*4/5)
 	ctx.fillStyle = "red"
-	ctx.fillRect(0, 0, canvas.width, 1)
+	ctx.fillRect(0, 1, canvas.width, 1)
+	# ctx.globalAlpha = 0.2
 	for note in notes
 		w = canvas.width / 128
 		x = note.key * w
-		# console.log note.length
-		y = (note.start_time - now) / 1000 * px_per_second
-		# h = (note.length ? 500000) / 1000 * px_per_second
-		# ctx.fillStyle = if note.length then "yellow" else "blue"
-		# ctx.fillRect(x, y, w, h)
 		unless note.length?
 			ctx.fillStyle = "#800"
-			ctx.fillRect(x, y, w, 50000)
-		h = (note.length ? now - note.start_time) / 1000 * px_per_second
+			ctx.fillRect(x, 2, w, 50000)
+			# TODO: maybe bend this
 		ctx.fillStyle = if note.length then "yellow" else "lime"
-		ctx.fillRect(x, y, w, h)
-		# ctx.fillRect(x, 50, w, 50)
+		# ctx.strokeStyle = if note.length then "yellow" else "lime"
+		for pitch_bend, i in note.pitch_bends
+			next_pitch_bend = note.pitch_bends[i + 1]
+			y = (pitch_bend.time - now) / 1000 * px_per_second
+			# h = (note.length ? now - note.start_time) / 1000 * px_per_second
+			end = next_pitch_bend?.time ? note.end_time ? now
+			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
+			ctx.fillRect(x + pitch_bend.value / 1000 * 2, y, w, h)
+			# ctx.strokeRect(x + pitch_bend.value / 500, y, w, h)
+			# console.log x, y, w, h
 	ctx.restore()

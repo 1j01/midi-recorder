@@ -9,7 +9,7 @@ I intend to make this into a MIDI *recorder*.
 
 ### TODO
 
-* Show pitch bends (should be fun)
+* Show note velocity and aftertouch pressure
 
 * Record MIDI (automatically, by default)
 
