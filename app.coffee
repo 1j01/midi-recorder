@@ -3,11 +3,18 @@ smi = new SimpleMidiInput()
 onsuccesscallback = (midi)->
 	smi.attach(midi)
 	console.log 'smi: ', smi
+	# TODO: show device(s) connection state
 
 onerrorcallback = (err)->
 	console.log 'ERROR: ', err
+	# TODO: better message (on the page)
+	alert("Failed to get MIDI access\n\n#{err}")
 
-navigator.requestMIDIAccess().then onsuccesscallback, onerrorcallback
+if navigator.requestMIDIAccess
+	navigator.requestMIDIAccess().then onsuccesscallback, onerrorcallback
+else
+	# TODO: better message (on the page)
+	alert("Your browser doesn't support MIDI access")
 
 notes = []
 current_notes = new Map
@@ -84,3 +91,110 @@ do animate = ->
 			# ctx.strokeRect(x + pitch_bend.value / 500, y, w, h)
 			# console.log x, y, w, h
 	ctx.restore()
+
+document.getElementById("export-midi-file").onclick = ->
+	midiFile = new MIDIFile()
+
+	if notes.length is 0
+		alert "No notes have been recorded!"
+		return
+
+	events = []
+	for note in notes
+		events.push({
+			# delta: 0 # TODO (time i guess)
+			_time: note.start_time
+			type: MIDIEvents.EVENT_MIDI
+			subtype: MIDIEvents.EVENT_MIDI_NOTE_ON
+			channel: 0
+			param1: note.velocity
+		})
+		events.push({
+			# delta: 0 # using _time and sorting and then converting to delta
+			_time: note.end_time
+			type: MIDIEvents.EVENT_MIDI
+			subtype: MIDIEvents.EVENT_MIDI_NOTE_OFF
+			channel: 0
+			param1: 5 # TODO?
+		})
+		
+		# for pitch_bend in note.pitch_bends
+		# 	events.push({
+		# 		# delta: 0 # using _time and sorting and then converting to delta
+		# 		_time: pitch_bend.time
+		# 		type: MIDIEvents.EVENT_MIDI
+		# 		subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
+		# 		channel: 0
+		# 		param1: pitch_bend.value # TODO: range
+		# 	})
+		# TODO: EVENT_MIDI_CHANNEL_AFTERTOUCH
+	events.sort((a, b)-> a._time - b._time) # TODO: is this right?
+	# events.sort((a, b)-> b._time - a._time) # TODO: is this right?
+	# events = .concat(events)
+	last_time = null
+	# TODO: is this needed?
+	BPM = 120
+	PPQ = 192
+	ms_per_tick = 60000 / (BPM * PPQ)
+	for event in events
+		if event.delta?
+			# okay
+		else
+			if last_time?
+				event.delta = (event._time - last_time) / ms_per_tick
+			else
+				event.delta = 0
+				console.log event._time, event.delta
+			last_time = event._time
+		delete event._time
+
+	events.push({
+		delta: 0
+		type: MIDIEvents.EVENT_META
+		subtype: MIDIEvents.EVENT_META_END_OF_TRACK
+		length: 0
+	})
+
+	# midiFile.setTrackEvents(0, events)
+
+	first_track_events = [
+		{
+			delta: 0
+			type: MIDIEvents.EVENT_META
+			subtype: MIDIEvents.EVENT_META_TIME_SIGNATURE
+			length: 4
+			data: [4, 2, 24, 8]
+			param1: 4
+			param2: 2
+			param3: 24
+			param4: 8
+		}
+		{
+			delta: 0
+			type: MIDIEvents.EVENT_META
+			subtype: MIDIEvents.EVENT_META_SET_TEMPO
+			length: 3
+			tempo: 500000
+			tempoBPM: 120 # not used
+		}
+		{
+			delta: 0
+			type: MIDIEvents.EVENT_META
+			subtype: MIDIEvents.EVENT_META_TRACK_NAME
+			length: 0 # TODO: "Tempo track" name
+		}
+		{
+			delta: 0
+			type: MIDIEvents.EVENT_META
+			subtype: MIDIEvents.EVENT_META_END_OF_TRACK
+			length: 0
+		}
+	]
+	midiFile.setTrackEvents(0, first_track_events)
+	midiFile.addTrack(1)
+	midiFile.setTrackEvents(1, events)
+
+	outputArrayBuffer = midiFile.getContent()
+	
+	blob = new Blob([outputArrayBuffer], {type: "audio/midi"});
+	saveAs(blob, "recording.midi");
