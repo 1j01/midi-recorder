@@ -102,34 +102,50 @@ document.getElementById("export-midi-file").onclick = ->
 	events = []
 	for note in notes
 		events.push({
-			# delta: 0 # TODO (time i guess)
+			# delta: <computed later>
 			_time: note.start_time
 			type: MIDIEvents.EVENT_MIDI
 			subtype: MIDIEvents.EVENT_MIDI_NOTE_ON
 			channel: 0
-			param1: note.velocity
+			param1: note.key
+			param2: note.velocity
 		})
 		events.push({
-			# delta: 0 # using _time and sorting and then converting to delta
+			# delta: <computed later>
 			_time: note.end_time
 			type: MIDIEvents.EVENT_MIDI
 			subtype: MIDIEvents.EVENT_MIDI_NOTE_OFF
 			channel: 0
-			param1: 5 # TODO?
+			param1: note.key
+			param2: 5 # TODO?
 		})
-		
-		# for pitch_bend in note.pitch_bends
-		# 	events.push({
-		# 		# delta: 0 # using _time and sorting and then converting to delta
-		# 		_time: pitch_bend.time
-		# 		type: MIDIEvents.EVENT_MIDI
-		# 		subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
-		# 		channel: 0
-		# 		param1: pitch_bend.value # TODO: range
-		# 	})
+
+		max = -Infinity
+		min = Infinity
+		for pitch_bend in note.pitch_bends
+			max = Math.max(pitch_bend.value)
+			min = Math.min(pitch_bend.value)
+			events.push({
+				# delta: <computed later>
+				_time: pitch_bend.time
+				type: MIDIEvents.EVENT_MIDI
+				subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
+				channel: 0
+				param1: note.key
+#				param2: pitch_bend.value # TODO: range
+#				param2: 127 + 127 * pitch_bend.value # TODO: range
+#				param2: 127 + 127*2 * pitch_bend.value # TODO: range
+#				param2: pitch_bend.value - 1000 # TODO: range
+#				param2: pitch_bend.value / 1000 * 2	# TODO: range
+				param2: Math.random() * 127	# TODO: range
+			})
+		console.log({min, max})
 		# TODO: EVENT_MIDI_CHANNEL_AFTERTOUCH
+
 	events.sort((a, b)-> a._time - b._time) # TODO: is this right?
 	# events.sort((a, b)-> b._time - a._time) # TODO: is this right?
+	total_track_time = events[events.length - 1]._time
+	console.log({total_track_time})
 	# events = .concat(events)
 	last_time = null
 	# TODO: is this needed?
@@ -137,9 +153,7 @@ document.getElementById("export-midi-file").onclick = ->
 	PPQ = 192
 	ms_per_tick = 60000 / (BPM * PPQ)
 	for event in events
-		if event.delta?
-			# okay
-		else
+		unless event.delta?
 			if last_time?
 				event.delta = (event._time - last_time) / ms_per_tick
 			else
@@ -177,14 +191,14 @@ document.getElementById("export-midi-file").onclick = ->
 			tempo: 500000
 			tempoBPM: 120 # not used
 		}
+#		{
+#			delta: 0
+#			type: MIDIEvents.EVENT_META
+#			subtype: MIDIEvents.EVENT_META_TRACK_NAME
+#			length: 0 # TODO: "Tempo track" name
+#		}
 		{
-			delta: 0
-			type: MIDIEvents.EVENT_META
-			subtype: MIDIEvents.EVENT_META_TRACK_NAME
-			length: 0 # TODO: "Tempo track" name
-		}
-		{
-			delta: 0
+			delta: ~~total_track_time
 			type: MIDIEvents.EVENT_META
 			subtype: MIDIEvents.EVENT_META_END_OF_TRACK
 			length: 0
@@ -193,6 +207,8 @@ document.getElementById("export-midi-file").onclick = ->
 	midiFile.setTrackEvents(0, first_track_events)
 	midiFile.addTrack(1)
 	midiFile.setTrackEvents(1, events)
+
+	console.log({first_track_events, events})
 
 	outputArrayBuffer = midiFile.getContent()
 	
