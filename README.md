@@ -1,19 +1,16 @@
-# [MidiCowDont][app] (ridiculous working title)
+# [MIDI Recorder][app]
 
-An extremely simple online live MIDI visualizer,
-built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js) and [MidiFile.js](TODO)
+The simplest way to record MIDI.
+
+Also a nice simple live MIDI visualizer.
 
 If you've got a MIDI keyboard, plug in and [try it out][app].
 
-I intend to make this into a MIDI *recorder*...
+Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js) and [MidiFile.js](https://github.com/nfroidure/midifile)
 
 ### TODO
 
 * Show note velocity and aftertouch pressure
-
-* Record MIDI (automatically, by default)
-
-* Rename project, maybe to "midi-recorder"?
 
 * Maybe allow scrolling back (pausing automatically (not recording, just the view))
 
@@ -23,8 +20,4 @@ I intend to make this into a MIDI *recorder*...
 
 * Offline support (w/ a service worker)
 
-* Relicense
-
-* midi recorder online html5
-
-[app]: http://1j01.github.io/midicowdont/
+[app]: https://1j01.github.io/midicowdont/
