@@ -1,17 +1,46 @@
+
+for el in document.querySelectorAll("noscript")
+	el.remove()
+
+midiDevicesTable = document.getElementById("midi-devices")
+midiDeviceIDsToRows = new Map
+
 smi = new SimpleMidiInput()
 
-onsuccesscallback = (midi)->
+onSuccess = (midi)->
 	smi.attach(midi)
-	console.log 'smi: ', smi
-	# TODO: show device(s) connection state
+#	console.log 'smi: ', smi
+#	console.log 'inputs (as a Map): ', new Map(midi.inputs)
 
-onerrorcallback = (err)->
+	midi.onstatechange = (e)->
+		if e.port.type is "input"
+			tr = midiDeviceIDsToRows.get(e.port.id)
+			unless tr
+				tr = document.createElement("tr")
+				midiDevicesTable.appendChild(tr)
+				midiDeviceIDsToRows.set(e.port.id, tr)
+			tr.innerHTML = ""
+			tr.className = "midi-device-#{e.port.state}"
+
+			td = document.createElement("td")
+			td.setAttribute("aria-label", e.port.state)
+			td.className = "midi-device-status"
+			tr.appendChild(td)
+
+			td = document.createElement("td")
+			td.textContent = e.port.name
+			tr.appendChild(td)
+
+#			console.log(e.port.name, e.port.manufacturer, e.port.state);
+
+
+onError = (err)->
 	console.log 'ERROR: ', err
 	# TODO: better message (on the page)
 	alert("Failed to get MIDI access\n\n#{err}")
 
 if navigator.requestMIDIAccess
-	navigator.requestMIDIAccess().then onsuccesscallback, onerrorcallback
+	navigator.requestMIDIAccess().then onSuccess, onError
 else
 	# TODO: better message (on the page)
 	alert("Your browser doesn't support MIDI access")

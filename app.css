@@ -29,3 +29,17 @@ body {
 		display: none;
 	}
 }
+.midi-device-status:after {
+	content: "";
+	display: inline-block;
+	vertical-align: center;
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+}
+.midi-device-connected .midi-device-status:after {
+	background: lime;
+}
+.midi-device-disconnected .midi-device-status:after {
+	background: red;
+}
