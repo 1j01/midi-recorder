@@ -70,7 +70,6 @@ smi.on 'noteOff', (data)->
 
 smi.on 'pitchWheel', (data)->
 	{event, value} = data
-	console.log(value)
 	current_pitch_bend_value = value
 	pitch_bend = {time: performance.now(), value: value}
 	global_pitch_bends.push(pitch_bend)
@@ -98,9 +97,10 @@ do animate = ->
 		w = canvas.width / 128
 		x = note.key * w
 		unless note.length?
+			# for ongoing (held) notes, display a bar at the bottom like a key
+			# TODO: maybe bend this?
 			ctx.fillStyle = "#800"
 			ctx.fillRect(x, 2, w, 50000)
-			# TODO: maybe bend this
 		ctx.fillStyle = if note.length then "yellow" else "lime"
 		# ctx.strokeStyle = if note.length then "yellow" else "lime"
 		for pitch_bend, i in note.pitch_bends
@@ -109,7 +109,7 @@ do animate = ->
 			# h = (note.length ? now - note.start_time) / 1000 * px_per_second
 			end = next_pitch_bend?.time ? note.end_time ? now
 			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
-			ctx.fillRect(x + pitch_bend.value / 8129 * w * 2, y, w, h)
+			ctx.fillRect(x + pitch_bend.value / 0x2000 * w * 2, y, w, h)
 			# ctx.strokeRect(x + pitch_bend.value / 500, y, w, h)
 			# console.log x, y, w, h
 	ctx.restore()
@@ -142,29 +142,28 @@ document.getElementById("export-midi-file").onclick = ->
 			param2: 5 # TODO?
 		})
 
-		# TODO: use global_pitch_bends
-		max = -Infinity
-		min = Infinity
-		for pitch_bend in note.pitch_bends
-			max = Math.max(max, pitch_bend.value)
-			min = Math.min(min, pitch_bend.value)
-			events.push({
-				# delta: <computed later>
-				_time: pitch_bend.time
-				type: MIDIEvents.EVENT_MIDI
-				subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
-				channel: 0
-				param1: note.key
-				param2: pitch_bend.value
-			})
-		console.log({min, max})
-		# TODO: EVENT_MIDI_CHANNEL_AFTERTOUCH
+	# TODO: EVENT_MIDI_CHANNEL_AFTERTOUCH
 
-	events.sort((a, b)-> a._time - b._time) # TODO: is this right?
-	# events.sort((a, b)-> b._time - a._time) # TODO: is this right?
+	for pitch_bend in global_pitch_bends
+		events.push({
+			# delta: <computed later>
+			_time: pitch_bend.time
+			type: MIDIEvents.EVENT_MIDI
+			subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
+			channel: 0
+			param1: note.key
+#			param2: Math.sin(Date.now() / 500) * 8129 # ~~(pitch_bend.value / 8129)
+#			param2: ((1 + Math.sin(Date.now() / 500)) / 2) * 0x1000
+#			param2: ((1 + Math.sin(Date.now() / 500)) / 2) * 0x1000
+#			param2: ((1 + Math.sin(Date.now() / 500)) / 2) * 128
+#			param2: Math.random() * 128 #* 0x1000
+			param2: (pitch_bend.value + 0x2000) / 128
+		})
+
+	events.sort((a, b)-> a._time - b._time)
 	total_track_time = events[events.length - 1]._time
-	console.log({total_track_time})
-	# events = .concat(events)
+	# TODO: fix track length (end time)?
+#	console.log({total_track_time})
 	last_time = null
 	# TODO: is this needed?
 	BPM = 120
@@ -176,7 +175,6 @@ document.getElementById("export-midi-file").onclick = ->
 				event.delta = (event._time - last_time) / ms_per_tick
 			else
 				event.delta = 0
-				console.log event._time, event.delta
 			last_time = event._time
 		delete event._time
 
@@ -186,8 +184,6 @@ document.getElementById("export-midi-file").onclick = ->
 		subtype: MIDIEvents.EVENT_META_END_OF_TRACK
 		length: 0
 	})
-
-	# midiFile.setTrackEvents(0, events)
 
 	first_track_events = [
 		{
@@ -226,7 +222,7 @@ document.getElementById("export-midi-file").onclick = ->
 	midiFile.addTrack(1)
 	midiFile.setTrackEvents(1, events)
 
-	console.log({first_track_events, events})
+#	console.log({first_track_events, events})
 
 	outputArrayBuffer = midiFile.getContent()
 	
