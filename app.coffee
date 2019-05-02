@@ -49,40 +49,33 @@ notes = []
 current_notes = new Map
 
 current_pitch_bend_value = 0
+global_pitch_bends = []
 
 smi.on 'noteOn', (data)->
 	{event, key, velocity} = data
 	old_note = current_notes.get(key)
-	# current_notes.delete(key)
 	start_time = performance.now()
-	if old_note
-		# console.log("double noteOn?")
-		# note = old_note
-		return
+	return if old_note
 	note = {key, velocity, start_time, pitch_bends: [{time: start_time, value: current_pitch_bend_value}]}
 	current_notes.set(key, note)
 	notes.push(note)
-	# console.log(event, note)
 
 smi.on 'noteOff', (data)->
 	{event, key} = data
 	note = current_notes.get(key)
 	if note
-		# console.log(event, note)
 		note.end_time = performance.now()
 		note.length = note.end_time - note.start_time
 	current_notes.delete(key)
 
 smi.on 'pitchWheel', (data)->
 	{event, value} = data
+	console.log(value)
 	current_pitch_bend_value = value
-	# note = current_notes.get(key)
-	# if note
+	pitch_bend = {time: performance.now(), value: value}
+	global_pitch_bends.push(pitch_bend)
 	current_notes.forEach (note, key)->
-		# console.log key, note
-		# note.pitch_bends ?= []
-		note.pitch_bends.push({time: performance.now(), value: value})
-		# console.log(event, note)
+		note.pitch_bends.push(pitch_bend)
 
 canvas = document.createElement "canvas"
 ctx = canvas.getContext "2d"
@@ -116,7 +109,7 @@ do animate = ->
 			# h = (note.length ? now - note.start_time) / 1000 * px_per_second
 			end = next_pitch_bend?.time ? note.end_time ? now
 			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
-			ctx.fillRect(x + pitch_bend.value / 1000 * 2, y, w, h)
+			ctx.fillRect(x + pitch_bend.value / 8129 * w * 2, y, w, h)
 			# ctx.strokeRect(x + pitch_bend.value / 500, y, w, h)
 			# console.log x, y, w, h
 	ctx.restore()
@@ -149,11 +142,12 @@ document.getElementById("export-midi-file").onclick = ->
 			param2: 5 # TODO?
 		})
 
+		# TODO: use global_pitch_bends
 		max = -Infinity
 		min = Infinity
 		for pitch_bend in note.pitch_bends
-			max = Math.max(pitch_bend.value)
-			min = Math.min(pitch_bend.value)
+			max = Math.max(max, pitch_bend.value)
+			min = Math.min(min, pitch_bend.value)
 			events.push({
 				# delta: <computed later>
 				_time: pitch_bend.time
@@ -161,12 +155,7 @@ document.getElementById("export-midi-file").onclick = ->
 				subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
 				channel: 0
 				param1: note.key
-#				param2: pitch_bend.value # TODO: range
-#				param2: 127 + 127 * pitch_bend.value # TODO: range
-#				param2: 127 + 127*2 * pitch_bend.value # TODO: range
-#				param2: pitch_bend.value - 1000 # TODO: range
-#				param2: pitch_bend.value / 1000 * 2	# TODO: range
-				param2: Math.random() * 127	# TODO: range
+				param2: pitch_bend.value
 			})
 		console.log({min, max})
 		# TODO: EVENT_MIDI_CHANNEL_AFTERTOUCH
