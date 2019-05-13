@@ -22,4 +22,4 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 * Offline support with a service worker
 
-[app]: https://1j01.github.io/midicowdont/
+[app]: https://1j01.github.io/midi-recorder/
