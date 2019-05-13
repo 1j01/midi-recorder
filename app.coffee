@@ -2,6 +2,19 @@
 for el in document.querySelectorAll("noscript")
 	el.remove()
 
+elToReplaceContentOfOnError = document.getElementById("replace-content-on-error")
+
+showErrorReplacingUI = (message, error)->
+	errorMessageEl = document.createElement("div")
+	errorMessageEl.className = "error-message"
+	errorMessageEl.textContent = message
+	if error
+		errorPre = document.createElement("pre")
+		errorPre.textContent = error
+		errorMessageEl.appendChild(errorPre)
+	elToReplaceContentOfOnError.innerHTML = ""
+	elToReplaceContentOfOnError.appendChild(errorMessageEl)
+
 midiDevicesTable = document.getElementById("midi-devices")
 midiDeviceIDsToRows = new Map
 
@@ -34,16 +47,14 @@ onSuccess = (midi)->
 #			console.log(e.port.name, e.port.manufacturer, e.port.state);
 
 
-onError = (err)->
-	console.log 'ERROR: ', err
-	# TODO: better message (on the page)
-	alert("Failed to get MIDI access\n\n#{err}")
+onError = (error)->
+	showErrorReplacingUI("Failed to get MIDI access", error)
+	console.log "requestMIDIAccess failed:", error
 
 if navigator.requestMIDIAccess
 	navigator.requestMIDIAccess().then onSuccess, onError
 else
-	# TODO: better message (on the page)
-	alert("Your browser doesn't support MIDI access")
+	showErrorReplacingUI("Your browser doesn't support MIDI access.")
 
 notes = []
 current_notes = new Map
