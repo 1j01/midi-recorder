@@ -65,3 +65,9 @@ body {
 #cant-export-midi {
 	color: gray;
 }
+.supported {
+	color: lime;
+}
+.unsupported {
+	color: #e83636;
+}
