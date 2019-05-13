@@ -62,3 +62,6 @@ body {
 	margin: 0;
 	margin-top: 1em;
 }
+#cant-export-midi {
+	color: gray;
+}

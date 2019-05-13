@@ -3,6 +3,8 @@ for el in document.querySelectorAll("noscript")
 	el.remove()
 
 elToReplaceContentOfOnError = document.getElementById("replace-content-on-error")
+cantExportMidiEl = document.getElementById("cant-export-midi")
+exportMidiButton = document.getElementById("export-midi-file")
 
 showErrorReplacingUI = (message, error)->
 	errorMessageEl = document.createElement("div")
@@ -58,6 +60,8 @@ else
 
 notes = []
 current_notes = new Map
+exportMidiButton.disabled = true
+cantExportMidiEl.textContent = "- No notes recorded yet"
 
 current_pitch_bend_value = 0
 global_pitch_bends = []
@@ -70,6 +74,9 @@ smi.on 'noteOn', (data)->
 	note = {key, velocity, start_time, pitch_bends: [{time: start_time, value: current_pitch_bend_value}]}
 	current_notes.set(key, note)
 	notes.push(note)
+
+	cantExportMidiEl.textContent = ""
+	exportMidiButton.disabled = false
 
 smi.on 'noteOff', (data)->
 	{event, key} = data
@@ -124,7 +131,7 @@ do animate = ->
 			# console.log x, y, w, h
 	ctx.restore()
 
-document.getElementById("export-midi-file").onclick = ->
+exportMidiButton.onclick = ->
 	midiFile = new MIDIFile()
 
 	if notes.length is 0
