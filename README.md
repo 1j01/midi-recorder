@@ -18,6 +18,8 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 * View options: horizontal mode, zooming, maybe themes
 
-* Offline support (w/ a service worker)
+* Offline support with a service worker
+
+* Test for `navigator.requestMIDIAccess` support and show message on page if not supported
 
 [app]: https://1j01.github.io/midicowdont/

@@ -110,7 +110,6 @@ do animate = ->
 			end = next_pitch_bend?.time ? note.end_time ? now
 			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
 			ctx.fillRect(x + pitch_bend.value / 0x2000 * w * 2, y, w, h)
-			# ctx.strokeRect(x + pitch_bend.value / 500, y, w, h)
 			# console.log x, y, w, h
 	ctx.restore()
 
@@ -152,12 +151,10 @@ document.getElementById("export-midi-file").onclick = ->
 			subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
 			channel: 0
 			param1: note.key
-#			param2: Math.sin(Date.now() / 500) * 8129 # ~~(pitch_bend.value / 8129)
-#			param2: ((1 + Math.sin(Date.now() / 500)) / 2) * 0x1000
-#			param2: ((1 + Math.sin(Date.now() / 500)) / 2) * 0x1000
-#			param2: ((1 + Math.sin(Date.now() / 500)) / 2) * 128
-#			param2: Math.random() * 128 #* 0x1000
-			param2: (pitch_bend.value + 0x2000) / 128
+			# TODO: refactor so pitch_bend.value is in the range of -1 to +1
+			param2: (pitch_bend.value / 0x2000 + 1) * 64
+#			param2: (pitch_bend.value + 0x2000) / 128
+#			param2: pitch_bend.value / 128 + 64
 		})
 
 	events.sort((a, b)-> a._time - b._time)
@@ -211,6 +208,7 @@ document.getElementById("export-midi-file").onclick = ->
 #			subtype: MIDIEvents.EVENT_META_TRACK_NAME
 #			length: 0 # TODO: "Tempo track" name
 #		}
+		# ...or, remove this "tempo track" if we don't need it
 		{
 			delta: ~~total_track_time
 			type: MIDIEvents.EVENT_META
