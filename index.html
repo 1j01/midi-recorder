@@ -13,10 +13,47 @@
 		<noscript>
 			This app requires JavaScript.
 		</noscript>
+
 		<h2>Plug in a MIDI keyboard and play away!</h2>
 		<p>You may need to refresh the page after plugging in or turning on your MIDI device.</p>
 		<p>I'll visualize what you play (in a nice simple way) and record your jams<!--TODO: , saving progressively-->.</p>
-		<p>Not all MIDI events are recorded, but pitch, velocity, and bends are supported. The pitch bend range is assumed to be two semitones in either direction.</p>
+		<p>
+			Feature support:
+			<table>
+				<tr>
+					<td>✔️</td>
+					<td>Pitch</td>
+				</tr>
+				<tr>
+					<td>✔️</td>
+					<td>Velocity</td>
+				</tr>
+				<tr>
+					<td>✔️</td>
+					<td>Pitch bends</td>
+				</tr>
+				<tr>
+					<td>❌</td>
+					<td>Pitch bend range selection (assumed two semitones in either direction)</td>
+				</tr>
+				<tr>
+					<td>❌</td>
+					<td>Aftertouch</td>
+				</tr>
+				<tr>
+					<td>❌</td>
+					<td>Instrument selection</td>
+				</tr>
+				<tr>
+					<td>❌</td>
+					<td>Instrument selection</td>
+				</tr>
+				<tr>
+					<td>❌</td>
+					<td>Misc MIDI events</td>
+				</tr>
+			</table>
+		</p>
 		<p>
 			<table id="midi-devices" aria-live="assertive"></table>
 		</p>
