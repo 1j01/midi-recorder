@@ -39,19 +39,20 @@ body {
 		display: none;
 	}
 }
-.midi-device-status:after {
+.midi-port-status:after {
 	content: "";
 	display: inline-block;
 	vertical-align: center;
 	width: 8px;
 	height: 8px;
 	border-radius: 50%;
+	background: red;
 }
-.midi-device-connected .midi-device-status:after {
+.midi-port-is-open .midi-port-status:after {
 	background: lime;
 }
-.midi-device-disconnected .midi-device-status:after {
-	background: red;
+.midi-port.midi-device-is-disconnected {
+	text-decoration: line-through;
 }
 .error-message {
 	background: maroon;

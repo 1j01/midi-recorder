@@ -29,24 +29,26 @@ onSuccess = (midi)->
 
 	midi.onstatechange = (e)->
 		if e.port.type is "input"
+			connected = e.port.state is "connected" and e.port.connection is "open"
+
 			tr = midiDeviceIDsToRows.get(e.port.id)
 			unless tr
 				tr = document.createElement("tr")
 				midiDevicesTable.appendChild(tr)
 				midiDeviceIDsToRows.set(e.port.id, tr)
 			tr.innerHTML = ""
-			tr.className = "midi-device-#{e.port.state}"
+			tr.className = "midi-port midi-device-is-#{e.port.state}#{if connected then " midi-port-is-open" else ""}"
 
 			td = document.createElement("td")
-			td.setAttribute("aria-label", e.port.state)
-			td.className = "midi-device-status"
+			td.setAttribute("aria-label", (if connected then "connected" else "disconnected"))
+			td.className = "midi-port-status"
 			tr.appendChild(td)
 
 			td = document.createElement("td")
 			td.textContent = e.port.name
 			tr.appendChild(td)
 
-#			console.log(e.port.name, e.port.manufacturer, e.port.state);
+#			console.log(e.port, e.port.name, e.port.state, e.port.connection);
 
 
 onError = (error)->
