@@ -183,10 +183,7 @@ exportMidiButton.onclick = ->
 
 	events.sort((a, b)-> a._time - b._time)
 	total_track_time = events[events.length - 1]._time
-	# TODO: fix track length (end time)?
-#	console.log({total_track_time})
 	last_time = null
-	# TODO: is this needed?
 	BPM = 120
 	PPQ = 192
 	ms_per_tick = 60000 / (BPM * PPQ)
@@ -230,9 +227,8 @@ exportMidiButton.onclick = ->
 #			delta: 0
 #			type: MIDIEvents.EVENT_META
 #			subtype: MIDIEvents.EVENT_META_TRACK_NAME
-#			length: 0 # TODO: "Tempo track" name
+#			length: 0 # TODO: name "Tempo track" / "Meta track" / "Conductor track"
 #		}
-		# ...or, remove this "tempo track" if we don't need it
 		{
 			delta: ~~total_track_time
 			type: MIDIEvents.EVENT_META

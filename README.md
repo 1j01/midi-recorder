@@ -10,9 +10,35 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 ### TODO
 
-* Show note velocity
+* Attempt to open MIDI port when device is connected but port is closed, so you don't need to refresh the page
 
-* Record and show aftertouch pressure
+* Fix track length (end time)
+
+* Replace fork on github banner with a small link somewhere
+
+* Improve layout on mobile / small viewport size
+
+* Fade out overlay when playing (with a button to show info again)
+
+* A way to clear/reset other than refreshing, with a confirmation prompt (unless you just saved?)
+
+* Save progressively to local storage
+    - This is the killer feature IMO, letting you record for long periods of time without fear
+    - Note: must handle multiple tabs without conflict
+        - Could be separate recording slots per tab, but then there'd have to be a way to recover different sessions, vs having just one
+        - Could use a scheme of saving chunks including notes since the last time of the last chunk (where the last write wins for a chunk) (and assume connected inputs are the same, which should be fine) - with potential complexity around trying not to duplicate or drop notes around chunk borders
+    - Specifically stress test the length of recording
+    - Make it clear it's continuing off a previous recording session / recording was recovered
+
+* Show note velocity (already recorded)
+
+* Record + show aftertouch pressure
+
+* Record instrument changes, maybe show as horizontal line with text for instrument number/name
+
+* Support Pitch Bend Range selection
+
+* Record miscellaneous MIDI events, maybe even SysEx (optionally)?
 
 * Maybe allow scrolling back (pausing automatically (not recording, just the view))
 
