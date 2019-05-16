@@ -73,7 +73,10 @@ smi.on 'noteOn', (data)->
 	old_note = current_notes.get(key)
 	start_time = performance.now()
 	return if old_note
-	note = {key, velocity, start_time, pitch_bends: [{time: start_time, value: current_pitch_bend_value}]}
+	note = {key, velocity, start_time, pitch_bends: [{
+		time: start_time,
+		value: current_pitch_bend_value,
+	}]}
 	current_notes.set(key, note)
 	notes.push(note)
 
@@ -90,8 +93,9 @@ smi.on 'noteOff', (data)->
 
 smi.on 'pitchWheel', (data)->
 	{event, value} = data
+	value /= 0x2000
 	current_pitch_bend_value = value
-	pitch_bend = {time: performance.now(), value: value}
+	pitch_bend = {time: performance.now(), value}
 	global_pitch_bends.push(pitch_bend)
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
@@ -129,7 +133,7 @@ do animate = ->
 			# h = (note.length ? now - note.start_time) / 1000 * px_per_second
 			end = next_pitch_bend?.time ? note.end_time ? now
 			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
-			ctx.fillRect(x + pitch_bend.value / 0x2000 * w * 2, y, w, h)
+			ctx.fillRect(x + pitch_bend.value * w * 2, y, w, h)
 			# console.log x, y, w, h
 	ctx.restore()
 
@@ -171,10 +175,10 @@ exportMidiButton.onclick = ->
 			subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
 			channel: 0
 			param1: note.key
-			# TODO: refactor so pitch_bend.value is in the range of -1 to +1
-			param2: (pitch_bend.value / 0x2000 + 1) * 64
-#			param2: (pitch_bend.value + 0x2000) / 128
-#			param2: pitch_bend.value / 128 + 64
+			param2: (pitch_bend.value + 1) * 64
+#			param2: ((pitch_bend.value + 1) * 0x2000) / 128
+#			param2: pitch_bend.value * 0x2000 / 128 + 64
+#			param2: pitch_bend.value * 0x1000 / 64 + 64
 		})
 
 	events.sort((a, b)-> a._time - b._time)
