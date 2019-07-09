@@ -2,7 +2,7 @@
 for el in document.querySelectorAll("noscript")
 	el.remove()
 
-elToReplaceContentOfOnError = document.getElementById("replace-content-on-error")
+elToReplaceContentOfOnError = document.querySelector(".replace-content-on-error") ? document.body
 cantExportMidiEl = document.getElementById("cant-export-midi")
 exportMidiButton = document.getElementById("export-midi-file")
 
