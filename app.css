@@ -55,6 +55,10 @@ body {
 .midi-port.midi-device-is-disconnected {
 	text-decoration: line-through;
 }
+#midi-devices {
+	min-width: 250px;
+}
+
 .error-message {
 	background: maroon;
 	color: white;
