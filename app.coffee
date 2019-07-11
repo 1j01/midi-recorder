@@ -5,6 +5,7 @@ for el in document.querySelectorAll("noscript")
 elToReplaceContentOfOnError = document.querySelector(".replace-content-on-error") ? document.body
 cantExportMidiEl = document.getElementById("cant-export-midi")
 exportMidiButton = document.getElementById("export-midi-file")
+fullscreenButton = document.getElementById("fullscreen-button")
 
 showErrorReplacingUI = (message, error)->
 	errorMessageEl = document.createElement("div")
@@ -48,7 +49,7 @@ onSuccess = (midi)->
 			td.textContent = e.port.name
 			tr.appendChild(td)
 
-#			console.log(e.port, e.port.name, e.port.state, e.port.connection);
+#			console.log(e.port, e.port.name, e.port.state, e.port.connection)
 
 
 onError = (error)->
@@ -184,9 +185,10 @@ exportMidiButton.onclick = ->
 	events.sort((a, b)-> a._time - b._time)
 	total_track_time = events[events.length - 1]._time
 	last_time = null
-	BPM = 120
-	PPQ = 192
+	BPM = 120 # beats per minute
+	PPQ = 192 # pulses per quarter note
 	ms_per_tick = 60000 / (BPM * PPQ)
+#	console.log({total_track_time, ms_per_tick})
 	for event in events
 		unless event.delta?
 			if last_time?
@@ -244,5 +246,14 @@ exportMidiButton.onclick = ->
 
 	outputArrayBuffer = midiFile.getContent()
 	
-	blob = new Blob([outputArrayBuffer], {type: "audio/midi"});
-	saveAs(blob, "recording.midi");
+	blob = new Blob([outputArrayBuffer], {type: "audio/midi"})
+	saveAs(blob, "recording.midi")
+
+
+fullscreenButton.onclick = ->
+	if canvas.requestFullscreen
+		canvas.requestFullscreen()
+	else if canvas.mozRequestFullScreen
+		canvas.mozRequestFullScreen()
+	else if canvas.webkitRequestFullScreen
+		canvas.webkitRequestFullScreen()

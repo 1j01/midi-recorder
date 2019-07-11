@@ -6,6 +6,7 @@ body {
 	margin: 0;
 	background: #1B1B1B;
 	color: white;
+	line-height: 1em;
 }
 body {
 	display: flex;
@@ -71,4 +72,25 @@ body {
 }
 .unsupported {
 	color: #e83636;
+}
+button {
+	vertical-align: middle;
+	display: inline-flex;
+	padding: 5px 10px;
+	line-height: 0.8;
+	height: 2em;
+	width: 10em;
+	justify-content: center;
+	align-items: center;
+}
+button svg {
+	margin-right: 5px;
+	height: 1em;
+}
+button svg path {
+	fill: currentColor;
+}
+.spacer {
+	display: inline-block;
+	width: 35px;
 }
