@@ -20,6 +20,32 @@ showErrorReplacingUI = (message, error)->
 	elToReplaceContentOfOnError.innerHTML = ""
 	elToReplaceContentOfOnError.appendChild(errorMessageEl)
 
+saveOptions = ->
+	data =
+		"midi-range-min": midiRangeMinInput.value
+		"midi-range-max": midiRangeMaxInput.value
+	keyvals =
+		for key, val of data
+			"#{key}=#{val}"
+	location.hash = keyvals.join("&")
+
+loadOptions = ->
+	data = {}
+	for keyval in location.hash.replace(/^#/, "").split("&")
+		[key, val] = keyval.split("=")
+		key = key.trim()
+		val = val.trim()
+		data[key] = val
+	if data["midi-range-min"]
+		midiRangeMinInput.value = data["midi-range-min"]
+	if data["midi-range-max"]
+		midiRangeMaxInput.value = data["midi-range-max"]
+
+loadOptions()
+
+midiRangeMinInput.onchange = saveOptions
+midiRangeMaxInput.onchange = saveOptions
+
 midiDevicesTable = document.getElementById("midi-devices")
 midiDeviceIDsToRows = new Map
 
