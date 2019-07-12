@@ -22,8 +22,7 @@ showErrorReplacingUI = (message, error)->
 
 saveOptions = ->
 	data =
-		"midi-range-min": midiRangeMinInput.value
-		"midi-range-max": midiRangeMaxInput.value
+		"midi-range": "#{midiRangeMinInput.value}..#{midiRangeMaxInput.value}"
 	keyvals =
 		for key, val of data
 			"#{key}=#{val}"
@@ -36,10 +35,8 @@ loadOptions = ->
 		key = key.trim()
 		val = val.trim()
 		data[key] = val
-	if data["midi-range-min"]
-		midiRangeMinInput.value = data["midi-range-min"]
-	if data["midi-range-max"]
-		midiRangeMaxInput.value = data["midi-range-max"]
+	if data["midi-range"]
+		[midiRangeMinInput.value, midiRangeMaxInput.value] = data["midi-range"].split("..")
 
 loadOptions()
 
