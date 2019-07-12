@@ -30,7 +30,7 @@ saveOptions = ->
 
 loadOptions = ->
 	data = {}
-	for keyval in location.hash.replace(/^#/, "").split("&")
+	for keyval in location.hash.replace(/^#/, "").split("&") when keyval.match(/=/)
 		[key, val] = keyval.split("=")
 		key = key.trim()
 		val = val.trim()
