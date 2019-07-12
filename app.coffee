@@ -6,6 +6,8 @@ elToReplaceContentOfOnError = document.querySelector(".replace-content-on-error"
 cantExportMidiEl = document.getElementById("cant-export-midi")
 exportMidiButton = document.getElementById("export-midi-file")
 fullscreenButton = document.getElementById("fullscreen-button")
+midiRangeMinInput = document.getElementById("midi-range-min")
+midiRangeMaxInput = document.getElementById("midi-range-max")
 
 showErrorReplacingUI = (message, error)->
 	errorMessageEl = document.createElement("div")
@@ -108,6 +110,12 @@ document.body.appendChild canvas
 
 px_per_second = 20
 do animate = ->
+	valid_int_0_to_128 = (value)->
+		int = parseInt(value)
+		return null if isNaN(int) or int < 0 or int > 128
+		return int 
+	midi_range_min = valid_int_0_to_128(midiRangeMinInput.value) ? 0
+	midi_range_max = valid_int_0_to_128(midiRangeMaxInput.value) ? 128
 	requestAnimationFrame animate
 	now = performance.now()
 	canvas.width = innerWidth if canvas.width isnt innerWidth
@@ -119,8 +127,8 @@ do animate = ->
 	ctx.fillRect(0, 1, canvas.width, 1)
 	# ctx.globalAlpha = 0.2
 	for note in notes
-		w = canvas.width / 128
-		x = note.key * w
+		w = canvas.width / (midi_range_max - midi_range_min + 1)
+		x = (note.key - midi_range_min) * w
 		unless note.length?
 			# for ongoing (held) notes, display a bar at the bottom like a key
 			# TODO: maybe bend this?
