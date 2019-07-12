@@ -20,9 +20,18 @@ showErrorReplacingUI = (message, error)->
 	elToReplaceContentOfOnError.innerHTML = ""
 	elToReplaceContentOfOnError.appendChild(errorMessageEl)
 
+getMidiRange = ->
+	valid_int_0_to_128 = (value)->
+		int = parseInt(value)
+		return null if isNaN(int) or int < 0 or int > 128
+		return int 
+	midi_range_min: valid_int_0_to_128(midiRangeMinInput.value) ? 0
+	midi_range_max: valid_int_0_to_128(midiRangeMaxInput.value) ? 128
+
 saveOptions = ->
+	{midi_range_min, midi_range_max} = getMidiRange()
 	data =
-		"midi-range": "#{midiRangeMinInput.value}..#{midiRangeMaxInput.value}"
+		"midi-range": "#{midi_range_min}..#{midi_range_max}"
 	keyvals =
 		for key, val of data
 			"#{key}=#{val}"
@@ -37,6 +46,8 @@ loadOptions = ->
 		data[key] = val
 	if data["midi-range"]
 		[midiRangeMinInput.value, midiRangeMaxInput.value] = data["midi-range"].split("..")
+		{midi_range_min, midi_range_max} = getMidiRange()
+		[midiRangeMinInput.value, midiRangeMaxInput.value] = [midi_range_min, midi_range_max]
 
 loadOptions()
 
@@ -73,6 +84,14 @@ onSuccess = (midi)->
 			td = document.createElement("td")
 			td.textContent = e.port.name
 			tr.appendChild(td)
+
+			# auto detect range based on device
+			# not sure if I should do this, considering there are instruments that transpose up or down an octave
+			# as well as user-explicit transposition
+			# if connected
+			# 	unless location.hash.match(/midi-range/)
+			# 		if e.port.name is "Yamaha Portable G-1"
+			# 			[midiRangeMinInput.value, midiRangeMaxInput.value] = [28, 103]
 
 #			console.log(e.port, e.port.name, e.port.state, e.port.connection)
 
@@ -133,12 +152,7 @@ document.body.appendChild canvas
 
 px_per_second = 20
 do animate = ->
-	valid_int_0_to_128 = (value)->
-		int = parseInt(value)
-		return null if isNaN(int) or int < 0 or int > 128
-		return int 
-	midi_range_min = valid_int_0_to_128(midiRangeMinInput.value) ? 0
-	midi_range_max = valid_int_0_to_128(midiRangeMaxInput.value) ? 128
+	{midi_range_min, midi_range_max} = getMidiRange()
 	requestAnimationFrame animate
 	now = performance.now()
 	canvas.width = innerWidth if canvas.width isnt innerWidth
