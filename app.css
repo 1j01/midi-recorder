@@ -80,6 +80,10 @@ body {
 .unsupported {
 	color: #e83636;
 }
+input:invalid {
+	background: #e83636;
+	color: white;
+}
 button {
 	vertical-align: middle;
 	display: inline-flex;
