@@ -25,13 +25,15 @@ getMidiRange = ->
 		int = parseInt(value)
 		return null if isNaN(int) or int < 0 or int > 128
 		return int 
-	midi_range_min: valid_int_0_to_128(midiRangeMinInput.value) ? 0
-	midi_range_max: valid_int_0_to_128(midiRangeMaxInput.value) ? 128
+	return [
+		valid_int_0_to_128(midiRangeMinInput.value) ? 0
+		valid_int_0_to_128(midiRangeMaxInput.value) ? 128
+	]
 
 saveOptions = ->
-	{midi_range_min, midi_range_max} = getMidiRange()
+	[low, high] = getMidiRange()
 	data =
-		"midi-range": "#{midi_range_min}..#{midi_range_max}"
+		"midi-range": "#{low}..#{high}"
 	keyvals =
 		for key, val of data
 			"#{key}=#{val}"
@@ -46,8 +48,7 @@ loadOptions = ->
 		data[key] = val
 	if data["midi-range"]
 		[midiRangeMinInput.value, midiRangeMaxInput.value] = data["midi-range"].split("..")
-		{midi_range_min, midi_range_max} = getMidiRange()
-		[midiRangeMinInput.value, midiRangeMaxInput.value] = [midi_range_min, midi_range_max]
+		[midiRangeMinInput.value, midiRangeMaxInput.value] = getMidiRange()
 
 loadOptions()
 
@@ -152,20 +153,25 @@ document.body.appendChild canvas
 
 px_per_second = 20
 do animate = ->
-	{midi_range_min, midi_range_max} = getMidiRange()
+	[left_midi_val, right_midi_val] = getMidiRange()
+	min_midi_val = Math.min(left_midi_val, right_midi_val)
+	max_midi_val = Math.max(left_midi_val, right_midi_val)
 	requestAnimationFrame animate
 	now = performance.now()
 	canvas.width = innerWidth if canvas.width isnt innerWidth
 	canvas.height = innerHeight if canvas.height isnt innerHeight
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
 	ctx.save()
+	if left_midi_val > right_midi_val
+		ctx.translate(canvas.width, 0)
+		ctx.scale(-1, 1)
 	ctx.translate(0, canvas.height*4/5)
 	ctx.fillStyle = "red"
 	ctx.fillRect(0, 1, canvas.width, 1)
 	# ctx.globalAlpha = 0.2
 	for note in notes
-		w = canvas.width / (midi_range_max - midi_range_min + 1)
-		x = (note.key - midi_range_min) * w
+		w = canvas.width / (max_midi_val - min_midi_val + 1)
+		x = (note.key - min_midi_val) * w
 		unless note.length?
 			# for ongoing (held) notes, display a bar at the bottom like a key
 			# TODO: maybe bend this?
