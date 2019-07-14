@@ -3,6 +3,8 @@ for el in document.querySelectorAll("noscript")
 	el.remove()
 
 elToReplaceContentOfOnError = document.querySelector(".replace-content-on-error") ? document.body
+fullscreenTarget = document.getElementById("fullscreen-target")
+canvas = document.getElementById("midi-viz-canvas")
 cantExportMidiEl = document.getElementById("cant-export-midi")
 exportMidiButton = document.getElementById("export-midi-file")
 fullscreenButton = document.getElementById("fullscreen-button")
@@ -146,10 +148,7 @@ smi.on 'pitchWheel', (data)->
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
 
-canvas = document.createElement "canvas"
 ctx = canvas.getContext "2d"
-
-document.body.appendChild canvas
 
 px_per_second = 20
 do animate = ->
@@ -302,9 +301,9 @@ exportMidiButton.onclick = ->
 
 
 fullscreenButton.onclick = ->
-	if canvas.requestFullscreen
-		canvas.requestFullscreen()
-	else if canvas.mozRequestFullScreen
-		canvas.mozRequestFullScreen()
-	else if canvas.webkitRequestFullScreen
-		canvas.webkitRequestFullScreen()
+	if fullscreenTarget.requestFullscreen
+		fullscreenTarget.requestFullscreen()
+	else if fullscreenTarget.mozRequestFullScreen
+		fullscreenTarget.mozRequestFullScreen()
+	else if fullscreenTarget.webkitRequestFullScreen
+		fullscreenTarget.webkitRequestFullScreen()

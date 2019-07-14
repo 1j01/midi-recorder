@@ -8,7 +8,8 @@ body {
 	color: white;
 	line-height: 1em;
 }
-body {
+body,
+#fullscreen-target {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
