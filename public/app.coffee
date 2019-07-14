@@ -352,3 +352,13 @@ learnMidiRangeButton.onclick = ->
 		midiLearningRangeMax = null
 
 cancelLearnMidiRangeButton.onclick = endLearnMidiRange
+
+KEYCODE_ESC = 27
+
+# supposedly keydown doesn't work consistently in all browsers
+document.body.addEventListener "keydown", (event)->
+	if event.keyCode is KEYCODE_ESC
+		endLearnMidiRange()
+document.body.addEventListener "keyup", (event)->
+	if event.keyCode is KEYCODE_ESC
+		endLearnMidiRange()
