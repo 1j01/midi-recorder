@@ -342,6 +342,7 @@ endLearnMidiRange = ->
 learnMidiRangeButton.onclick = ->
 	if midiLearningRange
 		setMidiRange(midiLearningRangeMin, midiLearningRangeMax)
+		saveOptions()
 		endLearnMidiRange()
 	else
 		midiLearningRange = true
