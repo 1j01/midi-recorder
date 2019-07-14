@@ -95,6 +95,9 @@ button {
 	justify-content: center;
 	align-items: center;
 }
+button[hidden] {
+	visibility: hidden;
+}
 button svg {
 	margin-right: 5px;
 	height: 1em;

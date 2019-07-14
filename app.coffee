@@ -10,6 +10,8 @@ exportMidiButton = document.getElementById("export-midi-file")
 fullscreenButton = document.getElementById("fullscreen-button")
 midiRangeMinInput = document.getElementById("midi-range-min")
 midiRangeMaxInput = document.getElementById("midi-range-max")
+learnMidiRangeButton = document.getElementById("learn-midi-range")
+cancelLearnMidiRangeButton = document.getElementById("cancel-learn-midi-range")
 
 showErrorReplacingUI = (message, error)->
 	errorMessageEl = document.createElement("div")
@@ -32,6 +34,10 @@ getMidiRange = ->
 		valid_int_0_to_128(midiRangeMaxInput.value) ? 128
 	]
 
+setMidiRange = (low, high)->
+	[midiRangeMinInput.value, midiRangeMaxInput.value] = [low, high]
+	[midiRangeMinInput.value, midiRangeMaxInput.value] = getMidiRange()
+
 saveOptions = ->
 	[low, high] = getMidiRange()
 	data =
@@ -49,13 +55,17 @@ loadOptions = ->
 		val = val.trim()
 		data[key] = val
 	if data["midi-range"]
-		[midiRangeMinInput.value, midiRangeMaxInput.value] = data["midi-range"].split("..")
-		[midiRangeMinInput.value, midiRangeMaxInput.value] = getMidiRange()
+		[low, high] = data["midi-range"].split("..")
+		setMidiRange(low, high)
 
 loadOptions()
 
 midiRangeMinInput.onchange = saveOptions
 midiRangeMaxInput.onchange = saveOptions
+
+midiLearningRange = false
+midiLearningRangeMin = null
+midiLearningRangeMax = null
 
 midiDevicesTable = document.getElementById("midi-devices")
 midiDeviceIDsToRows = new Map
@@ -131,6 +141,9 @@ smi.on 'noteOn', (data)->
 	cantExportMidiEl.textContent = ""
 	exportMidiButton.disabled = false
 
+	midiLearningRangeMin = Math.min(midiLearningRangeMin ? key, key)
+	midiLearningRangeMax = Math.max(midiLearningRangeMax ? key, key)
+
 smi.on 'noteOff', (data)->
 	{event, key} = data
 	note = current_notes.get(key)
@@ -152,9 +165,13 @@ ctx = canvas.getContext "2d"
 
 px_per_second = 20
 do animate = ->
-	[left_midi_val, right_midi_val] = getMidiRange()
-	min_midi_val = Math.min(left_midi_val, right_midi_val)
-	max_midi_val = Math.max(left_midi_val, right_midi_val)
+	if midiLearningRange
+		min_midi_val = 0
+		max_midi_val = 128
+	else
+		[left_midi_val, right_midi_val] = getMidiRange()
+		min_midi_val = Math.min(left_midi_val, right_midi_val)
+		max_midi_val = Math.max(left_midi_val, right_midi_val)
 	requestAnimationFrame animate
 	now = performance.now()
 	canvas.width = innerWidth if canvas.width isnt innerWidth
@@ -186,6 +203,13 @@ do animate = ->
 			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
 			ctx.fillRect(x + pitch_bend.value * w * 2, y, w, h)
 			# console.log x, y, w, h
+	if midiLearningRange
+		for extremity_midi_val, i in [midiLearningRangeMin, midiLearningRangeMax]
+			if extremity_midi_val?
+				w = canvas.width / (max_midi_val - min_midi_val + 1)
+				x = (extremity_midi_val - min_midi_val) * w
+				ctx.fillStyle = "red"
+				ctx.fillRect(x, 0, w, canvas.height)
 	ctx.restore()
 
 exportMidiButton.onclick = ->
@@ -307,3 +331,23 @@ fullscreenButton.onclick = ->
 		fullscreenTarget.mozRequestFullScreen()
 	else if fullscreenTarget.webkitRequestFullScreen
 		fullscreenTarget.webkitRequestFullScreen()
+
+originalLearnRangeText = learnMidiRangeButton.textContent
+endLearnMidiRange = ->
+	midiLearningRange = false
+	cancelLearnMidiRangeButton.hidden = true
+	learnMidiRangeButton.textContent = originalLearnRangeText
+	midiLearningRangeMin = null
+	midiLearningRangeMax = null
+learnMidiRangeButton.onclick = ->
+	if midiLearningRange
+		setMidiRange(midiLearningRangeMin, midiLearningRangeMax)
+		endLearnMidiRange()
+	else
+		midiLearningRange = true
+		cancelLearnMidiRangeButton.hidden = false
+		learnMidiRangeButton.textContent = "Apply"
+		midiLearningRangeMin = null
+		midiLearningRangeMax = null
+
+cancelLearnMidiRangeButton.onclick = endLearnMidiRange
