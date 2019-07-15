@@ -75,6 +75,10 @@ body,
 #cant-export-midi {
 	color: gray;
 }
+.bullets-in-items {
+	list-style-type: none;
+	padding: 0;
+}
 .supported {
 	color: lime;
 }

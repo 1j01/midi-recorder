@@ -1,6 +1,6 @@
 
 for el in document.querySelectorAll("noscript")
-	el.remove()
+	el.remove() # for screenreaders (maybe should be earlier than this asynchronously loaded coffeescript)
 
 elToReplaceContentOfOnError = document.querySelector(".replace-content-on-error") ? document.body
 fullscreenTarget = document.getElementById("fullscreen-target")
