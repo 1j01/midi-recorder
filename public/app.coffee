@@ -48,11 +48,16 @@ saveOptions = ->
 		for key, val of data
 			"#{key}=#{val}"
 	location.hash = keyvals.join("&")
+	
 	# NOTE: (sort of) redundantly loading options from hash on hashchange after setting hash
 	# This actually applies the normalization tho so it's kind of nice
 	# e.g. 1.0 -> 1, 1.5 -> 1, 1000 -> 128
 	# altho it's inconsistent in when it gets applied - if the hash is the same (i.e. because the normalized values are the same), it doesn't update
 	# so for example 1.0 -> 1 followed by 1.5 -> 1 doesn't actually normalize, and gets left on the invalid value 1.5
+
+	# I'm not sure this is the best behavior, to apply normalization to invalid user inputs, but let's at least be consistent
+	# (and further redundant in the case that a hashchange will occur)
+	loadOptions()
 
 loadOptions = ->
 	data = {}
