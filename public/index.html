@@ -82,7 +82,7 @@
 				<input type="number" value="0" min="0" max="128" id="midi-range-min" />
 				–
 				<input type="number" value="128" min="0" max="128" id="midi-range-max" />
-				<button id="learn-midi-range" class="button-functional" title="Press keys on the keyboard to select the range of notes to view, then hit Apply">
+				<button id="learn-range-or-apply-button" class="button-functional" title="Press keys on the keyboard to select the range of notes to view, then hit Apply">
 					<div class="button-visual">
 					<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="857.371" viewBox="0 0 1440 643.028" width="1920">
 						<path d="M441.28 42.28c9.95-10.53 24.22-16.9 38.73-17.04 11.99-.02 23.99 0 35.98-.01.02 109.26 0 218.53.01 327.79-.09 6.83 5.59 12.01 11.39 14.62 9.53 4.65 20.37 3.13 30.61 3.39 0 61.68.01 195.35-.01 257.03-16.66-.07-33.32-.01-49.99-.03-8.01-.06-16.09.34-24.02-1.01-18.98-2.95-36.9-13.14-48.5-28.54-3.75-4.79-6.45-10.26-9.14-15.68-.39-19.94-.05-111.91-.16-131.86 0-123.64-.01-247.28 0-370.92-.08-13.91 5.49-27.7 15.1-37.74zM618.01 25.23h49.98c.03 109.28 0 218.56.01 327.85-.05 7.07 6 12.29 12.03 14.85 9.4 4.32 19.96 2.83 29.97 3.1 0 61.68.01 187.36-.01 249.03-43.66-.06-87.32-.05-130.98 0-.02-61.68-.01-187.35-.01-249.03 9.04-.1 18.53.83 26.98-3.1 6.03-2.57 12.12-7.81 12.01-14.91.03-109.26-.01-218.53.02-327.79zM770.01 25.23c17.66 0 35.32.01 52.98 0 .03 109.27 0 218.54.01 327.82-.07 7.11 6.04 12.35 12.1 14.91 8.75 4.03 18.56 2.91 27.9 3.07 0 61.68.01 187.35-.01 249.03-43.99-.04-87.99-.06-131.98 0-.02-61.67-.01-187.35-.01-249.03 9.98-.01 20.68.85 29.64-4.43 4.95-2.72 9.5-7.59 9.35-13.58.03-109.26-.01-218.53.02-327.79zM925.01 25.23c11.68.05 23.36-.09 35.04.07 22.1.92 42.49 16.72 49.09 37.8 3.53 9.94 2.56 20.59 2.68 30.92v337.95c-.11 26.27.23 124.57-.16 150.82-5.62 12.72-14.5 24.04-26.11 31.79-10.29 7.03-22.33 11.42-34.69 12.88-6.26.77-12.57.54-18.86.57-16 .02-31.99-.04-47.99.03-.02-61.68-.01-195.35-.01-257.03 8.64-.24 17.56.9 25.9-1.92 5.55-1.86 11.15-5.11 13.84-10.54 1.72-3.23 1.17-7 1.26-10.51.01-107.61-.01-215.22.01-322.83z" fill="#fff"/>
@@ -99,14 +99,14 @@
 					</span>
 					</div>
 				</button>
-				<button id="cancel-learn-midi-range" class="button-functional" hidden>
+				<button id="cancel-learn-midi-range-button" class="button-functional" hidden>
 					<div class="button-visual">
 					Cancel
 					</div>
 				</button>
 			</div>
 			<div id="midi-exporting">
-				<button id="export-midi-file" class="button-functional" disabled>
+				<button id="export-midi-file-button" class="button-functional" disabled>
 					<div class="button-visual">
 					🎵 Save MIDI file
 					</div>

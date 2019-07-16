@@ -2,34 +2,35 @@
 for el in document.querySelectorAll("noscript")
 	el.remove() # for screenreaders (maybe should be earlier than this asynchronously loaded coffeescript)
 
-elToReplaceContentOfOnError = document.querySelector(".replace-content-on-error") ? document.body
-fullscreenTarget = document.getElementById("fullscreen-target")
+el_to_replace_content_of_on_error = document.querySelector(".replace-content-on-error") ? document.body
+fullscreen_target_el = document.getElementById("fullscreen-target")
 canvas = document.getElementById("midi-viz-canvas")
-noNotesRecordedMessageEl = document.getElementById("no-notes-recorded-message")
-exportMidiButton = document.getElementById("export-midi-file")
-fullscreenButton = document.getElementById("fullscreen-button")
-midiRangeMinInput = document.getElementById("midi-range-min")
-midiRangeMaxInput = document.getElementById("midi-range-max")
-learnMidiRangeButton = document.getElementById("learn-midi-range")
-learnMidiRangeButtonLabel = document.getElementById("learn-midi-range-button-text")
-applyMidiRangeButtonLabel = document.getElementById("apply-midi-range-button-text")
-cancelLearnMidiRangeButton = document.getElementById("cancel-learn-midi-range")
+no_notes_recorded_message_el = document.getElementById("no-notes-recorded-message")
+export_midi_file_button = document.getElementById("export-midi-file-button")
+fullscreen_button = document.getElementById("fullscreen-button")
+midi_range_left_input = document.getElementById("midi-range-min")
+midi_range_right_input = document.getElementById("midi-range-max")
+learn_range_or_apply_button = document.getElementById("learn-range-or-apply-button")
+learn_range_text_el = document.getElementById("learn-midi-range-button-text")
+apply_text_el = document.getElementById("apply-midi-range-button-text")
+cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-button")
+midi_devices_table = document.getElementById("midi-devices")
 
-isLearningRange = false
-learningRange = [null, null]
-selectedRange = [0, 128]
-viewRangeWhileLearning = [0, 128]
+is_learning_range = false
+learning_range = [null, null]
+selected_range = [0, 128]
+view_range_while_learning = [0, 128]
 
-showErrorReplacingUI = (message, error)->
-	errorMessageEl = document.createElement("div")
-	errorMessageEl.className = "error-message"
-	errorMessageEl.textContent = message
+show_error_screen_replacing_ui = (message, error)->
+	error_message_el = document.createElement("div")
+	error_message_el.className = "error-message"
+	error_message_el.textContent = message
 	if error
-		errorPre = document.createElement("pre")
-		errorPre.textContent = error
-		errorMessageEl.appendChild(errorPre)
-	elToReplaceContentOfOnError.innerHTML = ""
-	elToReplaceContentOfOnError.appendChild(errorMessageEl)
+		error_pre = document.createElement("pre")
+		error_pre.textContent = error
+		error_message_el.appendChild(error_pre)
+	el_to_replace_content_of_on_error.innerHTML = ""
+	el_to_replace_content_of_on_error.appendChild(error_message_el)
 
 normalize_range = (range)->
 	valid_int_0_to_128 = (value)->
@@ -41,13 +42,13 @@ normalize_range = (range)->
 		valid_int_0_to_128(range[1]) ? 128
 	]
 
-setSelectedRange = (range)->
-	selectedRange = normalize_range(range)
-	unless isLearningRange
-		[midiRangeMinInput.value, midiRangeMaxInput.value] = selectedRange
+set_selected_range = (range)->
+	selected_range = normalize_range(range)
+	unless is_learning_range
+		[midi_range_left_input.value, midi_range_right_input.value] = selected_range
 
-saveOptions = ->
-	[from_midi_val, to_midi_val] = selectedRange
+save_options = ->
+	[from_midi_val, to_midi_val] = selected_range
 	data =
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 	keyvals =
@@ -63,9 +64,9 @@ saveOptions = ->
 
 	# I'm not sure this is the best behavior, to apply normalization to invalid user inputs, but let's at least be consistent
 	# (and further redundant in the case that a hashchange will occur)
-	loadOptions()
+	load_options()
 
-loadOptions = ->
+load_options = ->
 	data = {}
 	for keyval in location.hash.replace(/^#/, "").split("&") when keyval.match(/=/)
 		[key, val] = keyval.split("=")
@@ -73,26 +74,25 @@ loadOptions = ->
 		val = val.trim()
 		data[key] = val
 	if data["midi-range"]
-		setSelectedRange(data["midi-range"].split(".."))
+		set_selected_range(data["midi-range"].split(".."))
 
-loadOptions()
+load_options()
 
-addEventListener("hashchange", loadOptions)
+addEventListener("hashchange", load_options)
 
-update_range_from_inputs = ->
-	setSelectedRange([midiRangeMinInput.value, midiRangeMaxInput.value])
-	saveOptions()
+update_selected_range_from_inputs = ->
+	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
+	save_options()
 
-midiRangeMinInput.onchange = update_range_from_inputs
-midiRangeMaxInput.onchange = update_range_from_inputs
+midi_range_left_input.onchange = update_selected_range_from_inputs
+midi_range_right_input.onchange = update_selected_range_from_inputs
 
 
-midiDevicesTable = document.getElementById("midi-devices")
-midiDeviceIDsToRows = new Map
+midi_device_ids_to_rows = new Map
 
 smi = new SimpleMidiInput()
 
-onSuccess = (midi)->
+on_success = (midi)->
 	smi.attach(midi)
 #	console.log 'smi: ', smi
 #	console.log 'inputs (as a Map): ', new Map(midi.inputs)
@@ -101,11 +101,11 @@ onSuccess = (midi)->
 		if e.port.type is "input"
 			connected = e.port.state is "connected" and e.port.connection is "open"
 
-			tr = midiDeviceIDsToRows.get(e.port.id)
+			tr = midi_device_ids_to_rows.get(e.port.id)
 			unless tr
 				tr = document.createElement("tr")
-				midiDevicesTable.appendChild(tr)
-				midiDeviceIDsToRows.set(e.port.id, tr)
+				midi_devices_table.appendChild(tr)
+				midi_device_ids_to_rows.set(e.port.id, tr)
 			tr.innerHTML = ""
 			tr.className = "midi-port midi-device-is-#{e.port.state}#{if connected then " midi-port-is-open" else ""}"
 
@@ -124,23 +124,23 @@ onSuccess = (midi)->
 			# if connected
 			# 	unless location.hash.match(/midi-range/)
 			# 		if e.port.name is "Yamaha Portable G-1"
-			# 			setSelectedRange([28, 103])
+			# 			set_selected_range([28, 103])
 
 #			console.log(e.port, e.port.name, e.port.state, e.port.connection)
 
 
-onError = (error)->
-	showErrorReplacingUI("Failed to get MIDI access", error)
+on_error = (error)->
+	show_error_screen_replacing_ui("Failed to get MIDI access", error)
 	console.log "requestMIDIAccess failed:", error
 
 if navigator.requestMIDIAccess
-	navigator.requestMIDIAccess().then onSuccess, onError
+	navigator.requestMIDIAccess().then on_success, on_error
 else
-	showErrorReplacingUI("Your browser doesn't support MIDI access.")
+	show_error_screen_replacing_ui("Your browser doesn't support MIDI access.")
 
 notes = []
 current_notes = new Map
-exportMidiButton.disabled = true
+export_midi_file_button.disabled = true
 
 current_pitch_bend_value = 0
 global_pitch_bends = []
@@ -157,13 +157,13 @@ smi.on 'noteOn', (data)->
 	current_notes.set(key, note)
 	notes.push(note)
 
-	noNotesRecordedMessageEl.hidden = true
-	exportMidiButton.disabled = false
+	no_notes_recorded_message_el.hidden = true
+	export_midi_file_button.disabled = false
 
-	if isLearningRange
-		learningRange[0] = Math.min(learningRange[0] ? key, key)
-		learningRange[1] = Math.max(learningRange[1] ? key, key)
-		[midiRangeMinInput.value, midiRangeMaxInput.value] = learningRange
+	if is_learning_range
+		learning_range[0] = Math.min(learning_range[0] ? key, key)
+		learning_range[1] = Math.max(learning_range[1] ? key, key)
+		[midi_range_left_input.value, midi_range_right_input.value] = learning_range
 
 smi.on 'noteOff', (data)->
 	{event, key} = data
@@ -186,10 +186,10 @@ ctx = canvas.getContext "2d"
 
 px_per_second = 20
 do animate = ->
-	if isLearningRange
-		[min_midi_val, max_midi_val] = viewRangeWhileLearning
+	if is_learning_range
+		[min_midi_val, max_midi_val] = view_range_while_learning
 	else
-		[left_midi_val, right_midi_val] = selectedRange
+		[left_midi_val, right_midi_val] = selected_range
 		min_midi_val = Math.min(left_midi_val, right_midi_val)
 		max_midi_val = Math.max(left_midi_val, right_midi_val)
 	requestAnimationFrame animate
@@ -223,8 +223,8 @@ do animate = ->
 			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
 			ctx.fillRect(x + pitch_bend.value * w * 2, y, w, h)
 			# console.log x, y, w, h
-	if isLearningRange
-		for extremity_midi_val, i in learningRange
+	if is_learning_range
+		for extremity_midi_val, i in learning_range
 			if extremity_midi_val?
 				w = canvas.width / (max_midi_val - min_midi_val + 1)
 				x = (extremity_midi_val - min_midi_val) * w
@@ -232,8 +232,8 @@ do animate = ->
 				ctx.fillRect(x, 0, w, canvas.height)
 	ctx.restore()
 
-exportMidiButton.onclick = ->
-	midiFile = new MIDIFile()
+export_midi_file_button.onclick = ->
+	midi_file = new MIDIFile()
 
 	if notes.length is 0
 		alert "No notes have been recorded!"
@@ -332,59 +332,59 @@ exportMidiButton.onclick = ->
 			length: 0
 		}
 	]
-	midiFile.setTrackEvents(0, first_track_events)
-	midiFile.addTrack(1)
-	midiFile.setTrackEvents(1, events)
+	midi_file.setTrackEvents(0, first_track_events)
+	midi_file.addTrack(1)
+	midi_file.setTrackEvents(1, events)
 
 #	console.log({first_track_events, events})
 
-	outputArrayBuffer = midiFile.getContent()
+	output_array_buffer = midi_file.getContent()
 	
-	blob = new Blob([outputArrayBuffer], {type: "audio/midi"})
+	blob = new Blob([output_array_buffer], {type: "audio/midi"})
 	saveAs(blob, "recording.midi")
 
 
-fullscreenButton.onclick = ->
-	if fullscreenTarget.requestFullscreen
-		fullscreenTarget.requestFullscreen()
-	else if fullscreenTarget.mozRequestFullScreen
-		fullscreenTarget.mozRequestFullScreen()
-	else if fullscreenTarget.webkitRequestFullScreen
-		fullscreenTarget.webkitRequestFullScreen()
+fullscreen_button.onclick = ->
+	if fullscreen_target_el.requestFullscreen
+		fullscreen_target_el.requestFullscreen()
+	else if fullscreen_target_el.mozRequestFullScreen
+		fullscreen_target_el.mozRequestFullScreen()
+	else if fullscreen_target_el.webkitRequestFullScreen
+		fullscreen_target_el.webkitRequestFullScreen()
 
-endLearnMidiRange = ->
-	isLearningRange = false
-	cancelLearnMidiRangeButton.hidden = true
-	applyMidiRangeButtonLabel.hidden = true
-	learnMidiRangeButtonLabel.hidden = false
-	learningRange = [null, null]
-	midiRangeMinInput.disabled = false
-	midiRangeMaxInput.disabled = false
-	[midiRangeMinInput.value, midiRangeMaxInput.value] = selectedRange
+end_learn_range = ->
+	is_learning_range = false
+	cancel_learn_range_button.hidden = true
+	apply_text_el.hidden = true
+	learn_range_text_el.hidden = false
+	learning_range = [null, null]
+	midi_range_left_input.disabled = false
+	midi_range_right_input.disabled = false
+	[midi_range_left_input.value, midi_range_right_input.value] = selected_range
 
-learnMidiRangeButton.onclick = ->
-	if isLearningRange
-		setSelectedRange(learningRange)
-		saveOptions()
-		endLearnMidiRange()
+learn_range_or_apply_button.onclick = ->
+	if is_learning_range
+		set_selected_range(learning_range)
+		save_options()
+		end_learn_range()
 	else
-		isLearningRange = true
-		cancelLearnMidiRangeButton.hidden = false
-		applyMidiRangeButtonLabel.hidden = false
-		learnMidiRangeButtonLabel.hidden = true
-		learningRange = [null, null]
-		midiRangeMinInput.disabled = true
-		midiRangeMaxInput.disabled = true
-		[midiRangeMinInput.value, midiRangeMaxInput.value] = viewRangeWhileLearning
+		is_learning_range = true
+		cancel_learn_range_button.hidden = false
+		apply_text_el.hidden = false
+		learn_range_text_el.hidden = true
+		learning_range = [null, null]
+		midi_range_left_input.disabled = true
+		midi_range_right_input.disabled = true
+		[midi_range_left_input.value, midi_range_right_input.value] = view_range_while_learning
 
-cancelLearnMidiRangeButton.onclick = endLearnMidiRange
+cancel_learn_range_button.onclick = end_learn_range
 
 KEYCODE_ESC = 27
 
 # supposedly keydown doesn't work consistently in all browsers
 document.body.addEventListener "keydown", (event)->
 	if event.keyCode is KEYCODE_ESC
-		endLearnMidiRange()
+		end_learn_range()
 document.body.addEventListener "keyup", (event)->
 	if event.keyCode is KEYCODE_ESC
-		endLearnMidiRange()
+		end_learn_range()
