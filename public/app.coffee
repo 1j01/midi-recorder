@@ -15,6 +15,11 @@ learnMidiRangeButtonLabel = document.getElementById("learn-midi-range-button-tex
 applyMidiRangeButtonLabel = document.getElementById("apply-midi-range-button-text")
 cancelLearnMidiRangeButton = document.getElementById("cancel-learn-midi-range")
 
+isLearningRange = false
+learningRange = [null, null]
+selectedRange = [0, 128]
+# viewingRange = [0, 128] # defined implicitly in animate
+
 showErrorReplacingUI = (message, error)->
 	errorMessageEl = document.createElement("div")
 	errorMessageEl.className = "error-message"
@@ -26,22 +31,22 @@ showErrorReplacingUI = (message, error)->
 	elToReplaceContentOfOnError.innerHTML = ""
 	elToReplaceContentOfOnError.appendChild(errorMessageEl)
 
-getMidiRange = ->
+normalize_range = (range)->
 	valid_int_0_to_128 = (value)->
 		int = parseInt(value)
 		return null if isNaN(int) or int < 0 or int > 128
 		return int 
 	return [
-		valid_int_0_to_128(midiRangeMinInput.value) ? 0
-		valid_int_0_to_128(midiRangeMaxInput.value) ? 128
+		valid_int_0_to_128(range[0]) ? 0
+		valid_int_0_to_128(range[1]) ? 128
 	]
 
-setMidiRange = (range)->
-	[midiRangeMinInput.value, midiRangeMaxInput.value] = range
-	[midiRangeMinInput.value, midiRangeMaxInput.value] = getMidiRange()
+setSelectedRange = (range)->
+	selectedRange = normalize_range(range)
+	[midiRangeMinInput.value, midiRangeMaxInput.value] = selectedRange
 
 saveOptions = ->
-	[from_midi_val, to_midi_val] = getMidiRange()
+	[from_midi_val, to_midi_val] = selectedRange
 	data =
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 	keyvals =
@@ -67,19 +72,18 @@ loadOptions = ->
 		val = val.trim()
 		data[key] = val
 	if data["midi-range"]
-		setMidiRange(data["midi-range"].split(".."))
+		setSelectedRange(data["midi-range"].split(".."))
 
 loadOptions()
 
 addEventListener("hashchange", loadOptions)
 
-midiRangeMinInput.onchange = saveOptions
-midiRangeMaxInput.onchange = saveOptions
+update_range_from_inputs = ->
+	setSelectedRange([midiRangeMinInput.value, midiRangeMaxInput.value])
+	saveOptions()
 
-isLearningRange = false
-learningRange = [null, null]
-# viewingRange = [0, 128]
-# selectedRange = [0, 128]
+midiRangeMinInput.onchange = update_range_from_inputs
+midiRangeMaxInput.onchange = update_range_from_inputs
 
 
 midiDevicesTable = document.getElementById("midi-devices")
@@ -119,7 +123,7 @@ onSuccess = (midi)->
 			# if connected
 			# 	unless location.hash.match(/midi-range/)
 			# 		if e.port.name is "Yamaha Portable G-1"
-			# 			[midiRangeMinInput.value, midiRangeMaxInput.value] = [28, 103]
+			# 			setSelectedRange([28, 103])
 
 #			console.log(e.port, e.port.name, e.port.state, e.port.connection)
 
@@ -184,7 +188,7 @@ do animate = ->
 		min_midi_val = 0
 		max_midi_val = 128
 	else
-		[left_midi_val, right_midi_val] = getMidiRange()
+		[left_midi_val, right_midi_val] = selectedRange
 		min_midi_val = Math.min(left_midi_val, right_midi_val)
 		max_midi_val = Math.max(left_midi_val, right_midi_val)
 	requestAnimationFrame animate
@@ -356,7 +360,7 @@ endLearnMidiRange = ->
 	learnMidiRangeButton.disabled = false
 learnMidiRangeButton.onclick = ->
 	if isLearningRange
-		setMidiRange(learningRange)
+		setSelectedRange(learningRange)
 		saveOptions()
 		endLearnMidiRange()
 	else
