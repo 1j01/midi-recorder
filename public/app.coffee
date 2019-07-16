@@ -156,6 +156,7 @@ smi.on 'noteOn', (data)->
 
 	midiLearningRangeMin = Math.min(midiLearningRangeMin ? key, key)
 	midiLearningRangeMax = Math.max(midiLearningRangeMax ? key, key)
+	learnMidiRangeButton.disabled = false
 
 smi.on 'noteOff', (data)->
 	{event, key} = data
@@ -352,6 +353,7 @@ endLearnMidiRange = ->
 	learnMidiRangeButtonLabel.hidden = false
 	midiLearningRangeMin = null
 	midiLearningRangeMax = null
+	learnMidiRangeButton.disabled = false
 learnMidiRangeButton.onclick = ->
 	if midiLearningRange
 		setMidiRange(midiLearningRangeMin, midiLearningRangeMax)
@@ -364,6 +366,7 @@ learnMidiRangeButton.onclick = ->
 		learnMidiRangeButtonLabel.hidden = true
 		midiLearningRangeMin = null
 		midiLearningRangeMax = null
+		learnMidiRangeButton.disabled = true # for Apply button
 
 cancelLearnMidiRangeButton.onclick = endLearnMidiRange
 
