@@ -43,7 +43,8 @@ normalize_range = (range)->
 
 setSelectedRange = (range)->
 	selectedRange = normalize_range(range)
-	[midiRangeMinInput.value, midiRangeMaxInput.value] = selectedRange
+	unless isLearningRange
+		[midiRangeMinInput.value, midiRangeMaxInput.value] = selectedRange
 
 saveOptions = ->
 	[from_midi_val, to_midi_val] = selectedRange
@@ -159,9 +160,11 @@ smi.on 'noteOn', (data)->
 	noNotesRecordedMessageEl.hidden = true
 	exportMidiButton.disabled = false
 
-	learningRange[0] = Math.min(learningRange[0] ? key, key)
-	learningRange[1] = Math.max(learningRange[1] ? key, key)
-	learnMidiRangeButton.disabled = false
+	if isLearningRange
+		learningRange[0] = Math.min(learningRange[0] ? key, key)
+		learningRange[1] = Math.max(learningRange[1] ? key, key)
+		learnMidiRangeButton.disabled = false # enable "Apply"
+		[midiRangeMinInput.value, midiRangeMaxInput.value] = learningRange
 
 smi.on 'noteOff', (data)->
 	{event, key} = data
@@ -358,6 +361,10 @@ endLearnMidiRange = ->
 	learnMidiRangeButtonLabel.hidden = false
 	learningRange = [null, null]
 	learnMidiRangeButton.disabled = false
+	midiRangeMinInput.disabled = false
+	midiRangeMaxInput.disabled = false
+	[midiRangeMinInput.value, midiRangeMaxInput.value] = selectedRange
+
 learnMidiRangeButton.onclick = ->
 	if isLearningRange
 		setSelectedRange(learningRange)
@@ -370,6 +377,10 @@ learnMidiRangeButton.onclick = ->
 		learnMidiRangeButtonLabel.hidden = true
 		learningRange = [null, null]
 		learnMidiRangeButton.disabled = true # for Apply button
+		midiRangeMinInput.disabled = true
+		midiRangeMaxInput.disabled = true
+		midiRangeMinInput.value = ""
+		midiRangeMaxInput.value = ""
 
 cancelLearnMidiRangeButton.onclick = endLearnMidiRange
 
