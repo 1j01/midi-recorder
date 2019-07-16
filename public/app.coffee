@@ -36,14 +36,14 @@ getMidiRange = ->
 		valid_int_0_to_128(midiRangeMaxInput.value) ? 128
 	]
 
-setMidiRange = (low, high)->
-	[midiRangeMinInput.value, midiRangeMaxInput.value] = [low, high]
+setMidiRange = (range)->
+	[midiRangeMinInput.value, midiRangeMaxInput.value] = range
 	[midiRangeMinInput.value, midiRangeMaxInput.value] = getMidiRange()
 
 saveOptions = ->
-	[low, high] = getMidiRange()
+	[from_midi_val, to_midi_val] = getMidiRange()
 	data =
-		"midi-range": "#{low}..#{high}"
+		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 	keyvals =
 		for key, val of data
 			"#{key}=#{val}"
@@ -67,8 +67,7 @@ loadOptions = ->
 		val = val.trim()
 		data[key] = val
 	if data["midi-range"]
-		[low, high] = data["midi-range"].split("..")
-		setMidiRange(low, high)
+		setMidiRange(data["midi-range"].split(".."))
 
 loadOptions()
 
@@ -77,9 +76,11 @@ addEventListener("hashchange", loadOptions)
 midiRangeMinInput.onchange = saveOptions
 midiRangeMaxInput.onchange = saveOptions
 
-midiLearningRange = false
-midiLearningRangeMin = null
-midiLearningRangeMax = null
+isLearningRange = false
+learningRange = [null, null]
+# viewingRange = [0, 128]
+# selectedRange = [0, 128]
+
 
 midiDevicesTable = document.getElementById("midi-devices")
 midiDeviceIDsToRows = new Map
@@ -154,8 +155,8 @@ smi.on 'noteOn', (data)->
 	noNotesRecordedMessageEl.hidden = true
 	exportMidiButton.disabled = false
 
-	midiLearningRangeMin = Math.min(midiLearningRangeMin ? key, key)
-	midiLearningRangeMax = Math.max(midiLearningRangeMax ? key, key)
+	learningRange[0] = Math.min(learningRange[0] ? key, key)
+	learningRange[1] = Math.max(learningRange[1] ? key, key)
 	learnMidiRangeButton.disabled = false
 
 smi.on 'noteOff', (data)->
@@ -179,7 +180,7 @@ ctx = canvas.getContext "2d"
 
 px_per_second = 20
 do animate = ->
-	if midiLearningRange
+	if isLearningRange
 		min_midi_val = 0
 		max_midi_val = 128
 	else
@@ -217,8 +218,8 @@ do animate = ->
 			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
 			ctx.fillRect(x + pitch_bend.value * w * 2, y, w, h)
 			# console.log x, y, w, h
-	if midiLearningRange
-		for extremity_midi_val, i in [midiLearningRangeMin, midiLearningRangeMax]
+	if isLearningRange
+		for extremity_midi_val, i in learningRange
 			if extremity_midi_val?
 				w = canvas.width / (max_midi_val - min_midi_val + 1)
 				x = (extremity_midi_val - min_midi_val) * w
@@ -347,25 +348,23 @@ fullscreenButton.onclick = ->
 		fullscreenTarget.webkitRequestFullScreen()
 
 endLearnMidiRange = ->
-	midiLearningRange = false
+	isLearningRange = false
 	cancelLearnMidiRangeButton.hidden = true
 	applyMidiRangeButtonLabel.hidden = true
 	learnMidiRangeButtonLabel.hidden = false
-	midiLearningRangeMin = null
-	midiLearningRangeMax = null
+	learningRange = [null, null]
 	learnMidiRangeButton.disabled = false
 learnMidiRangeButton.onclick = ->
-	if midiLearningRange
-		setMidiRange(midiLearningRangeMin, midiLearningRangeMax)
+	if isLearningRange
+		setMidiRange(learningRange)
 		saveOptions()
 		endLearnMidiRange()
 	else
-		midiLearningRange = true
+		isLearningRange = true
 		cancelLearnMidiRangeButton.hidden = false
 		applyMidiRangeButtonLabel.hidden = false
 		learnMidiRangeButtonLabel.hidden = true
-		midiLearningRangeMin = null
-		midiLearningRangeMax = null
+		learningRange = [null, null]
 		learnMidiRangeButton.disabled = true # for Apply button
 
 cancelLearnMidiRangeButton.onclick = endLearnMidiRange
