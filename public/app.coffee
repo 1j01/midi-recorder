@@ -18,7 +18,7 @@ cancelLearnMidiRangeButton = document.getElementById("cancel-learn-midi-range")
 isLearningRange = false
 learningRange = [null, null]
 selectedRange = [0, 128]
-# viewingRange = [0, 128] # defined implicitly in animate
+viewRangeWhileLearning = [0, 128]
 
 showErrorReplacingUI = (message, error)->
 	errorMessageEl = document.createElement("div")
@@ -163,7 +163,6 @@ smi.on 'noteOn', (data)->
 	if isLearningRange
 		learningRange[0] = Math.min(learningRange[0] ? key, key)
 		learningRange[1] = Math.max(learningRange[1] ? key, key)
-		learnMidiRangeButton.disabled = false # enable "Apply"
 		[midiRangeMinInput.value, midiRangeMaxInput.value] = learningRange
 
 smi.on 'noteOff', (data)->
@@ -188,8 +187,7 @@ ctx = canvas.getContext "2d"
 px_per_second = 20
 do animate = ->
 	if isLearningRange
-		min_midi_val = 0
-		max_midi_val = 128
+		[min_midi_val, max_midi_val] = viewRangeWhileLearning
 	else
 		[left_midi_val, right_midi_val] = selectedRange
 		min_midi_val = Math.min(left_midi_val, right_midi_val)
@@ -360,7 +358,6 @@ endLearnMidiRange = ->
 	applyMidiRangeButtonLabel.hidden = true
 	learnMidiRangeButtonLabel.hidden = false
 	learningRange = [null, null]
-	learnMidiRangeButton.disabled = false
 	midiRangeMinInput.disabled = false
 	midiRangeMaxInput.disabled = false
 	[midiRangeMinInput.value, midiRangeMaxInput.value] = selectedRange
@@ -376,11 +373,9 @@ learnMidiRangeButton.onclick = ->
 		applyMidiRangeButtonLabel.hidden = false
 		learnMidiRangeButtonLabel.hidden = true
 		learningRange = [null, null]
-		learnMidiRangeButton.disabled = true # for Apply button
 		midiRangeMinInput.disabled = true
 		midiRangeMaxInput.disabled = true
-		midiRangeMinInput.value = ""
-		midiRangeMaxInput.value = ""
+		[midiRangeMinInput.value, midiRangeMaxInput.value] = viewRangeWhileLearning
 
 cancelLearnMidiRangeButton.onclick = endLearnMidiRange
 
