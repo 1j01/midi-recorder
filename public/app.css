@@ -72,7 +72,7 @@ body,
 #midi-exporting {
 	margin-top: 1em;
 }
-#cant-export-midi {
+#no-notes-recorded-message {
 	color: gray;
 }
 .bullets-in-items {

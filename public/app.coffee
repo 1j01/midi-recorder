@@ -5,7 +5,7 @@ for el in document.querySelectorAll("noscript")
 elToReplaceContentOfOnError = document.querySelector(".replace-content-on-error") ? document.body
 fullscreenTarget = document.getElementById("fullscreen-target")
 canvas = document.getElementById("midi-viz-canvas")
-cantExportMidiEl = document.getElementById("cant-export-midi")
+noNotesRecordedMessageEl = document.getElementById("no-notes-recorded-message")
 exportMidiButton = document.getElementById("export-midi-file")
 fullscreenButton = document.getElementById("fullscreen-button")
 midiRangeMinInput = document.getElementById("midi-range-min")
@@ -130,7 +130,6 @@ else
 notes = []
 current_notes = new Map
 exportMidiButton.disabled = true
-cantExportMidiEl.textContent = "- No notes recorded yet"
 
 current_pitch_bend_value = 0
 global_pitch_bends = []
@@ -147,7 +146,7 @@ smi.on 'noteOn', (data)->
 	current_notes.set(key, note)
 	notes.push(note)
 
-	cantExportMidiEl.textContent = ""
+	noNotesRecordedMessageEl.hidden = true
 	exportMidiButton.disabled = false
 
 	midiLearningRangeMin = Math.min(midiLearningRangeMin ? key, key)
