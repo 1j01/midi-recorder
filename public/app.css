@@ -94,9 +94,6 @@ button {
 	line-height: 0.8;
 	height: 2.5em;
 	width: 11em;
-}
-button,
-button > span {
 	vertical-align: middle;
 	display: inline-flex;
 	justify-content: center;

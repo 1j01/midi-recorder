@@ -11,7 +11,8 @@ fullscreenButton = document.getElementById("fullscreen-button")
 midiRangeMinInput = document.getElementById("midi-range-min")
 midiRangeMaxInput = document.getElementById("midi-range-max")
 learnMidiRangeButton = document.getElementById("learn-midi-range")
-learnMidiRangeButtonLabel = document.getElementById("learn-midi-range-button-label")
+learnMidiRangeButtonLabel = document.getElementById("learn-midi-range-button-text")
+applyMidiRangeButtonLabel = document.getElementById("apply-midi-range-button-text")
 cancelLearnMidiRangeButton = document.getElementById("cancel-learn-midi-range")
 
 showErrorReplacingUI = (message, error)->
@@ -333,12 +334,11 @@ fullscreenButton.onclick = ->
 	else if fullscreenTarget.webkitRequestFullScreen
 		fullscreenTarget.webkitRequestFullScreen()
 
-learnMidiRangeButtonLabel
 endLearnMidiRange = ->
 	midiLearningRange = false
 	cancelLearnMidiRangeButton.hidden = true
-	learnMidiRangeButton.textContent = ""
-	learnMidiRangeButton.appendChild(learnMidiRangeButtonLabel)
+	applyMidiRangeButtonLabel.hidden = true
+	learnMidiRangeButtonLabel.hidden = false
 	midiLearningRangeMin = null
 	midiLearningRangeMax = null
 learnMidiRangeButton.onclick = ->
@@ -349,7 +349,8 @@ learnMidiRangeButton.onclick = ->
 	else
 		midiLearningRange = true
 		cancelLearnMidiRangeButton.hidden = false
-		learnMidiRangeButton.textContent = "Apply"
+		applyMidiRangeButtonLabel.hidden = false
+		learnMidiRangeButtonLabel.hidden = true
 		midiLearningRangeMin = null
 		midiLearningRangeMax = null
 
