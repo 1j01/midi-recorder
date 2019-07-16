@@ -11,6 +11,7 @@ fullscreenButton = document.getElementById("fullscreen-button")
 midiRangeMinInput = document.getElementById("midi-range-min")
 midiRangeMaxInput = document.getElementById("midi-range-max")
 learnMidiRangeButton = document.getElementById("learn-midi-range")
+learnMidiRangeButtonLabel = document.getElementById("learn-midi-range-button-label")
 cancelLearnMidiRangeButton = document.getElementById("cancel-learn-midi-range")
 
 showErrorReplacingUI = (message, error)->
@@ -332,11 +333,12 @@ fullscreenButton.onclick = ->
 	else if fullscreenTarget.webkitRequestFullScreen
 		fullscreenTarget.webkitRequestFullScreen()
 
-originalLearnRangeText = learnMidiRangeButton.textContent
+learnMidiRangeButtonLabel
 endLearnMidiRange = ->
 	midiLearningRange = false
 	cancelLearnMidiRangeButton.hidden = true
-	learnMidiRangeButton.textContent = originalLearnRangeText
+	learnMidiRangeButton.textContent = ""
+	learnMidiRangeButton.appendChild(learnMidiRangeButtonLabel)
 	midiLearningRangeMin = null
 	midiLearningRangeMax = null
 learnMidiRangeButton.onclick = ->

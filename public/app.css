@@ -90,12 +90,15 @@ input:invalid {
 	color: white;
 }
 button {
-	vertical-align: middle;
-	display: inline-flex;
-	padding: 5px 10px;
+	/*padding: 5px 10px;*/
 	line-height: 0.8;
 	height: 2em;
 	width: 10em;
+}
+button,
+button > span {
+	vertical-align: middle;
+	display: inline-flex;
 	justify-content: center;
 	align-items: center;
 }
@@ -104,8 +107,13 @@ button[hidden] {
 }
 button svg {
 	margin-right: 5px;
-	height: 1em;
+	height: 1.5em;
+	width: 1.5em;
 }
-button svg path {
+#fullscreen-button svg {
+	height: 1em;
+	width: 1em;
+}
+#fullscreen-button svg path {
 	fill: currentColor;
 }
