@@ -25,11 +25,11 @@
 					</li>
 					<li class="supported">
 						<span>✓</span>
-						<span>MIDI file export</span>
+						<span>Standard MIDI file export</span>
 					</li>
 					<li class="supported">
 						<span>✓</span>
-						<span>Note velocity / loudness</span>
+						<span>Note velocity (loudness)</span>
 					</li>
 					<li class="supported">
 						<span>✓</span>
@@ -37,28 +37,18 @@
 					</li>
 					<li class="supported">
 						<span>✓</span>
-						<span>No data is sent to any server.</span> <!-- dot needed for screen readers (but could be positioned offscreen) -->
+						<span>No data sent to any server</span>
+					</li>
+					<li class="supported">
+						<span>✓</span>
+						<span><a href="https://github.com/1j01/midi-recorder/" target="_blank">Open source</a> (<a href="https://github.com/1j01/midi-recorder/blob/master/LICENSE.md" target="_blank">MIT-licensed</a>)</span>
 					</li>
 				</ul>
-				<h3>Not Supported Yet:</h3>
-				<ul class="bullets-in-items">
-					<li class="unsupported">
-						<span>✗</span>
-						<span>Instrument selection</span>
-					</li>
-					<li class="unsupported">
-						<span>✗</span>
-						<span title="The range is assumed to be two semitones in either direction (a very common default)">Pitch bend range selection</span>
-					</li>
-					<li class="unsupported">
-						<span>✗</span>
-						<span>Aftertouch pressure</span>
-					</li>
-					<li class="unsupported">
-						<span>✗</span>
-						<span>Miscellaneous MIDI events.</span> <!-- dot needed for screen readers (but could be positioned offscreen) -->
-					</li>
-				</table>
+				<span style="opacity: 0; position: absolute; left: -500px;">.</span>
+				<h3>Caveats:</h3>
+				<p class="unsupported">Instrument selection, aftertouch pressure, and miscellaneous MIDI events are not recorded.</span>
+				<p class="unsupported">Pitch bend range is assumed to be ± 2 semitones.</p>
+				<p class="unsupported">Generated MIDI file currently has extra length.</p>
 			</div>
 			<div>
 				<h3>MIDI devices:</h3>

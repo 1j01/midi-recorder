@@ -36,6 +36,9 @@ body,
 		flex-direction: column;
 	}
 }
+.two-column-layout p {
+	max-width: 25em;
+}
 @media (max-width: 75em) and (max-height: 55em), print {
 	#fork-me-on-github {
 		display: none;
@@ -75,15 +78,18 @@ body,
 #no-notes-recorded-message {
 	color: gray;
 }
-.bullets-in-items {
+ul.bullets-in-items {
 	list-style-type: none;
 	padding: 0;
+}
+li {
+	padding: 2px 0;
 }
 .supported {
 	color: lime;
 }
 .unsupported {
-	color: #e83636;
+	color: #ff5d5d;
 }
 
 .button-functional {
@@ -171,4 +177,8 @@ input:disabled {
 input:invalid {
 	background: #e83636;
 	color: white;
+}
+
+a {
+	color: #00ceff;
 }
