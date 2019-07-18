@@ -168,8 +168,11 @@ li {
 	outline: 2px auto -webkit-focus-ring-color;
 }
 
+button span[aria-hidden],
 button svg {
 	margin-right: 5px;
+}
+button svg {
 	height: 1em;
 	width: 1em;
 }
