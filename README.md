@@ -45,7 +45,7 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 * Color notes by channel or instrument (doesn't matter much with a single keyboard)
 
-* View options: horizontal mode, zooming, maybe themes
+* Themes
 
 * Offline support with a service worker
 
