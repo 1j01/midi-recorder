@@ -8,23 +8,31 @@ body {
 	color: white;
 	line-height: 1em;
 }
-body,
-#fullscreen-target {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+
+body {
+	overflow: hidden;
 }
-.app-informational-overlay {
-	position: absolute;
-	left: 0;
+.root {
+	position: fixed;
 	top: 0;
+	left: 0;
 	bottom: 0;
 	right: 0;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.scroll-container {
+	margin: auto;
+	max-height: 100%;
+	overflow: auto;
+}
+.app-informational-overlay {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	justify-content: center;
+	align-items: center;
 }
 
 @media (max-width: 75em) and (max-height: 55em), print {
