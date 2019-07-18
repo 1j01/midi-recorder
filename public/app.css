@@ -72,6 +72,16 @@ body,
 	margin: 0;
 	margin-top: 1em;
 }
+fieldset {
+	border: 1px solid gray;
+	box-shadow: 0 0 0 2px black, 0 0 0 2px inset black;
+	background: rgba(100, 100, 100, 0.3);
+}
+legend {
+    background-color: #000;
+    color: #fff;
+    padding: 3px 6px;
+}
 #midi-exporting {
 	margin-top: 1em;
 }

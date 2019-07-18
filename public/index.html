@@ -56,7 +56,8 @@
 			</div>
 		</div>
 		<div id="controls">
-			<div id="viz-controls">
+			<fieldset id="viz-controls">
+				<legend>Visualization</legend>
 				<button id="fullscreen-button" class="button-functional">
 					<div class="button-visual">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.543 438.543">
@@ -94,15 +95,16 @@
 					Cancel
 					</div>
 				</button>
-			</div>
-			<div id="midi-exporting">
+			</fieldset>
+			<fieldset id="midi-exporting">
+				<legend>Export</legend>
 				<button id="export-midi-file-button" class="button-functional" disabled>
 					<div class="button-visual">
 					🎵 Save MIDI file
 					</div>
 				</button>
 				<span id="no-notes-recorded-message">- No notes recorded</span>
-			</div>
+			</fieldset>
 		</div>
 	</main>
 	<div id="fullscreen-target">
