@@ -311,23 +311,27 @@ do animate = ->
 		when "left"
 			ctx.translate(canvas.width/2, canvas.height/2)
 			ctx.rotate(-Math.PI / 2)
-			# ctx.scale(canvas.height/canvas.width, canvas.width/canvas.height) # would affect px/sec
-			ctx.translate(-canvas.width/2, -canvas.height/2)
+			ctx.translate(-canvas.height/2, -canvas.width/2)
 		when "right"
+			ctx.translate(0, canvas.height)
+			ctx.scale(1, -1)
+
 			ctx.translate(canvas.width/2, canvas.height/2)
 			ctx.rotate(Math.PI / 2)
-			# ctx.scale(canvas.height/canvas.width, canvas.width/canvas.height) # would affect px/sec
-			ctx.translate(-canvas.width/2, -canvas.height/2)
-	# TODO: reverse scale if left or right not sure which
+			ctx.translate(-canvas.height/2, -canvas.width/2)
+
+	pitch_axis_canvas_length = if note_gravity_direction in ["left", "right"] then canvas.height else canvas.width
+	time_axis_canvas_length = if note_gravity_direction in ["left", "right"] then canvas.width else canvas.height
+
 	if left_midi_val > right_midi_val
-		ctx.translate(canvas.width, 0)
+		ctx.translate(pitch_axis_canvas_length, 0)
 		ctx.scale(-1, 1)
-	ctx.translate(0, canvas.height*4/5)
+	ctx.translate(0, time_axis_canvas_length*4/5)
 	ctx.fillStyle = "red"
-	ctx.fillRect(0, 1, canvas.width, 1)
+	ctx.fillRect(0, 1, pitch_axis_canvas_length, 1)
 	# ctx.globalAlpha = 0.2
 	for note in notes
-		w = canvas.width / (max_midi_val - min_midi_val + 1)
+		w = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
 		x = (note.key - min_midi_val) * w
 		unless note.length?
 			# for ongoing (held) notes, display a bar at the bottom like a key
@@ -347,10 +351,10 @@ do animate = ->
 	if is_learning_range
 		for extremity_midi_val, i in learning_range
 			if extremity_midi_val?
-				w = canvas.width / (max_midi_val - min_midi_val + 1)
+				w = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
 				x = (extremity_midi_val - min_midi_val) * w
 				ctx.fillStyle = "red"
-				ctx.fillRect(x, 0, w, canvas.height)
+				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
 
 export_midi_file_button.onclick = ->
