@@ -296,29 +296,25 @@ do animate = ->
 		[left_midi_val, right_midi_val] = selected_range
 		min_midi_val = Math.min(left_midi_val, right_midi_val)
 		max_midi_val = Math.max(left_midi_val, right_midi_val)
+	
 	requestAnimationFrame animate
 	now = performance.now()
+
 	canvas.width = innerWidth if canvas.width isnt innerWidth
 	canvas.height = innerHeight if canvas.height isnt innerHeight
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
-	ctx.save()
-	switch note_gravity_direction
-		when "up"
-			break
-		when "down"
-			ctx.translate(0, canvas.height)
-			ctx.scale(1, -1)
-		when "left"
-			ctx.translate(canvas.width/2, canvas.height/2)
-			ctx.rotate(-Math.PI / 2)
-			ctx.translate(-canvas.height/2, -canvas.width/2)
-		when "right"
-			ctx.translate(0, canvas.height)
-			ctx.scale(1, -1)
 
-			ctx.translate(canvas.width/2, canvas.height/2)
-			ctx.rotate(Math.PI / 2)
-			ctx.translate(-canvas.height/2, -canvas.width/2)
+	ctx.save()
+
+	if note_gravity_direction in ["down", "right"]
+		# "that's downright backwards!" haha
+		ctx.translate(0, canvas.height)
+		ctx.scale(1, -1)
+	
+	if note_gravity_direction in ["left", "right"]
+		ctx.translate(canvas.width/2, canvas.height/2)
+		ctx.rotate(Math.PI / 2 * if note_gravity_direction is "left" then -1 else +1)
+		ctx.translate(-canvas.height/2, -canvas.width/2)
 
 	pitch_axis_canvas_length = if note_gravity_direction in ["left", "right"] then canvas.height else canvas.width
 	time_axis_canvas_length = if note_gravity_direction in ["left", "right"] then canvas.width else canvas.height
@@ -326,6 +322,7 @@ do animate = ->
 	if left_midi_val > right_midi_val
 		ctx.translate(pitch_axis_canvas_length, 0)
 		ctx.scale(-1, 1)
+
 	ctx.translate(0, time_axis_canvas_length*4/5)
 	ctx.fillStyle = "red"
 	ctx.fillRect(0, 1, pitch_axis_canvas_length, 1)
