@@ -8,6 +8,8 @@ canvas = document.getElementById("midi-viz-canvas")
 no_notes_recorded_message_el = document.getElementById("no-notes-recorded-message")
 export_midi_file_button = document.getElementById("export-midi-file-button")
 fullscreen_button = document.getElementById("fullscreen-button")
+px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
+note_gravity_direction_select = document.getElementById("note-gravity-direction")
 midi_range_left_input = document.getElementById("midi-range-min")
 midi_range_right_input = document.getElementById("midi-range-max")
 learn_range_or_apply_button = document.getElementById("learn-range-or-apply-button")
@@ -16,10 +18,15 @@ apply_text_el = document.getElementById("apply-midi-range-button-text")
 cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-button")
 midi_devices_table = document.getElementById("midi-devices")
 
+# options are initialized from the URL & HTML later
+px_per_second = 20
+note_gravity_direction = "up"
+selected_range = [0, 128]
+
 is_learning_range = false
 learning_range = [null, null]
-selected_range = [0, 128]
 view_range_while_learning = [0, 128]
+
 
 show_error_screen_replacing_ui = (message, error)->
 	error_message_el = document.createElement("div")
@@ -50,6 +57,8 @@ set_selected_range = (range)->
 save_options = ->
 	[from_midi_val, to_midi_val] = selected_range
 	data =
+		"gravity-direction": note_gravity_direction
+		"pixels-per-second": px_per_second
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 	keyvals =
 		for key, val of data
@@ -75,18 +84,30 @@ load_options = ->
 		data[key] = val
 	if data["midi-range"]
 		set_selected_range(data["midi-range"].split(".."))
+	if data["pixels-per-second"]
+		px_per_second = parseFloat(data["pixels-per-second"])
+		px_per_second_input.valueAsNumber = px_per_second
+	if data["gravity-direction"]
+		note_gravity_direction = data["gravity-direction"].toLowerCase()
+		note_gravity_direction_select.value = note_gravity_direction
 
-load_options()
-
-addEventListener("hashchange", load_options)
-
-update_selected_range_from_inputs = ->
+update_options_from_inputs = ->
 	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
+	px_per_second = px_per_second_input.valueAsNumber
+	note_gravity_direction = note_gravity_direction_select.value
+	# TODO: debounce saving
 	save_options()
 
-midi_range_left_input.onchange = update_selected_range_from_inputs
-midi_range_right_input.onchange = update_selected_range_from_inputs
+# TODO: use oninput
+midi_range_left_input.onchange = update_options_from_inputs
+midi_range_right_input.onchange = update_options_from_inputs
+px_per_second_input.onchange = update_options_from_inputs
+note_gravity_direction_select.onchange = update_options_from_inputs
 
+load_options()
+update_options_from_inputs()
+
+addEventListener("hashchange", load_options)
 
 midi_device_ids_to_rows = new Map
 
@@ -260,7 +281,6 @@ smi.on 'pitchWheel', (data)->
 
 ctx = canvas.getContext "2d"
 
-px_per_second = 20
 do animate = ->
 	if is_learning_range
 		[min_midi_val, max_midi_val] = view_range_while_learning
@@ -274,6 +294,23 @@ do animate = ->
 	canvas.height = innerHeight if canvas.height isnt innerHeight
 	ctx.clearRect(0, 0, canvas.width, canvas.height)
 	ctx.save()
+	switch note_gravity_direction
+		when "up"
+			break
+		when "down"
+			ctx.translate(0, canvas.height)
+			ctx.scale(1, -1)
+		when "left"
+			ctx.translate(canvas.width/2, canvas.height/2)
+			ctx.rotate(-Math.PI / 2)
+			# ctx.scale(canvas.height/canvas.width, canvas.width/canvas.height) # would affect px/sec
+			ctx.translate(-canvas.width/2, -canvas.height/2)
+		when "right"
+			ctx.translate(canvas.width/2, canvas.height/2)
+			ctx.rotate(Math.PI / 2)
+			# ctx.scale(canvas.height/canvas.width, canvas.width/canvas.height) # would affect px/sec
+			ctx.translate(-canvas.width/2, -canvas.height/2)
+	# TODO: reverse scale if left or right not sure which
 	if left_midi_val > right_midi_val
 		ctx.translate(canvas.width, 0)
 		ctx.scale(-1, 1)

@@ -90,8 +90,14 @@ legend {
 	border-radius: 2px;
 	font-size: 1.3em;
 }
-#controls > fieldset:not(:first-child) {
+#controls > fieldset:not(:first-of-type) {
 	margin-top: 1.3em;
+}
+/*.control-row {
+	line-height: 2em;
+}*/
+.control-row:not(:first-of-type) {
+	margin-top: 0.5em;
 }
 
 ul.bullets-in-items {
@@ -111,6 +117,7 @@ li {
 .button-functional {
 	border: none;
 	background: none;
+	padding: 0;
 }
 .button-functional,
 .button-visual {

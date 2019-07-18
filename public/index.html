@@ -58,6 +58,7 @@
 		<div id="controls">
 			<fieldset id="viz-controls">
 				<legend>Visualization</legend>
+				<div class="control-row">
 				<button id="fullscreen-button" class="button-functional">
 					<div class="button-visual">
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.543 438.543">
@@ -69,10 +70,61 @@
 					Fullscreen
 					</div>
 				</button>
-				View Note Range:
+				</div>
+				<div class="control-row">
+				<!-- Note gravity direction: -->
+				<!-- Gravity direction: -->
+				<!-- Notes fall direction:
+				<select id="note-gravity-direction">
+					<option value="down">Down</option>
+					<option value="up" selected>Up</option>
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+				</select> -->
+				<!-- Notes source: -->
+				<!-- Notes source side: -->
+				<!-- Notes come from side: -->
+				<!-- Keyboard side: -->
+				<!-- <select id="note-source-side">
+					<option value="bottom" selected>Bottom</option>
+					<option value="top">Top</option>
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+				</select> -->
+				<!-- Pixels per second: -->
+				<!-- Notes move at pixels per second: -->
+				<label>
+				Notes move at
+				<input type="number" value="20" min="1" max="1000" id="note-gravity-pixels-per-second" />
+				pixels per second,
+				</label>
+				<!-- from the
+				<select id="note-source-side">
+					<option value="bottom" selected>Bottom</option>
+					<option value="top">Top</option>
+					<option value="left">Left</option>
+					<option value="right">Right</option>
+				</select> -->
+				<label>
+				going
+				<select id="note-gravity-direction">
+					<option value="down">Down</option>
+					<option value="up" selected>Up</option>
+					<!-- <option value="right">Right</option> -->
+					<!-- <option value="left">Left</option> -->
+					<!-- <option value="down">Downwards</option>
+					<option value="up" selected>Upwards</option>
+					<option value="right">to the Right</option>
+					<option value="left">to the Left</option> -->
+				</select>
+				</label>
+				</div>
+				<div class="control-row">
+				View note range:
 				<input type="number" value="0" min="0" max="128" id="midi-range-min" />
 				–
 				<input type="number" value="128" min="0" max="128" id="midi-range-max" />
+				&nbsp;
 				<button id="learn-range-or-apply-button" class="button-functional" title="Press keys on the keyboard to select the range of notes to view, then hit Apply">
 					<div class="button-visual">
 					<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="857.371" viewBox="0 0 1440 643.028" width="1920">
@@ -95,6 +147,7 @@
 					Cancel
 					</div>
 				</button>
+				</div>
 			</fieldset>
 			<fieldset id="midi-exporting">
 				<legend>Export</legend>
@@ -103,7 +156,7 @@
 					🎵 Save MIDI file
 					</div>
 				</button>
-				<span id="no-notes-recorded-message">- No notes recorded</span>
+				<span id="no-notes-recorded-message">&nbsp;- No notes recorded</span>
 			</fieldset>
 		</div>
 	</main>
