@@ -75,20 +75,21 @@ body,
 fieldset {
 	border: 2px solid gray;
 	border-radius: 8px;
-	/*box-shadow: 0 0 0 2px black, 0 0 0 2px inset black;*/
-	box-shadow: 0 0 0 4px #2a2a2a;
-	background: rgba(50, 50, 50, 0.5);
+	/*box-shadow: 0 0 0 4px #2a2a2a, 0 0 0 4px inset #2a2a2a;*/
+	background: rgba(30, 30, 30, 0.5);
 	padding: 1em;
 	padding-bottom: 1.5em; /* to balance with the top which has the <legend> */
 }
 legend {
-    background-color: #2a2a2a;
-    color: #eee;
+    /*background-color: #2a2a2a;*/
+    background-color: #1a1a1a;
+    color: #aaa;
     padding: 3px 6px;
 	border-radius: 2px;
+	font-size: 1.3em;
 }
 #midi-exporting {
-	margin-top: 1em;
+	margin-top: 1.3em;
 }
 #no-notes-recorded-message {
 	color: gray;
