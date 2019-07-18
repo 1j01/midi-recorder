@@ -20,6 +20,7 @@
 		<div class="two-column-layout">
 			<div>
 				<h3>Features:</h3>
+				<span class="visually-hidden">.</span> <!-- so ChromeVox pronounces "Live" with an I sound -->
 				<ul class="bullets-in-items">
 					<li class="supported">
 						<span>✓</span>
@@ -31,7 +32,7 @@
 					</li>
 					<li class="supported">
 						<span>✓</span>
-						<span>Note velocity (loudness)</span>
+						<span>Note velocity / loudness</span>
 					</li>
 					<li class="supported">
 						<span>✓</span>
@@ -46,18 +47,20 @@
 						<span><a href="https://github.com/1j01/midi-recorder/" target="_blank">Open source</a> (MIT-licensed)</span>
 					</li>
 				</ul>
-				<span style="opacity: 0; position: absolute; left: -500px;">.</span>
+				<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
 				<h3>Caveats:</h3>
 				<p class="caveat">Instrument selection, aftertouch pressure, and miscellaneous MIDI events are not recorded.</p>
 				<p class="caveat">Pitch bend range is assumed to be ± 2 semitones.</p>
 				<p class="caveat">Generated MIDI file currently has excess length.</p>
 			</div>
 			<div>
+				<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
 				<h3>MIDI devices:</h3>
 				<table id="midi-devices" aria-live="assertive"></table>
 			</div>
 		</div>
 		<div id="controls">
+			<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
 			<fieldset id="viz-controls">
 				<legend>Visualization</legend>
 				<div class="control-row">
@@ -76,12 +79,12 @@
 				<div class="control-row">
 					<label>
 						Notes move at
-						<input type="number" value="20" min="1" max="1000" id="note-gravity-pixels-per-second" />
+						<input type="number" value="20" min="1" id="note-gravity-pixels-per-second" aria-label="note speed (pixels per second)" />
 						pixels per second,
 					</label>
 					<label>
 						going
-						<select id="note-gravity-direction">
+						<select id="note-gravity-direction" aria-label="note gravity direction">
 							<option value="down">Down</option>
 							<option value="up" selected>Up</option>
 							<!-- <option value="right">Right</option> -->
@@ -91,9 +94,9 @@
 				</div>
 				<div class="control-row">
 					View note range:
-					<input type="number" value="0" min="0" max="128" id="midi-range-min" />
+					<input type="number" value="0" min="0" max="128" id="midi-range-min" aria-label="viewport note range minimum (MIDI value)" />
 					–
-					<input type="number" value="128" min="0" max="128" id="midi-range-max" />
+					<input type="number" value="128" min="0" max="128" id="midi-range-max" aria-label="viewport note range maximum (MIDI value)" />
 					&nbsp;
 					<button class="button-functional" id="learn-range-or-apply-button" title="Press keys on the keyboard to select the range of notes to view, then hit Apply">
 						<span class="button-visual">
@@ -123,10 +126,11 @@
 				<legend>Export</legend>
 				<button class="button-functional" id="export-midi-file-button" disabled>
 					<span class="button-visual">
-						🎵 Save MIDI file
+						<span aria-hidden="true">🎵</span>
+						Save MIDI file
 					</span>
 				</button>
-				<span id="no-notes-recorded-message">&nbsp;- No notes recorded</span>
+				<span id="no-notes-recorded-message" tabIndex="0">&nbsp;- No notes recorded</span>
 			</fieldset>
 		</div>
 	</main>

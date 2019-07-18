@@ -86,14 +86,14 @@ load_options = ->
 		set_selected_range(data["midi-range"].split(".."))
 	if data["pixels-per-second"]
 		px_per_second = parseFloat(data["pixels-per-second"])
-		px_per_second_input.valueAsNumber = px_per_second
+		px_per_second_input.value = px_per_second
 	if data["gravity-direction"]
 		note_gravity_direction = data["gravity-direction"].toLowerCase()
 		note_gravity_direction_select.value = note_gravity_direction
 
 update_options_from_inputs = ->
 	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
-	px_per_second = px_per_second_input.valueAsNumber
+	px_per_second = parseFloat(px_per_second_input.value) || 20
 	note_gravity_direction = note_gravity_direction_select.value
 	# TODO: debounce saving
 	save_options()
