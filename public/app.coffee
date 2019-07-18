@@ -145,6 +145,82 @@ export_midi_file_button.disabled = true
 current_pitch_bend_value = 0
 global_pitch_bends = []
 
+demo = ->
+	iid = setInterval ->
+		velocity = 127 # ??? range TBD - my MIDI keyboard isn't working right now haha, I'll have to restart my computer
+
+		start_time = performance.now()
+
+		# keys_to_be_held = [
+		# 	Math.round(((+Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) * 128)
+		# 	Math.round(((-Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) * 128)
+		# ]
+		# keys_to_be_held =
+			# n for n in [0...128] when (start_time / 500 % n) < 4
+			# n for n in [0...128] when ((start_time / 100) % (n * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 4
+			# n for n in [0...128] when ((start_time / 100) % (n * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 4 and (Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) > 0)
+			# n for n in [0...128] when ((start_time / 100) % (n * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 4 and (Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) > ((n / 128) - 0.5))
+			# n for n in [0...128] when ((start_time / 100) % (((n / 128) - 0.5) * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 0.1
+			# n for n in [0...128] when ((start_time / 1000) % (((n / 128) - 0.5) * Math.sin(start_time / 64000 + Math.sin(start_time / 23450)) + 1) / 2) < 0.1
+			# n for n in [0...128] when (
+			# 	((start_time / 100) % (((n / 128) - 0.5) * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 0.1 and
+			# 	Math.abs(Math.sin(start_time / 640 + Math.sin(start_time / 250)) - ((n / 128) - 0.5)) < 0.5
+			# )
+		# t = start_time / 1000
+		# keys_to_be_held =
+			# n for n in [0...128] when (
+			# 	((t / 1) % (((n / 128) - 0.5) * Math.sin(t / 64 + Math.sin(t / 23)) + 1) / 2) < 0.1 and
+			# 	Math.abs(Math.sin(t / 6 + Math.sin(t / 2)) - ((n / 128) - 0.5)) < 0.5
+			# )
+		t = start_time / 1000
+		# t = t % 4 if t % 16 < 4
+		# root = 60 + Math.floor(t / 4) % 4
+		# root = 60 + [0, 5, 3, 6][(Math.floor(t / 4) % 4)]
+		root = 60 + [0, 5, 3, 6][(Math.floor(t / 4) % 4)]
+		keys_to_be_held =
+			# n for n in [0...128] when (
+			# 	((t / 1) % (((n / 128) - 0.5) * Math.sin(t / 64 + Math.sin(t / 24)) + 1) / 2) < 0.1 and
+			# 	Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) < 0.5
+			# )
+			n for n in [0...128] when (
+				# (n - root) %% 12 < 1
+				# (n - root) %% 12 < Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) 
+				# ((n - root) %% 12) % Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) > 1
+
+				# ((n - root) %% 12) % Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) %% 0.5 < 0.1 and
+				# ((n - root)) % Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) %% 0.5 < 0.1
+
+				# ((n - root) %% 12) %% (n - t) %% 0.5 < 0.1
+				# ((n - root) %% 12) %% (-n + t) %% 0.5 < 0.1
+				((n - root) %% 12) %% (n & (t / 4)) < (t / 16) %% 1 and
+				((n - root)) % Math.abs(Math.sin(t / 80 + Math.sin(t / 20)) - ((n / 128) - 0.5)) %% 0.5 < 0.1
+			)
+
+		current_notes.forEach (note, note_key)->
+			unless note_key in keys_to_be_held
+				note.end_time = performance.now()
+				note.length = note.end_time - note.start_time
+				current_notes.delete(note_key)
+
+		for key in keys_to_be_held
+			old_note = current_notes.get(key)
+			unless old_note
+				note = {key, velocity, start_time, pitch_bends: [{
+					time: start_time,
+					value: current_pitch_bend_value,
+				}]}
+				current_notes.set(key, note)
+				notes.push(note)
+
+
+		no_notes_recorded_message_el.hidden = true
+		export_midi_file_button.disabled = false
+
+	, 10
+
+# do demo
+window.demo = demo
+
 smi.on 'noteOn', (data)->
 	{event, key, velocity} = data
 	old_note = current_notes.get(key)
