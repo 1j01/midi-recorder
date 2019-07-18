@@ -26,6 +26,13 @@ body,
 	align-items: center;
 	justify-content: center;
 }
+
+@media (max-width: 75em) and (max-height: 55em), print {
+	#fork-me-on-github {
+		display: none;
+	}
+}
+
 .two-column-layout {
 	display: flex;
 	flex-direction: row;
@@ -39,10 +46,8 @@ body,
 .two-column-layout p {
 	max-width: 25em;
 }
-@media (max-width: 75em) and (max-height: 55em), print {
-	#fork-me-on-github {
-		display: none;
-	}
+#midi-devices {
+	min-width: 250px;
 }
 .midi-port-status:after {
 	content: "";
@@ -59,9 +64,6 @@ body,
 .midi-port.midi-device-is-disconnected {
 	text-decoration: line-through;
 }
-#midi-devices {
-	min-width: 250px;
-}
 
 .error-message {
 	background: maroon;
@@ -72,28 +74,26 @@ body,
 	margin: 0;
 	margin-top: 1em;
 }
+
 fieldset {
 	border: 2px solid gray;
 	border-radius: 8px;
-	/*box-shadow: 0 0 0 4px #2a2a2a, 0 0 0 4px inset #2a2a2a;*/
 	background: rgba(30, 30, 30, 0.5);
 	padding: 1em;
+	/* padding-bottom: calc(1em + 1.3em / 2); - to balance with the top which has the <legend>, mathematically */
 	padding-bottom: 1.5em; /* to balance with the top which has the <legend> */
 }
 legend {
-    /*background-color: #2a2a2a;*/
     background-color: #1a1a1a;
     color: #aaa;
     padding: 3px 6px;
 	border-radius: 2px;
 	font-size: 1.3em;
 }
-#midi-exporting {
+#controls > fieldset:not(:first-child) {
 	margin-top: 1.3em;
 }
-#no-notes-recorded-message {
-	color: gray;
-}
+
 ul.bullets-in-items {
 	list-style-type: none;
 	padding: 0;
@@ -115,16 +115,18 @@ li {
 .button-functional,
 .button-visual {
 	vertical-align: middle;
-	display: inline-flex; /* Note: overrides display: none implicit style from "hidden" attribute*/
+	display: inline-flex; /* NOTE: overrides display: none implicit style from "hidden" attribute*/
 	justify-content: center;
 	align-items: center;
+}
+.button-functional[hidden] {
+	visibility: hidden;
 }
 
 .button-visual {
 	line-height: 0.8;
 	height: 1.5em;
 	width: 10em;
-
 	font-size: 14px;
 	font-weight: bold;
 	background-color: #434343;
@@ -148,7 +150,6 @@ li {
 .button-functional:enabled:active .button-visual {
 	margin-top: 3px;
 	margin-bottom: 0px;
-	/*box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 1px 0 #2A2A2A, 0 -3px 0 2px black, 0 1px 0 2px black, 0 -3px 0 3px #222, 0 1px 0 3px #222;*/
 	box-shadow: inset 0 1px 2px rgba(255,255,255,0.2), 0 1px 0 #2A2A2A, 0 1px 0 2px black, 0 1px 0 3px #222;
 } 
 
@@ -156,14 +157,10 @@ li {
 	outline: none;
 }
 .button-functional:focus .button-visual {
-	/*box-shadow: 0 0 2px blue;*/
 	outline: 2px auto #2b8ce2;
 	outline: 2px auto -webkit-focus-ring-color;
 }
 
-button[hidden] {
-	visibility: hidden;
-}
 button svg {
 	margin-right: 5px;
 	height: 1em;
@@ -175,6 +172,10 @@ button svg {
 }
 #fullscreen-button svg path {
 	fill: currentColor;
+}
+
+#no-notes-recorded-message {
+	color: gray;
 }
 
 input {
