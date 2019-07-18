@@ -76,9 +76,10 @@ fieldset {
 	border: 2px solid gray;
 	border-radius: 8px;
 	/*box-shadow: 0 0 0 2px black, 0 0 0 2px inset black;*/
-	box-shadow: 0 0 0 10px #2a2a2a;
+	box-shadow: 0 0 0 4px #2a2a2a;
 	background: rgba(50, 50, 50, 0.5);
 	padding: 1em;
+	padding-bottom: 1.5em; /* to balance with the top which has the <legend> */
 }
 legend {
     background-color: #2a2a2a;
@@ -87,7 +88,7 @@ legend {
 	border-radius: 2px;
 }
 #midi-exporting {
-	margin-top: 2em;
+	margin-top: 1em;
 }
 #no-notes-recorded-message {
 	color: gray;
