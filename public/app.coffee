@@ -6,6 +6,8 @@ el_to_replace_content_of_on_error = document.querySelector(".replace-content-on-
 fullscreen_target_el = document.getElementById("fullscreen-target")
 canvas = document.getElementById("midi-viz-canvas")
 no_notes_recorded_message_el = document.getElementById("no-notes-recorded-message")
+no_midi_devices_message_el = document.getElementById("no-midi-devices-message")
+loading_midi_devices_message_el = document.getElementById("loading-midi-devices-message")
 export_midi_file_button = document.getElementById("export-midi-file-button")
 fullscreen_button = document.getElementById("fullscreen-button")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
@@ -113,13 +115,19 @@ midi_device_ids_to_rows = new Map
 
 smi = new SimpleMidiInput()
 
+loading_midi_devices_message_el.hidden = false
+
 on_success = (midi)->
 	smi.attach(midi)
 #	console.log 'smi: ', smi
 #	console.log 'inputs (as a Map): ', new Map(midi.inputs)
 
+	loading_midi_devices_message_el.hidden = true
+	no_midi_devices_message_el.hidden = false
 	midi.onstatechange = (e)->
 		if e.port.type is "input"
+			no_midi_devices_message_el.hidden = true
+
 			connected = e.port.state is "connected" and e.port.connection is "open"
 
 			tr = midi_device_ids_to_rows.get(e.port.id)

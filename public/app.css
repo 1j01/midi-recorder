@@ -181,7 +181,9 @@ button svg {
 	fill: currentColor;
 }
 
-#no-notes-recorded-message {
+#no-notes-recorded-message,
+#loading-midi-devices-message,
+#no-midi-devices-message {
 	color: gray;
 }
 
