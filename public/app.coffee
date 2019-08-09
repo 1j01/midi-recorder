@@ -11,7 +11,8 @@ loading_midi_devices_message_el = document.getElementById("loading-midi-devices-
 export_midi_file_button = document.getElementById("export-midi-file-button")
 fullscreen_button = document.getElementById("fullscreen-button")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
-note_gravity_direction_select = document.getElementById("note-gravity-direction")
+note_gravity_direction_select = document.getElementById("note-gravity-direction-select")
+layout_select = document.getElementById("layout-select")
 midi_range_left_input = document.getElementById("midi-range-min")
 midi_range_right_input = document.getElementById("midi-range-max")
 learn_range_or_apply_button = document.getElementById("learn-range-or-apply-button")
@@ -21,6 +22,7 @@ cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-but
 midi_devices_table = document.getElementById("midi-devices")
 
 # options are initialized from the URL & HTML later
+layout = "equal"
 px_per_second = 20
 note_gravity_direction = "up"
 selected_range = [0, 128]
@@ -59,6 +61,7 @@ set_selected_range = (range)->
 save_options = ->
 	[from_midi_val, to_midi_val] = selected_range
 	data =
+		"layout": layout
 		"gravity-direction": note_gravity_direction
 		"pixels-per-second": px_per_second
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
@@ -84,6 +87,7 @@ load_options = ->
 		key = key.trim()
 		val = val.trim()
 		data[key] = val
+	# TODO: reset to original defaults when not in URL, in case you hit the back button
 	if data["midi-range"]
 		set_selected_range(data["midi-range"].split(".."))
 	if data["pixels-per-second"]
@@ -92,11 +96,14 @@ load_options = ->
 	if data["gravity-direction"]
 		note_gravity_direction = data["gravity-direction"].toLowerCase()
 		note_gravity_direction_select.value = note_gravity_direction
+	if data["layout"]
+		layout = data["layout"]
 
 update_options_from_inputs = ->
 	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
 	px_per_second = parseFloat(px_per_second_input.value) || 20
 	note_gravity_direction = note_gravity_direction_select.value
+	layout = layout_select.value
 	# TODO: debounce saving
 	save_options()
 
@@ -105,6 +112,7 @@ midi_range_left_input.onchange = update_options_from_inputs
 midi_range_right_input.onchange = update_options_from_inputs
 px_per_second_input.onchange = update_options_from_inputs
 note_gravity_direction_select.onchange = update_options_from_inputs
+layout_select.onchange = update_options_from_inputs
 
 load_options()
 update_options_from_inputs()
