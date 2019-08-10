@@ -345,17 +345,16 @@ do animate = ->
 	
 	get_note_location = (note_midi_val)->
 		# TODO: handle piano layout for viewport range
-		# (scale to canvas space at the end - operate in MIDI pitch space most of the time)
+		# (should operate in MIDI pitch space most of the time (not scaled to a range))
 		# (maybe break into two functions, or just multiply by pitch_axis_canvas_length outside)
-		base_w = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
 		scale_key_index = note_midi_val %% piano_accidental_pattern.length
 		is_accidental = piano_accidental_pattern[scale_key_index]
 		if layout is "piano"
-			octave_w = base_w * 12
+			octave_w = 12
 			non_accidental_key_w = octave_w / 7
 			accidental_key_w = non_accidental_key_w * 0.64
 			octave_start_midi_val = Math.floor(note_midi_val / 12) * 12
-			octave_start_x = (octave_start_midi_val - min_midi_val) * base_w
+			octave_start_x = (octave_start_midi_val - min_midi_val)
 			if is_accidental
 				ind = 0
 				for is_accidental, i in piano_accidental_pattern
@@ -384,15 +383,14 @@ do animate = ->
 					if i >= scale_key_index
 						break
 				
-				# x1 = octave_start_x + ((ind - 1) / 7 * octave_w)
-				# x2 = octave_start_x + ((ind + 0) / 7 * octave_w)
 				x1 = octave_start_x + (ind - 1) * non_accidental_key_w
 				x2 = octave_start_x + (ind + 0) * non_accidental_key_w
-				# x1 = octave_start_x + (ind - 1/2) * non_accidental_key_w
-				# x2 = octave_start_x + (ind + 1/2) * non_accidental_key_w
 		else
-			x1 = (note_midi_val - min_midi_val) * base_w
-			x2 = x1 + base_w
+			x1 = (note_midi_val - min_midi_val)
+			x2 = x1 + 1
+		w_scale = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
+		x1 *= w_scale
+		x2 *= w_scale
 		{x: x1, w: x2 - x1, is_accidental}
 
 	for note in notes
