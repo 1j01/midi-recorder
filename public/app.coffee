@@ -299,10 +299,20 @@ smi.on 'pitchWheel', (data)->
 ctx = canvas.getContext "2d"
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
-# piano_natural_
-# piano_layout = []
-# for is_accidental in piano_accidental_pattern
-# 	if is_accidental
+
+# TODO: precompute entire piano layout
+# and maybe switch between two get_note_location functions
+nth_accidentals = []
+nth_naturals = []
+nth_accidental = 0
+nth_natural = 0
+for is_accidental, i in piano_accidental_pattern
+	if is_accidental
+		nth_accidental += 1
+	else
+		nth_natural += 1
+	nth_accidentals.push(nth_accidental)
+	nth_naturals.push(nth_natural)
 
 do animate = ->
 	if is_learning_range
@@ -355,7 +365,6 @@ do animate = ->
 			octave_width_inches = 6 + 1/4 + 1/16
 			natural_key_width_inches = octave_width_inches / 7
 			accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
-			# accidental_key_width_inches = 1/2
 			group_of_3_width_inches = 2 + 1/2 + 1/8
 			group_of_2_width_inches = 1 + 3/4 - 1/16
 			
@@ -363,16 +372,11 @@ do animate = ->
 			accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
 			octave_start_midi_val = Math.floor(note_midi_val / 12) * 12
 			if is_accidental
-				# TODO: look-up tables for for loop results
-				ind = 0
-				for is_accidental, i in piano_accidental_pattern
-					ind += 1 if is_accidental
-					if i >= scale_key_index
-						break
-				is_group_of_3 = ind > 2 # OH BABY, IT'S A TRIPLE!
+				nth_accidental = nth_accidentals[scale_key_index]
+				is_group_of_3 = nth_accidental > 2 # OH BABY, A TRIPLE!
 				accidentals_in_group = if is_group_of_3 then 3 else 2
 				gaps_for_naturals_in_group = accidentals_in_group - 1
-				index_within_accidental_group = if is_group_of_3 then ind - 2 else ind
+				index_within_accidental_group = if is_group_of_3 then nth_accidental - 2 else nth_accidental
 				group_center =
 					octave_start_midi_val +
 					natural_key_size * (if is_group_of_3 then 5 else 1.5)
@@ -390,14 +394,10 @@ do animate = ->
 				x1 = key_center_x - accidental_key_size / 2
 				x2 = key_center_x + accidental_key_size / 2
 			else
-				ind = 0
-				for is_accidental, i in piano_accidental_pattern
-					ind += 1 unless is_accidental
-					if i >= scale_key_index
-						break
+				nth_natural = nth_naturals[scale_key_index]
 				
-				x1 = octave_start_midi_val + (ind - 1) * natural_key_size
-				x2 = octave_start_midi_val + (ind + 0) * natural_key_size
+				x1 = octave_start_midi_val + (nth_natural - 1) * natural_key_size
+				x2 = octave_start_midi_val + (nth_natural + 0) * natural_key_size
 		else
 			x1 = note_midi_val
 			x2 = note_midi_val + 1
