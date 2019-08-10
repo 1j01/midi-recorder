@@ -299,7 +299,7 @@ smi.on 'pitchWheel', (data)->
 ctx = canvas.getContext "2d"
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
-# piano_non_accidental_
+# piano_natural_
 # piano_layout = []
 # for is_accidental in piano_accidental_pattern
 # 	if is_accidental
@@ -349,9 +349,17 @@ do animate = ->
 		scale_key_index = note_midi_val %% piano_accidental_pattern.length
 		is_accidental = piano_accidental_pattern[scale_key_index]
 		if layout is "piano"
-			octave_size = 12
-			non_accidental_key_size = octave_size / 7
-			accidental_key_size = non_accidental_key_size * 0.64 # based on measurement of a keyboard
+
+			# measurements of a keyboard
+			# (accidental refers to the black keys, natural refers to the white keys)
+			octave_width_inches = 6 + 1/4 + 1/16
+			natural_key_width_inches = octave_width_inches / 7
+			accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
+			group_of_3_width_inches = 2 + 1/2 + 1/8
+			group_of_2_width_inches = 1 + 3/4 - 1/16
+			
+			natural_key_size = 12 / 7
+			accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
 			octave_start_midi_val = Math.floor(note_midi_val / 12) * 12
 			if is_accidental
 				# TODO: look-up tables for for loop results
@@ -365,12 +373,18 @@ do animate = ->
 				index_within_accidental_group = if is_group_of_3 then ind - 2 else ind
 				accidental_group_center =
 					octave_start_midi_val +
-					non_accidental_key_size * (if is_group_of_3 then 5 else 1.5)
-				accidental_group_spacing =
-					non_accidental_key_size * (if is_group_of_3 then 1 else 1.2) # trial and error estimate
+					natural_key_size * (if is_group_of_3 then 5 else 1.5)
+				accidental_group_spacing_of_key_centers =
+					(
+						accidental_key_width_inches +
+						if is_group_of_3
+							(group_of_3_width_inches - 3 * accidental_key_width_inches) / 2
+						else
+							(group_of_2_width_inches - 2 * accidental_key_width_inches)
+					) / natural_key_width_inches * natural_key_size
 				key_center_x =
 					accidental_group_center +
-					(index_within_accidental_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing
+					(index_within_accidental_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing_of_key_centers
 				x1 = key_center_x - accidental_key_size / 2
 				x2 = key_center_x + accidental_key_size / 2
 			else
@@ -380,8 +394,8 @@ do animate = ->
 					if i >= scale_key_index
 						break
 				
-				x1 = octave_start_midi_val + (ind - 1) * non_accidental_key_size
-				x2 = octave_start_midi_val + (ind + 0) * non_accidental_key_size
+				x1 = octave_start_midi_val + (ind - 1) * natural_key_size
+				x2 = octave_start_midi_val + (ind + 0) * natural_key_size
 		else
 			x1 = note_midi_val
 			x2 = note_midi_val + 1
