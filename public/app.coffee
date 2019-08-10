@@ -355,6 +355,7 @@ do animate = ->
 			octave_width_inches = 6 + 1/4 + 1/16
 			natural_key_width_inches = octave_width_inches / 7
 			accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
+			# accidental_key_width_inches = 1/2
 			group_of_3_width_inches = 2 + 1/2 + 1/8
 			group_of_2_width_inches = 1 + 3/4 - 1/16
 			
@@ -368,22 +369,23 @@ do animate = ->
 					ind += 1 if is_accidental
 					if i >= scale_key_index
 						break
-				is_group_of_3 = ind > 2
+				is_group_of_3 = ind > 2 # OH BABY, IT'S A TRIPLE!
 				accidentals_in_group = if is_group_of_3 then 3 else 2
+				gaps_for_naturals_in_group = accidentals_in_group - 1
 				index_within_accidental_group = if is_group_of_3 then ind - 2 else ind
-				accidental_group_center =
+				group_center =
 					octave_start_midi_val +
 					natural_key_size * (if is_group_of_3 then 5 else 1.5)
+				group_width_inches = if is_group_of_3 then group_of_3_width_inches else group_of_2_width_inches
+				space_between_accidentals_inches =
+					(group_width_inches - accidentals_in_group * accidental_key_width_inches) /
+					gaps_for_naturals_in_group
 				accidental_group_spacing_of_key_centers =
 					(
-						accidental_key_width_inches +
-						if is_group_of_3
-							(group_of_3_width_inches - 3 * accidental_key_width_inches) / 2
-						else
-							(group_of_2_width_inches - 2 * accidental_key_width_inches)
+						accidental_key_width_inches + space_between_accidentals_inches
 					) / natural_key_width_inches * natural_key_size
 				key_center_x =
-					accidental_group_center +
+					group_center +
 					(index_within_accidental_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing_of_key_centers
 				x1 = key_center_x - accidental_key_size / 2
 				x2 = key_center_x + accidental_key_size / 2
