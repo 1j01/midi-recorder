@@ -300,8 +300,6 @@ ctx = canvas.getContext "2d"
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
 
-# TODO: precompute entire piano layout
-# and maybe switch between two get_note_location functions
 nth_accidentals = []
 nth_naturals = []
 nth_accidental = 0
@@ -313,6 +311,45 @@ for is_accidental, i in piano_accidental_pattern
 		nth_natural += 1
 	nth_accidentals.push(nth_accidental)
 	nth_naturals.push(nth_natural)
+
+# measurements of a keyboard
+# (accidental refers to the black keys, natural refers to the white keys)
+octave_width_inches = 6 + 1/4 + 1/16
+natural_key_width_inches = octave_width_inches / 7
+accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
+group_of_3_width_inches = 2 + 1/2 + 1/8
+group_of_2_width_inches = 1 + 3/4 - 1/16
+
+piano_layout = for is_accidental, scale_key_index in piano_accidental_pattern
+
+	natural_key_size = 12 / 7
+	accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
+	if is_accidental
+		nth_accidental = nth_accidentals[scale_key_index]
+		is_group_of_3 = nth_accidental > 2 # OH BABY A TRIPLE!
+		accidentals_in_group = if is_group_of_3 then 3 else 2
+		gaps_for_naturals_in_group = accidentals_in_group - 1
+		index_within_accidental_group = if is_group_of_3 then nth_accidental - 2 else nth_accidental
+		group_center =
+			natural_key_size * (if is_group_of_3 then 5 else 1.5)
+		group_width_inches = if is_group_of_3 then group_of_3_width_inches else group_of_2_width_inches
+		space_between_accidentals_inches =
+			(group_width_inches - accidentals_in_group * accidental_key_width_inches) /
+			gaps_for_naturals_in_group
+		accidental_group_spacing_of_key_centers =
+			(accidental_key_width_inches + space_between_accidentals_inches) /
+			natural_key_width_inches * natural_key_size
+		key_center_x =
+			group_center +
+			(index_within_accidental_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing_of_key_centers
+		x1 = key_center_x - accidental_key_size / 2
+		x2 = key_center_x + accidental_key_size / 2
+	else
+		nth_natural = nth_naturals[scale_key_index]
+		
+		x1 = (nth_natural - 1) * natural_key_size
+		x2 = (nth_natural + 0) * natural_key_size
+	{x1, x2}
 
 do animate = ->
 	if is_learning_range
@@ -355,49 +392,14 @@ do animate = ->
 	
 	get_note_location = (note_midi_val)->
 		# TODO: handle piano layout for viewport range
-		# (maybe break into two functions, or just multiply by pitch_axis_canvas_length outside)
+		# (maybe break into two functions, or just multiple (or scale()?) by pitch_axis_canvas_length outside)
 		scale_key_index = note_midi_val %% piano_accidental_pattern.length
 		is_accidental = piano_accidental_pattern[scale_key_index]
 		if layout is "piano"
-
-			# measurements of a keyboard
-			# (accidental refers to the black keys, natural refers to the white keys)
-			octave_width_inches = 6 + 1/4 + 1/16
-			natural_key_width_inches = octave_width_inches / 7
-			accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
-			group_of_3_width_inches = 2 + 1/2 + 1/8
-			group_of_2_width_inches = 1 + 3/4 - 1/16
-			
-			natural_key_size = 12 / 7
-			accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
 			octave_start_midi_val = Math.floor(note_midi_val / 12) * 12
-			if is_accidental
-				nth_accidental = nth_accidentals[scale_key_index]
-				is_group_of_3 = nth_accidental > 2 # OH BABY, A TRIPLE!
-				accidentals_in_group = if is_group_of_3 then 3 else 2
-				gaps_for_naturals_in_group = accidentals_in_group - 1
-				index_within_accidental_group = if is_group_of_3 then nth_accidental - 2 else nth_accidental
-				group_center =
-					octave_start_midi_val +
-					natural_key_size * (if is_group_of_3 then 5 else 1.5)
-				group_width_inches = if is_group_of_3 then group_of_3_width_inches else group_of_2_width_inches
-				space_between_accidentals_inches =
-					(group_width_inches - accidentals_in_group * accidental_key_width_inches) /
-					gaps_for_naturals_in_group
-				accidental_group_spacing_of_key_centers =
-					(
-						accidental_key_width_inches + space_between_accidentals_inches
-					) / natural_key_width_inches * natural_key_size
-				key_center_x =
-					group_center +
-					(index_within_accidental_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing_of_key_centers
-				x1 = key_center_x - accidental_key_size / 2
-				x2 = key_center_x + accidental_key_size / 2
-			else
-				nth_natural = nth_naturals[scale_key_index]
-				
-				x1 = octave_start_midi_val + (nth_natural - 1) * natural_key_size
-				x2 = octave_start_midi_val + (nth_natural + 0) * natural_key_size
+			{x1, x2} = piano_layout[scale_key_index]
+			x1 += octave_start_midi_val
+			x2 += octave_start_midi_val
 		else
 			x1 = note_midi_val
 			x2 = note_midi_val + 1
