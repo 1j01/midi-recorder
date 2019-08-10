@@ -345,37 +345,34 @@ do animate = ->
 	
 	get_note_location = (note_midi_val)->
 		# TODO: handle piano layout for viewport range
-		# (should operate in MIDI pitch space most of the time (not scaled to a range))
 		# (maybe break into two functions, or just multiply by pitch_axis_canvas_length outside)
 		scale_key_index = note_midi_val %% piano_accidental_pattern.length
 		is_accidental = piano_accidental_pattern[scale_key_index]
 		if layout is "piano"
-			octave_w = 12
-			non_accidental_key_w = octave_w / 7
-			accidental_key_w = non_accidental_key_w * 0.64
+			octave_size = 12
+			non_accidental_key_size = octave_size / 7
+			accidental_key_size = non_accidental_key_size * 0.64 # based on measurement of a keyboard
 			octave_start_midi_val = Math.floor(note_midi_val / 12) * 12
-			octave_start_x = (octave_start_midi_val - min_midi_val)
 			if is_accidental
+				# TODO: look-up tables for for loop results
 				ind = 0
 				for is_accidental, i in piano_accidental_pattern
 					ind += 1 if is_accidental
 					if i >= scale_key_index
 						break
-				accidental_group_of_3 = ind > 2
-				accidentals_in_group = if accidental_group_of_3 then 3 else 2
-				index_within_accidental_group = if accidental_group_of_3 then ind - 2 else ind
-				accidental_group_center_x =
-					octave_start_x +
-					non_accidental_key_w * (if accidental_group_of_3 then 5 else 1.5)
-				# ctx.fillStyle = "#800"
-				# ctx.fillRect(accidental_group_center_x, 2, 1, 50000)
+				is_group_of_3 = ind > 2
+				accidentals_in_group = if is_group_of_3 then 3 else 2
+				index_within_accidental_group = if is_group_of_3 then ind - 2 else ind
+				accidental_group_center =
+					octave_start_midi_val +
+					non_accidental_key_size * (if is_group_of_3 then 5 else 1.5)
 				accidental_group_spacing =
-					non_accidental_key_w * (if accidental_group_of_3 then 1 else 1.2)
+					non_accidental_key_size * (if is_group_of_3 then 1 else 1.2) # trial and error estimate
 				key_center_x =
-					accidental_group_center_x +
+					accidental_group_center +
 					(index_within_accidental_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing
-				x1 = key_center_x - accidental_key_w / 2
-				x2 = key_center_x + accidental_key_w / 2
+				x1 = key_center_x - accidental_key_size / 2
+				x2 = key_center_x + accidental_key_size / 2
 			else
 				ind = 0
 				for is_accidental, i in piano_accidental_pattern
@@ -383,11 +380,13 @@ do animate = ->
 					if i >= scale_key_index
 						break
 				
-				x1 = octave_start_x + (ind - 1) * non_accidental_key_w
-				x2 = octave_start_x + (ind + 0) * non_accidental_key_w
+				x1 = octave_start_midi_val + (ind - 1) * non_accidental_key_size
+				x2 = octave_start_midi_val + (ind + 0) * non_accidental_key_size
 		else
-			x1 = (note_midi_val - min_midi_val)
-			x2 = x1 + 1
+			x1 = note_midi_val
+			x2 = note_midi_val + 1
+		x1 -= min_midi_val
+		x2 -= min_midi_val
 		w_scale = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
 		x1 *= w_scale
 		x2 *= w_scale
