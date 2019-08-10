@@ -97,7 +97,8 @@ load_options = ->
 		note_gravity_direction = data["gravity-direction"].toLowerCase()
 		note_gravity_direction_select.value = note_gravity_direction
 	if data["layout"]
-		layout = data["layout"]
+		layout = data["layout"].toLowerCase()
+		layout_select.value = layout
 
 update_options_from_inputs = ->
 	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
@@ -297,6 +298,12 @@ smi.on 'pitchWheel', (data)->
 
 ctx = canvas.getContext "2d"
 
+piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0]
+# piano_non_accidental_
+# piano_layout = []
+# for accidental in piano_accidental_pattern
+# 	if accidental
+
 do animate = ->
 	if is_learning_range
 		[min_midi_val, max_midi_val] = view_range_while_learning
@@ -335,9 +342,56 @@ do animate = ->
 	ctx.fillStyle = "red"
 	ctx.fillRect(0, 1, pitch_axis_canvas_length, 1)
 	# ctx.globalAlpha = 0.2
+	
+	get_note_location = (note_midi_val)->
+		# TODO: handle piano layout for viewport range
+		base_w = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
+		if layout is "piano"
+			octave_w = base_w * 12
+			non_accidental_key_w = octave_w / 7
+			accidental_key_w = non_accidental_key_w * 0.5
+			octave_start_midi_val = Math.floor(note_midi_val / 12) * 12
+			octave_start_x = (octave_start_midi_val - min_midi_val) * base_w
+			scale_key_index = note_midi_val %% piano_accidental_pattern.length
+			accidental = piano_accidental_pattern[scale_key_index]
+			if accidental
+				# x1 = (note_midi_val - min_midi_val + 1) * base_w + accidental_key_w / 4
+				ind = 0
+				for accidental, i in piano_accidental_pattern
+					ind += accidental
+					if i >= scale_key_index
+						break
+				accidental_group_of_3 = ind > 2
+				accidentals_in_group = if accidental_group_of_3 then 3 else 2
+				index_within_accidental_group = if accidental_group_of_3 then ind - 2 else ind
+				accidental_group_center_x =
+					octave_start_x +
+					non_accidental_key_w * (if accidental_group_of_3 then 5 else 1.5)
+				accidental_group_spacing =
+					non_accidental_key_w * (if accidental_group_of_3 then 1 else 1.2)
+				key_center_x =
+					accidental_group_center_x +
+					(index_within_accidental_group - accidentals_in_group / 2) * accidental_group_spacing
+				x1 = key_center_x - accidental_key_w / 2
+				x2 = key_center_x + accidental_key_w / 2
+			else
+				ind = 0
+				for accidental, i in piano_accidental_pattern
+					ind += not accidental
+					if i >= scale_key_index
+						break
+				
+				# x1 = octave_start_x + ((ind - 1) / 7 * octave_w)
+				# x2 = octave_start_x + ((ind + 0) / 7 * octave_w)
+				x1 = octave_start_x + (ind + 0) * non_accidental_key_w
+				x2 = octave_start_x + (ind + 1) * non_accidental_key_w
+		else
+			x1 = (note_midi_val - min_midi_val) * base_w
+			x2 = x1 + base_w
+		{x: x1, w: x2 - x1}
+
 	for note in notes
-		w = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
-		x = (note.key - min_midi_val) * w
+		{w, x} = get_note_location(note.key, pitch_axis_canvas_length)
 		unless note.length?
 			# for ongoing (held) notes, display a bar at the bottom like a key
 			# TODO: maybe bend this?
@@ -356,8 +410,7 @@ do animate = ->
 	if is_learning_range
 		for extremity_midi_val, i in learning_range
 			if extremity_midi_val?
-				w = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
-				x = (extremity_midi_val - min_midi_val) * w
+				{w, x} = get_note_location(extremity_midi_val, pitch_axis_canvas_length)
 				ctx.fillStyle = "red"
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
