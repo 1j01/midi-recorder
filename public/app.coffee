@@ -296,10 +296,10 @@ smi.on 'pitchWheel', (data)->
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
 
-ctx = canvas.getContext "2d"
-
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
 
+# accidental refers to the black keys
+# natural refers to the white keys
 nth_accidentals = []
 nth_naturals = []
 nth_accidental = 0
@@ -313,7 +313,6 @@ for is_accidental, i in piano_accidental_pattern
 	nth_naturals.push(nth_natural)
 
 # measurements of a keyboard
-# (accidental refers to the black keys, natural refers to the white keys)
 octave_width_inches = 6 + 1/4 + 1/16
 natural_key_width_inches = octave_width_inches / 7
 accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
@@ -328,17 +327,17 @@ accidental_key_size = natural_key_size * accidental_key_width_inches / natural_k
 piano_layout = for is_accidental, octave_key_index in piano_accidental_pattern
 	if is_accidental
 		nth_accidental = nth_accidentals[octave_key_index]
-		is_group_of_3 = nth_accidental > 2 # OH BABY A TRIPLE!
+		is_group_of_3 = nth_accidental > 2
 		accidentals_in_group = if is_group_of_3 then 3 else 2
 		gaps_in_group = accidentals_in_group - 1
 		nth_accidental_in_group = if is_group_of_3 then nth_accidental - 2 else nth_accidental
 		group_center = natural_key_size * (if is_group_of_3 then 5 else 1.5)
 		group_span_size = if is_group_of_3 then group_of_3_span_size else group_of_2_span_size
 		gap_size = (group_span_size - accidentals_in_group * accidental_key_size) / gaps_in_group
-		accidental_group_spacing_of_key_centers = (accidental_key_size + gap_size)
+		space_between_key_centers = accidental_key_size + gap_size
 		key_center_x =
 			group_center +
-			(nth_accidental_in_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing_of_key_centers
+			(nth_accidental_in_group - (accidentals_in_group + 1) / 2) * space_between_key_centers
 		x1 = key_center_x - accidental_key_size / 2
 		x2 = key_center_x + accidental_key_size / 2
 	else
@@ -346,6 +345,8 @@ piano_layout = for is_accidental, octave_key_index in piano_accidental_pattern
 		x1 = (nth_natural - 1) * natural_key_size
 		x2 = (nth_natural + 0) * natural_key_size
 	{x1, x2}
+
+ctx = canvas.getContext "2d"
 
 do animate = ->
 	if is_learning_range
@@ -408,11 +409,8 @@ do animate = ->
 
 	get_note_location_canvas_space = (note_midi_val)->
 		{x1, x2, is_accidental} = get_note_location_midi_space(note_midi_val)
-		x1 -= midi_x1
-		x2 -= midi_x1
-		scalar = pitch_axis_canvas_length / (midi_x2 - midi_x1)
-		x1 *= scalar
-		x2 *= scalar
+		x1 = (x1 - midi_x1) / (midi_x2 - midi_x1) * pitch_axis_canvas_length
+		x2 = (x2 - midi_x1) / (midi_x2 - midi_x1) * pitch_axis_canvas_length
 		{x: x1, w: x2 - x1, is_accidental}
 
 	for note in notes
