@@ -325,29 +325,24 @@ group_of_2_span_size = group_of_2_span_inches / octave_width_inches * 12
 natural_key_size = 12 / 7
 accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
 
-# TODO: would octave_key_index be a better name?
-# maybe index_in_octave, nth_note_in_octave
-piano_layout = for is_accidental, scale_key_index in piano_accidental_pattern
+piano_layout = for is_accidental, octave_key_index in piano_accidental_pattern
 	if is_accidental
-		nth_accidental = nth_accidentals[scale_key_index]
+		nth_accidental = nth_accidentals[octave_key_index]
 		is_group_of_3 = nth_accidental > 2 # OH BABY A TRIPLE!
 		accidentals_in_group = if is_group_of_3 then 3 else 2
-		gaps_for_naturals_in_group = accidentals_in_group - 1
-		index_within_accidental_group = if is_group_of_3 then nth_accidental - 2 else nth_accidental
-		group_center =
-			natural_key_size * (if is_group_of_3 then 5 else 1.5)
+		gaps_in_group = accidentals_in_group - 1
+		nth_accidental_in_group = if is_group_of_3 then nth_accidental - 2 else nth_accidental
+		group_center = natural_key_size * (if is_group_of_3 then 5 else 1.5)
 		group_span_size = if is_group_of_3 then group_of_3_span_size else group_of_2_span_size
-		gap_size =
-			(group_span_size - accidentals_in_group * accidental_key_size) /
-			gaps_for_naturals_in_group
+		gap_size = (group_span_size - accidentals_in_group * accidental_key_size) / gaps_in_group
 		accidental_group_spacing_of_key_centers = (accidental_key_size + gap_size)
 		key_center_x =
 			group_center +
-			(index_within_accidental_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing_of_key_centers
+			(nth_accidental_in_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing_of_key_centers
 		x1 = key_center_x - accidental_key_size / 2
 		x2 = key_center_x + accidental_key_size / 2
 	else
-		nth_natural = nth_naturals[scale_key_index]
+		nth_natural = nth_naturals[octave_key_index]
 		x1 = (nth_natural - 1) * natural_key_size
 		x2 = (nth_natural + 0) * natural_key_size
 	{x1, x2}
@@ -392,11 +387,11 @@ do animate = ->
 	# ctx.globalAlpha = 0.2
 	
 	get_note_location_midi_space = (note_midi_val)->
-		scale_key_index = note_midi_val %% piano_accidental_pattern.length
-		is_accidental = piano_accidental_pattern[scale_key_index]
+		octave_key_index = note_midi_val %% piano_accidental_pattern.length
+		is_accidental = piano_accidental_pattern[octave_key_index]
 		if layout is "piano"
 			octave_start_midi_val = Math.floor(note_midi_val / 12) * 12
-			{x1, x2} = piano_layout[scale_key_index]
+			{x1, x2} = piano_layout[octave_key_index]
 			x1 += octave_start_midi_val
 			x2 += octave_start_midi_val
 		else
