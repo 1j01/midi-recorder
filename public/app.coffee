@@ -13,6 +13,7 @@ fullscreen_button = document.getElementById("fullscreen-button")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
 note_gravity_direction_select = document.getElementById("note-gravity-direction-select")
 layout_select = document.getElementById("layout-select")
+theme_select = document.getElementById("theme-select")
 midi_range_left_input = document.getElementById("midi-range-min")
 midi_range_right_input = document.getElementById("midi-range-max")
 learn_range_or_apply_button = document.getElementById("learn-range-or-apply-button")
@@ -22,6 +23,7 @@ cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-but
 midi_devices_table = document.getElementById("midi-devices")
 
 # options are initialized from the URL & HTML later
+theme = "white-and-accent-color"
 layout = "equal"
 px_per_second = 20
 note_gravity_direction = "up"
@@ -65,6 +67,7 @@ save_options = ->
 		"gravity-direction": note_gravity_direction
 		"pixels-per-second": px_per_second
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
+		"theme": theme
 	keyvals =
 		for key, val of data
 			"#{key}=#{val}"
@@ -99,12 +102,16 @@ load_options = ->
 	if data["layout"]
 		layout = data["layout"].toLowerCase()
 		layout_select.value = layout
+	if data["theme"]
+		theme = data["theme"].toLowerCase()
+		theme_select.value = theme
 
 update_options_from_inputs = ->
 	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
 	px_per_second = parseFloat(px_per_second_input.value) || 20
 	note_gravity_direction = note_gravity_direction_select.value
 	layout = layout_select.value
+	theme = theme_select.value
 	# TODO: debounce saving
 	save_options()
 
@@ -114,6 +121,7 @@ midi_range_right_input.onchange = update_options_from_inputs
 px_per_second_input.onchange = update_options_from_inputs
 note_gravity_direction_select.onchange = update_options_from_inputs
 layout_select.onchange = update_options_from_inputs
+theme_select.onchange = update_options_from_inputs
 
 load_options()
 update_options_from_inputs()
@@ -412,8 +420,9 @@ do animate = ->
 		ctx.scale(-1, 1)
 
 	ctx.translate(0, time_axis_canvas_length*4/5)
-	ctx.fillStyle = "red"
-	ctx.fillRect(0, 1, pitch_axis_canvas_length, 1)
+	if theme in ["classic", "gaudy"]
+		ctx.fillStyle = "red"
+		ctx.fillRect(0, 1, pitch_axis_canvas_length, 1)
 	# ctx.globalAlpha = 0.2
 	
 	get_note_location_midi_space = (note_midi_val)->
@@ -454,13 +463,34 @@ do animate = ->
 		unless note.length?
 			# for ongoing (held) notes, display a bar at the bottom like a key
 			# TODO: maybe bend this?
-			ctx.fillStyle = "#800"
+			ctx.fillStyle =
+			switch theme
+				when "classic", "classic-gaudy"
+					"#a00"
+				when "white"
+					"rgba(255, 255, 255, 0.2)"
+				when "white-and-accent-color"
+					if is_accidental
+						"rgba(255, 50, 200, 0.5)"
+					else
+						"rgba(255, 255, 255, 0.2)"
 			ctx.fillRect(x, 2, w, 50000)
 		ctx.fillStyle =
-			if is_accidental
-				if note.length then "#f79" else "aqua"
-			else
-				if note.length then "yellow" else "lime"
+			switch theme
+				when "classic"
+					if note.length then "yellow" else "lime"
+				when "classic-gaudy"
+					if is_accidental
+						if note.length then "#f79" else "aqua"
+					else
+						if note.length then "yellow" else "lime"
+				when "white"
+					"white"
+				when "white-and-accent-color"
+					if is_accidental
+						"#f5a"
+					else
+						"white"
 		# ctx.strokeStyle = if note.length then "yellow" else "lime"
 		smooth = no
 		if smooth
