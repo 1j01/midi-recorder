@@ -478,14 +478,14 @@ do animate = ->
 			ctx.lineTo(bent_x + w, y2)
 
 			for pitch_bend, i in note.pitch_bends by -1
-				next_pitch_bend = note.pitch_bends[i + 1]
-				segment_end_time = next_pitch_bend?.time ? note.end_time ? now
+				next_pitch_bend = note.pitch_bends[i - 1]
+				segment_end_time = next_pitch_bend?.time ? note.start_time
 				y1 = (pitch_bend.time - now) / 1000 * px_per_second
 				y2 = (segment_end_time - now) / 1000 * px_per_second
 				bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
 				ctx.lineTo(bent_x + w, y1)
-				if y2 - y1 > 5
-					ctx.lineTo(bent_x, y2 - 4)
+				if y2 - y1 < -5
+					ctx.lineTo(bent_x + w, y2 + 4)
 			ctx.fill()
 		else
 			for pitch_bend, i in note.pitch_bends
