@@ -317,15 +317,17 @@ for is_accidental, i in piano_accidental_pattern
 octave_width_inches = 6 + 1/4 + 1/16
 natural_key_width_inches = octave_width_inches / 7
 accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
-group_of_3_width_inches = 2 + 1/2 + 1/8
-group_of_2_width_inches = 1 + 3/4 - 1/16
+group_of_3_span_inches = 2 + 1/2 + 1/8
+group_of_2_span_inches = 1 + 3/4 - 1/16
+
+group_of_3_span_size = group_of_3_span_inches / octave_width_inches * 12
+group_of_2_span_size = group_of_2_span_inches / octave_width_inches * 12
+natural_key_size = 12 / 7
+accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
 
 # TODO: would octave_key_index be a better name?
 # maybe index_in_octave, nth_note_in_octave
 piano_layout = for is_accidental, scale_key_index in piano_accidental_pattern
-
-	natural_key_size = 12 / 7
-	accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
 	if is_accidental
 		nth_accidental = nth_accidentals[scale_key_index]
 		is_group_of_3 = nth_accidental > 2 # OH BABY A TRIPLE!
@@ -334,13 +336,11 @@ piano_layout = for is_accidental, scale_key_index in piano_accidental_pattern
 		index_within_accidental_group = if is_group_of_3 then nth_accidental - 2 else nth_accidental
 		group_center =
 			natural_key_size * (if is_group_of_3 then 5 else 1.5)
-		group_width_inches = if is_group_of_3 then group_of_3_width_inches else group_of_2_width_inches
-		space_between_accidentals_inches =
-			(group_width_inches - accidentals_in_group * accidental_key_width_inches) /
+		group_span_size = if is_group_of_3 then group_of_3_span_size else group_of_2_span_size
+		gap_size =
+			(group_span_size - accidentals_in_group * accidental_key_size) /
 			gaps_for_naturals_in_group
-		accidental_group_spacing_of_key_centers =
-			(accidental_key_width_inches + space_between_accidentals_inches) /
-			natural_key_width_inches * natural_key_size
+		accidental_group_spacing_of_key_centers = (accidental_key_size + gap_size)
 		key_center_x =
 			group_center +
 			(index_within_accidental_group - (accidentals_in_group + 1) / 2) * accidental_group_spacing_of_key_centers
@@ -348,7 +348,6 @@ piano_layout = for is_accidental, scale_key_index in piano_accidental_pattern
 		x2 = key_center_x + accidental_key_size / 2
 	else
 		nth_natural = nth_naturals[scale_key_index]
-		
 		x1 = (nth_natural - 1) * natural_key_size
 		x2 = (nth_natural + 0) * natural_key_size
 	{x1, x2}
