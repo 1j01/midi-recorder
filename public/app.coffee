@@ -313,16 +313,25 @@ for is_accidental, i in piano_accidental_pattern
 	nth_naturals.push(nth_natural)
 
 # measurements of a keyboard
-octave_width_inches = 6 + 1/4 + 1/16
-natural_key_width_inches = octave_width_inches / 7
-accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
-group_of_3_span_inches = 2 + 1/2 + 1/8
-group_of_2_span_inches = 1 + 3/4 - 1/16
+# octave_width_inches = 6 + 1/4 + 1/16
+# natural_key_width_inches = octave_width_inches / 7
+# accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys sticks up out of
+# group_of_3_span_inches = 2 + 1/2 + 1/8
+# group_of_2_span_inches = 1 + 3/4 - 1/16
 
-group_of_3_span_size = group_of_3_span_inches / octave_width_inches * 12
-group_of_2_span_size = group_of_2_span_inches / octave_width_inches * 12
+# group_of_3_span_size = group_of_3_span_inches / octave_width_inches * 12
+# group_of_2_span_size = group_of_2_span_inches / octave_width_inches * 12
+# natural_key_size = 12 / 7
+# accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
+
+# console.log {group_of_2_span_size, group_of_3_span_size, accidental_key_size}
+# console.log group_of_2_span_size/natural_key_size, group_of_3_span_size/natural_key_size, accidental_key_size/natural_key_size
+# 1.8712871287128714 2.9108910891089113 0.6237623762376237
+
 natural_key_size = 12 / 7
-accidental_key_size = natural_key_size * accidental_key_width_inches / natural_key_width_inches
+accidental_key_size = natural_key_size * 0.6
+group_of_2_span_size = natural_key_size * 1.87
+group_of_3_span_size = natural_key_size * 2.91
 
 piano_layout = for is_accidental, octave_key_index in piano_accidental_pattern
 	if is_accidental
