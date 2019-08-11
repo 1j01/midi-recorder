@@ -320,6 +320,8 @@ accidental_key_width_inches = 1/2 + 1/16 # measured by the hole that the keys st
 group_of_3_width_inches = 2 + 1/2 + 1/8
 group_of_2_width_inches = 1 + 3/4 - 1/16
 
+# TODO: would octave_key_index be a better name?
+# maybe index_in_octave, nth_note_in_octave
 piano_layout = for is_accidental, scale_key_index in piano_accidental_pattern
 
 	natural_key_size = 12 / 7
@@ -390,9 +392,7 @@ do animate = ->
 	ctx.fillRect(0, 1, pitch_axis_canvas_length, 1)
 	# ctx.globalAlpha = 0.2
 	
-	get_note_location = (note_midi_val)->
-		# TODO: handle piano layout for viewport range
-		# (maybe break into two functions, or just multiple (or scale()?) by pitch_axis_canvas_length outside)
+	get_note_location_midi_space = (note_midi_val)->
 		scale_key_index = note_midi_val %% piano_accidental_pattern.length
 		is_accidental = piano_accidental_pattern[scale_key_index]
 		if layout is "piano"
@@ -403,15 +403,26 @@ do animate = ->
 		else
 			x1 = note_midi_val
 			x2 = note_midi_val + 1
-		x1 -= min_midi_val
-		x2 -= min_midi_val
-		w_scale = pitch_axis_canvas_length / (max_midi_val - min_midi_val + 1)
-		x1 *= w_scale
-		x2 *= w_scale
+		{x1, x2, is_accidental}
+	
+	if layout is "piano"
+		midi_x1 = get_note_location_midi_space(min_midi_val).x1
+		midi_x2 = get_note_location_midi_space(max_midi_val).x2
+	else
+		midi_x1 = min_midi_val
+		midi_x2 = max_midi_val
+
+	get_note_location_canvas_space = (note_midi_val)->
+		{x1, x2, is_accidental} = get_note_location_midi_space(note_midi_val)
+		x1 -= midi_x1
+		x2 -= midi_x1
+		scalar = pitch_axis_canvas_length / (midi_x2 - midi_x1 + 1)
+		x1 *= scalar
+		x2 *= scalar
 		{x: x1, w: x2 - x1, is_accidental}
 
 	for note in notes
-		{w, x, is_accidental} = get_note_location(note.key, pitch_axis_canvas_length)
+		{x, w, is_accidental} = get_note_location_canvas_space(note.key, pitch_axis_canvas_length)
 		unless note.length?
 			# for ongoing (held) notes, display a bar at the bottom like a key
 			# TODO: maybe bend this?
@@ -434,7 +445,7 @@ do animate = ->
 	if is_learning_range
 		for extremity_midi_val, i in learning_range
 			if extremity_midi_val?
-				{w, x} = get_note_location(extremity_midi_val, pitch_axis_canvas_length)
+				{x, w} = get_note_location_canvas_space(extremity_midi_val, pitch_axis_canvas_length)
 				ctx.fillStyle = "red"
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
