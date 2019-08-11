@@ -416,10 +416,11 @@ do animate = ->
 		midi_x1 = min_midi_val
 		midi_x2 = max_midi_val + 1
 
+	midi_to_canvas_scalar = pitch_axis_canvas_length / (midi_x2 - midi_x1)
 	get_note_location_canvas_space = (note_midi_val)->
 		{x1, x2, is_accidental} = get_note_location_midi_space(note_midi_val)
-		x1 = (x1 - midi_x1) / (midi_x2 - midi_x1) * pitch_axis_canvas_length
-		x2 = (x2 - midi_x1) / (midi_x2 - midi_x1) * pitch_axis_canvas_length
+		x1 = (x1 - midi_x1) * midi_to_canvas_scalar
+		x2 = (x2 - midi_x1) * midi_to_canvas_scalar
 		{x: x1, w: x2 - x1, is_accidental}
 
 	for note in notes
@@ -435,13 +436,39 @@ do animate = ->
 			# else
 				if note.length then "yellow" else "lime"
 		# ctx.strokeStyle = if note.length then "yellow" else "lime"
+		# smooth = no
+		# if smooth
+		# 	ctx.beginPath()
+		# 	for pitch_bend, i in note.pitch_bends
+		# 		next_pitch_bend = note.pitch_bends[i + 1]
+		# 		y = (pitch_bend.time - now) / 1000 * px_per_second
+		# 		# h = (note.length ? now - note.start_time) / 1000 * px_per_second
+		# 		end = next_pitch_bend?.time ? note.end_time ? now
+		# 		h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
+		# 		bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
+		# 		ctx.lineTo(bent_x, y)
+		# 		# ctx.lineTo(bent_x, y)
+		# 	ctx.lineTo(bent_x, y + h)
+		# 	ctx.lineTo(bent_x + w, y + h)
+
+		# 	for pitch_bend, i in note.pitch_bends by -1
+		# 		next_pitch_bend = note.pitch_bends[i + 1]
+		# 		y = (pitch_bend.time - now) / 1000 * px_per_second
+		# 		# h = (note.length ? now - note.start_time) / 1000 * px_per_second
+		# 		end = next_pitch_bend?.time ? note.end_time ? now
+		# 		# h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
+		# 		bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
+		# 		ctx.lineTo(bent_x + w, y)
+		# 	ctx.fill()
+		# else
 		for pitch_bend, i in note.pitch_bends
 			next_pitch_bend = note.pitch_bends[i + 1]
 			y = (pitch_bend.time - now) / 1000 * px_per_second
 			# h = (note.length ? now - note.start_time) / 1000 * px_per_second
 			end = next_pitch_bend?.time ? note.end_time ? now
 			h = (end - pitch_bend.time) / 1000 * px_per_second + 0.5
-			ctx.fillRect(x + pitch_bend.value * w * 2, y, w, h)
+			bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
+			ctx.fillRect(bent_x, y, w, h)
 			# console.log x, y, w, h
 	if is_learning_range
 		for extremity_midi_val, i in learning_range
