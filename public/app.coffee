@@ -185,6 +185,13 @@ global_pitch_bends = []
 current_sustain_active = off
 global_sustain_periods = []
 
+set_pitch_bend = (value)->
+	current_pitch_bend_value = value
+	pitch_bend = {time: performance.now(), value}
+	global_pitch_bends.push(pitch_bend)
+	current_notes.forEach (note, key)->
+		note.pitch_bends.push(pitch_bend)
+
 demo = ->
 	iid = setInterval ->
 		velocity = 127 # ??? range TBD - my MIDI keyboard isn't working right now haha, I'll have to restart my computer
@@ -252,6 +259,8 @@ demo = ->
 				current_notes.set(key, note)
 				notes.push(note)
 
+		# if Math.sin(t * 29) < 0
+		# 	set_pitch_bend(Math.sin(t * 4))
 
 		no_notes_recorded_message_el.hidden = true
 		export_midi_file_button.disabled = false
@@ -261,8 +270,7 @@ demo = ->
 # do demo
 window.demo = demo
 
-smi.on 'noteOn', (data)->
-	{event, key, velocity} = data
+smi.on 'noteOn', ({event, key, velocity})->
 	old_note = current_notes.get(key)
 	start_time = performance.now()
 	return if old_note
@@ -284,22 +292,15 @@ smi.on 'noteOn', (data)->
 		learning_range[1] = Math.max(learning_range[1] ? key, key)
 		[midi_range_left_input.value, midi_range_right_input.value] = learning_range
 
-smi.on 'noteOff', (data)->
-	{event, key} = data
+smi.on 'noteOff', ({event, key})->
 	note = current_notes.get(key)
 	if note
 		note.end_time = performance.now()
 		note.length = note.end_time - note.start_time
 	current_notes.delete(key)
 
-smi.on 'pitchWheel', (data)->
-	{event, value} = data
-	value /= 0x2000
-	current_pitch_bend_value = value
-	pitch_bend = {time: performance.now(), value}
-	global_pitch_bends.push(pitch_bend)
-	current_notes.forEach (note, key)->
-		note.pitch_bends.push(pitch_bend)
+smi.on 'pitchWheel', ({event, value})->
+	set_pitch_bend(value / 0x2000)
 
 smi.on 'global', (data)->
 	# if data.event not in ['clock', 'activeSensing']
@@ -461,7 +462,7 @@ do animate = ->
 			else
 				if note.length then "yellow" else "lime"
 		# ctx.strokeStyle = if note.length then "yellow" else "lime"
-		smooth = yes
+		smooth = no
 		if smooth
 			ctx.beginPath()
 			points_to_get_back_around_to = []
@@ -472,11 +473,21 @@ do animate = ->
 				y2 = (segment_end_time - now) / 1000 * px_per_second
 				h = y2 - y1 + 0.5
 				bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
+				segment_end_bent_x = x + (next_pitch_bend ? pitch_bend).value * 2 * midi_to_canvas_scalar
 				ctx.lineTo(bent_x, y1)
 				points_to_get_back_around_to.push({x: bent_x + w,y: y1})
+				# if y2 - y1 > 5 # and Math.abs(pitch_bend.value - next_pitch_bend?.value) < 0.1
+				# 	ctx.lineTo(bent_x, y2 - 4)
+					# points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 4})
 				if y2 - y1 > 5
-					ctx.lineTo(bent_x, y2 - 4)
-					points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 4})
+					ctx.lineTo((bent_x + segment_end_bent_x) / 2, y2 - 5)
+					points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 5})
+				if y2 - y1 > 10
+					ctx.lineTo((bent_x * 2 + segment_end_bent_x) / 3, y2 - 10)
+					points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 10})
+				if y2 - y1 > 20
+					ctx.lineTo(bent_x, y2 - 20)
+					points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 20})
 			ctx.lineTo(bent_x, y2)
 			ctx.lineTo(bent_x + w, y2)
 
