@@ -410,13 +410,13 @@ do animate = ->
 		midi_x2 = get_note_location_midi_space(max_midi_val).x2
 	else
 		midi_x1 = min_midi_val
-		midi_x2 = max_midi_val
+		midi_x2 = max_midi_val + 1
 
 	get_note_location_canvas_space = (note_midi_val)->
 		{x1, x2, is_accidental} = get_note_location_midi_space(note_midi_val)
 		x1 -= midi_x1
 		x2 -= midi_x1
-		scalar = pitch_axis_canvas_length / (midi_x2 - midi_x1 + 1)
+		scalar = pitch_axis_canvas_length / (midi_x2 - midi_x1)
 		x1 *= scalar
 		x2 *= scalar
 		{x: x1, w: x2 - x1, is_accidental}
