@@ -14,6 +14,7 @@ px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
 note_gravity_direction_select = document.getElementById("note-gravity-direction-select")
 layout_select = document.getElementById("layout-select")
 theme_select = document.getElementById("theme-select")
+hue_rotate_degrees_input = document.getElementById("hue-rotate-degrees")
 midi_range_left_input = document.getElementById("midi-range-min")
 midi_range_right_input = document.getElementById("midi-range-max")
 learn_range_or_apply_button = document.getElementById("learn-range-or-apply-button")
@@ -24,6 +25,7 @@ midi_devices_table = document.getElementById("midi-devices")
 
 # options are initialized from the URL & HTML later
 theme = "white-and-accent-color"
+hue_rotate_degrees = 0
 layout = "equal"
 px_per_second = 20
 note_gravity_direction = "up"
@@ -68,6 +70,7 @@ save_options = ->
 		"pixels-per-second": px_per_second
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 		"theme": theme
+		"hue-rotate": hue_rotate_degrees
 	keyvals =
 		for key, val of data
 			"#{key}=#{val}"
@@ -105,10 +108,14 @@ load_options = ->
 	if data["theme"]
 		theme = data["theme"].toLowerCase()
 		theme_select.value = theme
+	if data["hue-rotate"]
+		hue_rotate_degrees = parseFloat(data["hue-rotate"])
+		hue_rotate_degrees_input.value = hue_rotate_degrees
 
 update_options_from_inputs = ->
 	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
 	px_per_second = parseFloat(px_per_second_input.value) || 20
+	hue_rotate_degrees = parseFloat(hue_rotate_degrees_input.value) || 0
 	note_gravity_direction = note_gravity_direction_select.value
 	layout = layout_select.value
 	theme = theme_select.value
@@ -122,6 +129,7 @@ px_per_second_input.onchange = update_options_from_inputs
 note_gravity_direction_select.onchange = update_options_from_inputs
 layout_select.onchange = update_options_from_inputs
 theme_select.onchange = update_options_from_inputs
+hue_rotate_degrees_input.onchange = update_options_from_inputs
 
 load_options()
 update_options_from_inputs()
@@ -386,6 +394,10 @@ piano_layout = for is_accidental, octave_key_index in piano_accidental_pattern
 ctx = canvas.getContext "2d"
 
 do animate = ->
+	filter = "hue-rotate(#{hue_rotate_degrees}deg)"
+	if canvas.style.filter isnt filter
+		canvas.style.filter = filter
+
 	if is_learning_range
 		[min_midi_val, max_midi_val] = view_range_while_learning
 	else
@@ -471,7 +483,7 @@ do animate = ->
 					"rgba(255, 255, 255, 0.2)"
 				when "white-and-accent-color"
 					if is_accidental
-						"rgba(255, 50, 200, 0.5)"
+						"rgba(255, 0, 0, 0.5)"
 					else
 						"rgba(255, 255, 255, 0.2)"
 			ctx.fillRect(x, 2, w, 50000)
@@ -488,7 +500,7 @@ do animate = ->
 					"white"
 				when "white-and-accent-color"
 					if is_accidental
-						"#f5a"
+						"rgb(255, 0, 0)"
 					else
 						"white"
 		# ctx.strokeStyle = if note.length then "yellow" else "lime"
