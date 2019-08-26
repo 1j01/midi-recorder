@@ -14,6 +14,8 @@ px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
 note_gravity_direction_select = document.getElementById("note-gravity-direction-select")
 layout_select = document.getElementById("layout-select")
 theme_select = document.getElementById("theme-select")
+perspective_rotate_vertically_input = document.getElementById("perspective-rotate-vertically")
+perspective_distance_input = document.getElementById("perspective-distance")
 hue_rotate_degrees_input = document.getElementById("hue-rotate-degrees")
 midi_range_left_input = document.getElementById("midi-range-min")
 midi_range_right_input = document.getElementById("midi-range-max")
@@ -29,6 +31,8 @@ hue_rotate_degrees = 0
 layout = "equal"
 px_per_second = 20
 note_gravity_direction = "up"
+perspective_rotate_vertically = 0
+perspective_distance = 0
 selected_range = [0, 128]
 
 is_learning_range = false
@@ -68,6 +72,8 @@ save_options = ->
 		"layout": layout
 		"gravity-direction": note_gravity_direction
 		"pixels-per-second": px_per_second
+		"3d-vertical": perspective_rotate_vertically
+		"3d-distance": perspective_distance
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 		"theme": theme
 		"hue-rotate": hue_rotate_degrees
@@ -99,6 +105,12 @@ load_options = ->
 	if data["pixels-per-second"]
 		px_per_second = parseFloat(data["pixels-per-second"])
 		px_per_second_input.value = px_per_second
+	if data["3d-vertical"]
+		perspective_rotate_vertically = parseFloat(data["3d-vertical"])
+		perspective_rotate_vertically_input.value = perspective_rotate_vertically
+	if data["3d-distance"]
+		perspective_distance = parseFloat(data["3d-distance"])
+		perspective_distance_input.value = perspective_distance
 	if data["gravity-direction"]
 		note_gravity_direction = data["gravity-direction"].toLowerCase()
 		note_gravity_direction_select.value = note_gravity_direction
@@ -119,17 +131,29 @@ update_options_from_inputs = ->
 	note_gravity_direction = note_gravity_direction_select.value
 	layout = layout_select.value
 	theme = theme_select.value
+	
+	# canvas.style.transform = "translate(0, -20px) perspective(50vw) rotateX(-10deg) scale(0.9, 1)"
+	# canvas.style.transformOrigin = "50% 0%"
+	perspective_rotate_vertically = perspective_rotate_vertically_input.value
+	perspective_distance = perspective_distance_input.value
+	canvas.style.transform = "perspective(#{perspective_distance}vw) rotateX(-#{perspective_rotate_vertically}deg)"
+	canvas.style.transformOrigin = "50% 0%"
 	# TODO: debounce saving
 	save_options()
 
 # TODO: use oninput
-midi_range_left_input.onchange = update_options_from_inputs
-midi_range_right_input.onchange = update_options_from_inputs
-px_per_second_input.onchange = update_options_from_inputs
-note_gravity_direction_select.onchange = update_options_from_inputs
-layout_select.onchange = update_options_from_inputs
-theme_select.onchange = update_options_from_inputs
-hue_rotate_degrees_input.onchange = update_options_from_inputs
+for control_element in [
+	midi_range_left_input
+	midi_range_right_input
+	px_per_second_input
+	note_gravity_direction_select
+	layout_select
+	perspective_rotate_vertically_input
+	perspective_distance_input
+	theme_select
+	hue_rotate_degrees_input
+]
+	control_element.onchange = update_options_from_inputs
 
 load_options()
 update_options_from_inputs()
