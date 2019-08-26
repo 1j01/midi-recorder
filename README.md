@@ -45,8 +45,6 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 * Color notes by channel or instrument (doesn't matter much with a single keyboard)
 
-* Themes
-
 * Offline support with a service worker
 
 [app]: https://midi-recorder.web.app/

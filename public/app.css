@@ -239,3 +239,9 @@ a {
 	height: 1px;
 	overflow: hidden;
 }
+
+canvas {
+	transition: transform .2s ease;
+	transform: translate(0, -20px) perspective(50vw) rotateX(-10deg) scale(0.9, 1);
+	transform-origin: 50% 0%;
+}
