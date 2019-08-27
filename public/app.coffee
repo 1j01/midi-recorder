@@ -16,6 +16,7 @@ layout_select = document.getElementById("layout-select")
 theme_select = document.getElementById("theme-select")
 perspective_rotate_vertically_input = document.getElementById("perspective-rotate-vertically")
 perspective_distance_input = document.getElementById("perspective-distance")
+scale_x_input = document.getElementById("scale-x")
 hue_rotate_degrees_input = document.getElementById("hue-rotate-degrees")
 midi_range_left_input = document.getElementById("midi-range-min")
 midi_range_right_input = document.getElementById("midi-range-max")
@@ -33,6 +34,7 @@ px_per_second = 20
 note_gravity_direction = "up"
 perspective_rotate_vertically = 0
 perspective_distance = 0
+scale_x = 1
 selected_range = [0, 128]
 
 is_learning_range = false
@@ -74,6 +76,7 @@ save_options = ->
 		"pixels-per-second": px_per_second
 		"3d-vertical": perspective_rotate_vertically
 		"3d-distance": perspective_distance
+		"scale-x": scale_x
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 		"theme": theme
 		"hue-rotate": hue_rotate_degrees
@@ -111,6 +114,9 @@ load_options = ->
 	if data["3d-distance"]
 		perspective_distance = parseFloat(data["3d-distance"])
 		perspective_distance_input.value = perspective_distance
+	if data["scale-x"]
+		scale_x = parseFloat(data["scale-x"])
+		scale_x_input.value = scale_x
 	if data["gravity-direction"]
 		note_gravity_direction = data["gravity-direction"].toLowerCase()
 		note_gravity_direction_select.value = note_gravity_direction
@@ -136,7 +142,8 @@ update_options_from_inputs = ->
 	# canvas.style.transformOrigin = "50% 0%"
 	perspective_rotate_vertically = perspective_rotate_vertically_input.value
 	perspective_distance = perspective_distance_input.value
-	canvas.style.transform = "perspective(#{perspective_distance}vw) rotateX(-#{perspective_rotate_vertically}deg)"
+	scale_x = scale_x_input.value
+	canvas.style.transform = "perspective(#{perspective_distance}vw) rotateX(-#{perspective_rotate_vertically}deg) scaleX(#{scale_x})"
 	canvas.style.transformOrigin = "50% 0%"
 	# TODO: debounce saving
 	save_options()
@@ -150,6 +157,7 @@ for control_element in [
 	layout_select
 	perspective_rotate_vertically_input
 	perspective_distance_input
+	scale_x_input
 	theme_select
 	hue_rotate_degrees_input
 ]
