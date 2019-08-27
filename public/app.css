@@ -192,8 +192,8 @@ button svg {
 	margin-right: 5px;
 }
 button svg {
-	height: 1em;
-	width: 1em;
+	height: 1.5em;
+	width: 1.5em;
 }
 #edit-perspective-button svg {
 	height: 1.5em;
@@ -203,7 +203,13 @@ button svg {
 	height: 1.5em;
 	width: 3em;
 }
-#fullscreen-button svg path {
+#fullscreen-button svg {
+	height: 1em;
+	width: 1em;
+}
+#fullscreen-button svg path,
+#export-midi-file-button svg path,
+#export-midi-file-button svg ellipse {
 	fill: currentColor;
 }
 
