@@ -239,6 +239,38 @@ input:invalid {
 	color: white;
 }
 
+
+.select-wrapper {
+	position: relative;
+	display: inline-block;
+}
+.select-wrapper select {
+	display: inline-block;
+	min-width: 20ch;
+	padding: 4px 3px 3px 5px;
+	margin: 0;
+	font: inherit;
+	font-size: smaller;
+	line-height: 1.2;
+	background: #000;
+	color: white;
+	border: 1px solid rgba(255,255,255,0.4);
+}
+.select-wrapper::after {
+	content: "▼";
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	bottom: 1px;
+	font-size: 60%;
+	line-height: 2.8em;
+	padding: 0 7px;
+	background: #000;
+	color: white;
+	pointer-events: none;
+}
+
+
 a {
 	color: #00ceff;
 }
