@@ -195,6 +195,10 @@ button svg {
 	height: 1em;
 	width: 1em;
 }
+#edit-perspective-button svg {
+	height: 1.5em;
+	width: calc(1.5em * 1.5);
+}
 #learn-range-or-apply-button svg {
 	height: 1.5em;
 	width: 3em;
