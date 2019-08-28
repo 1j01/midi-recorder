@@ -251,29 +251,29 @@ a {
 	overflow: hidden;
 }
 
-#perspective-registration-svg {
-	display: block;
-	margin: auto;
-	touch-action: none;
-}
-
 #perspective-registration-container,
 #perspective-registration-svg,
 #perspective-registration-video {
 	width: 100%;
 }
-
 #perspective-registration-svg,
 #perspective-registration-video {
 	position: absolute;
 	left: 0;
 	top: 0;
 }
-#perspective-registration-svg {
-	z-index: 5;
-}
 #perspective-registration-video {
 	z-index: -5;
+}
+#perspective-registration-svg {
+	display: block;
+	margin: auto;
+	touch-action: none;
+	pointer-events: none;
+	z-index: 5;
+}
+.point-handle {
+	pointer-events: all;
 }
 
 #element-to-transform {
