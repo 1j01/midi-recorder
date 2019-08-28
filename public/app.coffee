@@ -14,7 +14,6 @@ px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
 note_gravity_direction_select = document.getElementById("note-gravity-direction-select")
 layout_select = document.getElementById("layout-select")
 theme_select = document.getElementById("theme-select")
-edit_perspective_button = document.getElementById("edit-perspective-button")
 # scale_x_input = document.getElementById("scale-x")
 hue_rotate_degrees_input = document.getElementById("hue-rotate-degrees")
 midi_range_left_input = document.getElementById("midi-range-min")
@@ -153,6 +152,7 @@ load_options()
 update_options_from_inputs()
 
 addEventListener("hashchange", load_options)
+
 
 midi_device_ids_to_rows = new Map
 

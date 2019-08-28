@@ -195,7 +195,7 @@ button svg {
 	height: 1.5em;
 	width: 1.5em;
 }
-#edit-perspective-button svg {
+#setup-3d-button svg {
 	height: 1.5em;
 	width: calc(1.5em * 1.5);
 }
@@ -257,4 +257,36 @@ canvas {
 	canvas {
 		transition: none;
 	}
+}
+
+#perspective-registration-svg {
+	display: block;
+	margin: auto;
+	touch-action: none;
+}
+
+.perspective-registration,
+#perspective-registration-svg,
+#video {
+	width: 100%;
+}
+
+#perspective-registration-svg,
+#video {
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+#element-to-transform {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 150px;
+	height: 120px;
+	border: 4px solid red;
+	transform-origin: 0 0;
+	pointer-events: none;
+	color: white;
+	background: rgba(0, 0, 0, 0.2);
 }
