@@ -1,7 +1,7 @@
-element_to_transform = document.getElementById('element-to-transform')
+element_to_transform = document.querySelector('.element-to-transform')
 svg_root = document.getElementById('perspective-registration-svg')
 polygon = document.getElementById('perspective-registration-polygon')
-video = document.getElementById('video')
+video = document.getElementById('perspective-registration-video')
 setup_3d_button = document.getElementById("setup-3d-button")
 enable_camera_checkbox = document.getElementById("enable-camera")
 
@@ -186,4 +186,5 @@ init_video = ->
 		videoGotTimeupdate = true
 	, true) ###
 
+# TODO: optional
 init_video()

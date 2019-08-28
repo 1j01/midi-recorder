@@ -250,32 +250,29 @@ a {
 	overflow: hidden;
 }
 
-canvas {
-	transition: transform .2s ease;
-}
-@media (prefers-reduced-motion: reduce) {
-	canvas {
-		transition: none;
-	}
-}
-
 #perspective-registration-svg {
 	display: block;
 	margin: auto;
 	touch-action: none;
 }
 
-.perspective-registration,
+#perspective-registration-container,
 #perspective-registration-svg,
-#video {
+#perspective-registration-video {
 	width: 100%;
 }
 
 #perspective-registration-svg,
-#video {
+#perspective-registration-video {
 	position: absolute;
 	left: 0;
 	top: 0;
+}
+#perspective-registration-svg {
+	z-index: 5;
+}
+#perspective-registration-video {
+	z-index: -5;
 }
 
 #element-to-transform {
