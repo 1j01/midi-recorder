@@ -1,12 +1,12 @@
-element_to_transform = document.querySelector('.element-to-transform')
-svg_root = document.getElementById('perspective-registration-svg')
-polygon = document.getElementById('perspective-registration-polygon')
-video = document.getElementById('perspective-registration-video')
+element_to_transform = document.querySelector(".element-to-transform")
+svg_root = document.getElementById("perspective-registration-svg")
+polygon = document.getElementById("perspective-registration-polygon")
+video = document.getElementById("perspective-registration-video")
 setup_3d_button = document.getElementById("setup-3d-button")
 enable_camera_checkbox = document.getElementById("enable-camera")
 
 setup_3d_button.onclick = ->
-	
+	# TODO
 
 transform_2d = do ->
 	# from https://jsfiddle.net/dFrHS/549
@@ -42,9 +42,9 @@ transform_2d = do ->
 		]
 		v = multmv(adj(m), [x4, y4, 1])
 		return multmm(m, [
-			v[0], 0, 0
-			0, v[1], 0
-			0, 0, v[2]
+			v[0], 0   , 0
+			0   , v[1], 0
+			0   , 0   , v[2]
 		])
 	general_2d_projection = (
 		x1s, y1s, x1d, y1d
@@ -65,10 +65,10 @@ transform_2d = do ->
 		for i in [0...9]
 			t[i] = t[i]/t[8]
 		t = [
-			t[0], t[3], 0, t[6]
-			t[1], t[4], 0, t[7]
-			0   , 0   , 1, 0   
-			t[2], t[5], 0, t[8]
+			t[0], t[3], 0,   t[6]
+			t[1], t[4], 0,   t[7]
+			0   , 0   , 1,   0   
+			t[2], t[5], 0,   t[8]
 		]
 		t = "matrix3d(#{t.join(", ")})"
 		el.style.transform = t
@@ -76,27 +76,23 @@ transform_2d = do ->
 	return transform_2d
 
 init_polygon_ui = (on_points_change)->
-	sns = "http://www.w3.org/2000/svg"
-	xns = "http://www.w3.org/1999/xlink"
+	svg_ns = "http://www.w3.org/2000/svg"
+	xlink_ns = "http://www.w3.org/1999/xlink"
 	root_matrix = null
-	original_points = []
-	transformed_points = []
 	point_handles = []
 
 	for i in [0...polygon.points.numberOfItems]
-		handle = document.createElementNS(sns, 'use')
+		handle = document.createElementNS(svg_ns, "use")
 		point = polygon.points.getItem(i)
 		newPoint = svg_root.createSVGPoint()
 
-		handle.setAttributeNS(xns, 'href', '#point-handle')
-		handle.setAttribute('class', 'point-handle')
+		handle.setAttributeNS(xlink_ns, "href", "#point-handle")
+		handle.setAttribute("class", "point-handle")
 
 		handle.x.baseVal.value = newPoint.x = point.x
 		handle.y.baseVal.value = newPoint.y = point.y
 
-		handle.setAttribute('data-index', i)
-
-		original_points.push(newPoint)
+		handle.setAttribute("data-index", i)
 
 		svg_root.appendChild(handle)
 
@@ -105,20 +101,16 @@ init_polygon_ui = (on_points_change)->
 	apply_transforms = (event)->
 		root_matrix = svg_root.getScreenCTM()
 
-		transformed_points = original_points.map((point)->
-			return point.matrixTransform(root_matrix)
-		)
+		interact(".point-handle", context: document).draggable()
 
-		interact('.point-handle', { context: document }).draggable()
+	interact(svg_root, context: document).on("down", apply_transforms)
 
-	interact(svg_root, { context: document }).on('down', apply_transforms)
-
-	interact('.point-handle', { context: document })
+	interact(".point-handle", context: document)
 		.draggable(
 			onstart: (event)->
-				svg_root.setAttribute('class', 'dragging')
+				svg_root.setAttribute("class", "dragging")
 			onmove: (event)->
-				i = event.target.getAttribute('data-index')|0
+				i = event.target.getAttribute("data-index")|0
 				point = polygon.points.getItem(i)
 
 				point.x += event.dx / root_matrix.a
@@ -129,21 +121,17 @@ init_polygon_ui = (on_points_change)->
 
 				on_points_change()
 			onend: (event)->
-				svg_root.setAttribute('class', '')
+				svg_root.setAttribute("class", "")
 			restrict: { restriction: document.rootElement }
 		)
-		#.styleCursor(off)
 
-
-	document.addEventListener('dragstart', (event)->
+	document.addEventListener "dragstart", (event)->
 		event.preventDefault()
-	)
 	
 	get_points = ->
-		return point_handles.map((pointHandle)->
+		return point_handles.map (pointHandle)->
 			x: pointHandle.x.baseVal.value
 			y: pointHandle.y.baseVal.value
-		)
 	
 	return get_points
 
@@ -165,26 +153,16 @@ init_video = ->
 	constraints = { audio: false, video: { width: 1280, height: 720 } } 
 
 	navigator.mediaDevices.getUserMedia(constraints)
-	.then((mediaStream)->
-		video = document.querySelector('video')
+	.then (mediaStream)->
+		video = document.querySelector("video")
 		video.srcObject = mediaStream
 		video.onloadedmetadata = (e)->
 			video.play()
-	)
-	.catch((err)->
+	.catch (err)->
 		console.log(err.name + ": " + err.message)
 		if err.name is "NotReadableError"
+			# TODO: message on page
 			alert("Can't access camera - it may be in use. If you're using it in OBS, go into the source's Properties and say Deactivate.")
-	)
-
-	### let videoPlaying = false, videoGotTimeupdate = false
-	video.addEventListener('playing', ->
-		videoPlaying = true
-	, true)
-
-	video.addEventListener('timeupdate', ->
-		videoGotTimeupdate = true
-	, true) ###
 
 # TODO: optional
 init_video()
