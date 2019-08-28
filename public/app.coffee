@@ -2,6 +2,28 @@
 for el in document.querySelectorAll("noscript")
 	el.remove() # for screenreaders (maybe should be earlier than this asynchronously loaded coffeescript)
 
+do enhance_selects = ->
+	select_wrappers = Array.from(document.querySelectorAll(".select-wrapper"))
+	for select_wrapper in select_wrappers
+		select = select_wrapper.querySelector("select")
+		additions = Array.from(select_wrapper.querySelectorAll("div"))
+		ui = document.createElement("div") # should this be a label?
+		select_wrapper.appendChild(ui)
+		ui.classList.add("select-ui")
+		ui.setAttribute("aria-hidden", "true")
+		ui_options =
+			for option in select.options
+				ui_option = document.createElement("div")
+				ui_option.classList.add("select-ui-option")
+				ui.appendChild(ui_option)
+				ui_option.innerText = option.innerText
+				ui_option.dataset.value = option.value
+				ui_option
+		for addition in additions
+			for ui_option in ui_options when ui_option.dataset.value is addition.dataset.value
+				if addition.classList.contains("prepend-to-option")
+					ui_option.prepend(addition)
+
 el_to_replace_content_of_on_error = document.querySelector(".replace-content-on-error") ? document.body
 fullscreen_target_el = document.getElementById("fullscreen-target")
 canvas = document.getElementById("midi-viz-canvas")

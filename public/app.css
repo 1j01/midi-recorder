@@ -270,6 +270,13 @@ input:invalid {
 	pointer-events: none;
 }
 
+.select-ui {
+	
+}
+.select-ui-option {
+	display: flex;
+	flex-direction: row;
+}
 
 a {
 	color: #00ceff;
