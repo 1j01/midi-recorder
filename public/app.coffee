@@ -182,6 +182,8 @@ export_midi_file_button.disabled = true
 
 current_pitch_bend_value = 0
 global_pitch_bends = []
+current_sustain_active = off
+global_sustain_periods = []
 
 demo = ->
 	iid = setInterval ->
@@ -264,10 +266,13 @@ smi.on 'noteOn', (data)->
 	old_note = current_notes.get(key)
 	start_time = performance.now()
 	return if old_note
-	note = {key, velocity, start_time, pitch_bends: [{
-		time: start_time,
-		value: current_pitch_bend_value,
-	}]}
+	note = {
+		key, velocity, start_time,
+		pitch_bends: [{
+			time: start_time,
+			value: current_pitch_bend_value,
+		}],
+	}
 	current_notes.set(key, note)
 	notes.push(note)
 
@@ -295,6 +300,20 @@ smi.on 'pitchWheel', (data)->
 	global_pitch_bends.push(pitch_bend)
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
+
+smi.on 'global', (data)->
+	# if data.event not in ['clock', 'activeSensing']
+	# 	console.log(data)
+	if data.event is "cc" and data.cc is 64
+		active = data.value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
+		if current_sustain_active and not active
+			global_sustain_periods[global_sustain_periods.length - 1]?.end_time = performance.now()
+		else if active and not current_sustain_active
+			global_sustain_periods.push({
+				start_time: performance.now(),
+				end_time: undefined,
+			})
+		current_sustain_active = active
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
 
@@ -423,6 +442,12 @@ do animate = ->
 		x2 = (x2 - midi_x1) * midi_to_canvas_scalar
 		{x: x1, w: x2 - x1, is_accidental}
 
+	for sustain_period, i in global_sustain_periods
+		start_y = (sustain_period.start_time - now) / 1000 * px_per_second
+		end_y = ((sustain_period.end_time ? now) - now) / 1000 * px_per_second
+		ctx.fillStyle = "rgba(128, 128, 128, 0.3)"
+		ctx.fillRect(0, start_y, pitch_axis_canvas_length, end_y - start_y)
+
 	for note in notes
 		{x, w, is_accidental} = get_note_location_canvas_space(note.key, pitch_axis_canvas_length)
 		unless note.length?
@@ -515,11 +540,31 @@ export_midi_file_button.onclick = ->
 			type: MIDIEvents.EVENT_MIDI
 			subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
 			channel: 0
-			param1: note.key
+			param1: note.key # TODO: ??
 			param2: (pitch_bend.value + 1) * 64
 #			param2: ((pitch_bend.value + 1) * 0x2000) / 128
 #			param2: pitch_bend.value * 0x2000 / 128 + 64
 #			param2: pitch_bend.value * 0x1000 / 64 + 64
+		})
+
+	for sustain_period in global_sustain_periods
+		events.push({
+			# delta: <computed later>
+			_time: sustain_period.start_time
+			type: MIDIEvents.EVENT_MIDI
+			subtype: MIDIEvents.EVENT_MIDI_CONTROLLER
+			channel: 0
+			param1: 64
+			param2: 127
+		})
+		events.push({
+			# delta: <computed later>
+			_time: sustain_period.end_time ? performance.now()
+			type: MIDIEvents.EVENT_MIDI
+			subtype: MIDIEvents.EVENT_MIDI_CONTROLLER
+			channel: 0
+			param1: 64
+			param2: 0
 		})
 
 	events.sort((a, b)-> a._time - b._time)
