@@ -41,6 +41,11 @@ body {
 	left: 0;
 }
 
+#fullscreen-target,
+#midi-viz-canvas {
+	pointer-events: none;
+}
+
 @media (max-width: 75em) and (max-height: 55em), print {
 	#fork-me-on-github {
 		display: none;
