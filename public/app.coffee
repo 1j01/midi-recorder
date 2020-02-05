@@ -26,6 +26,137 @@ apply_text_el = document.getElementById("apply-midi-range-button-text")
 cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-button")
 midi_devices_table = document.getElementById("midi-devices")
 
+instrument_names = [
+	"1. Acoustic Grand Piano"
+	"2. Bright Acoustic Piano"
+	"3. Electric Grand Piano"
+	"4. Honky-tonk Piano"
+	"5. Electric Piano 1"
+	"6. Electric Piano 2"
+	"7. Harpsichord"
+	"8. Clavi"
+	"9. Celesta"
+	"10. Glockenspiel"
+	"11. Music Box"
+	"12. Vibraphone"
+	"13. Marimba"
+	"14. Xylophone"
+	"15. Tubular Bells"
+	"16. Dulcimer"
+	"17. Drawbar Organ"
+	"18. Percussive Organ"
+	"19. Rock Organ"
+	"20. Church Organ"
+	"21. Reed Organ"
+	"22. Accordion"
+	"23. Harmonica"
+	"24. Tango Accordion"
+	"25. Acoustic Guitar (nylon)"
+	"26. Acoustic Guitar (steel)"
+	"27. Electric Guitar (jazz)"
+	"28. Electric Guitar (clean)"
+	"29. Electric Guitar (muted)"
+	"30. Overdriven Guitar"
+	"31. Distortion Guitar"
+	"32. Guitar harmonics"
+	"33. Acoustic Bass"
+	"34. Electric Bass (finger)"
+	"35. Electric Bass (pick)"
+	"36. Fretless Bass"
+	"37. Slap Bass 1"
+	"38. Slap Bass 2"
+	"39. Synth Bass 1"
+	"40. Synth Bass 2"
+	"41. Violin"
+	"42. Viola"
+	"43. Cello"
+	"44. Contrabass"
+	"45. Tremolo Strings"
+	"46. Pizzicato Strings"
+	"47. Orchestral Harp"
+	"48. Timpani"
+	"49. String Ensemble 1"
+	"50. String Ensemble 2"
+	"51. SynthStrings 1"
+	"52. SynthStrings 2"
+	"53. Choir Aahs"
+	"54. Voice Oohs"
+	"55. Synth Voice"
+	"56. Orchestra Hit"
+	"57. Trumpet"
+	"58. Trombone"
+	"59. Tuba"
+	"60. Muted Trumpet"
+	"61. French Horn"
+	"62. Brass Section"
+	"63. SynthBrass 1"
+	"64. SynthBrass 2"
+	"65. Soprano Sax"
+	"66. Alto Sax"
+	"67. Tenor Sax"
+	"68. Baritone Sax"
+	"69. Oboe"
+	"70. English Horn"
+	"71. Bassoon"
+	"72. Clarinet"
+	"73. Piccolo"
+	"74. Flute"
+	"75. Recorder"
+	"76. Pan Flute"
+	"77. Blown Bottle"
+	"78. Shakuhachi"
+	"79. Whistle"
+	"80. Ocarina"
+	"81. Lead 1 (square)"
+	"82. Lead 2 (sawtooth)"
+	"83. Lead 3 (calliope)"
+	"84. Lead 4 (chiff)"
+	"85. Lead 5 (charang)"
+	"86. Lead 6 (voice)"
+	"87. Lead 7 (fifths)"
+	"88. Lead 8 (bass + lead)"
+	"89. Pad 1 (new age)"
+	"90. Pad 2 (warm)"
+	"91. Pad 3 (polysynth)"
+	"92. Pad 4 (choir)"
+	"93. Pad 5 (bowed)"
+	"94. Pad 6 (metallic)"
+	"95. Pad 7 (halo)"
+	"96. Pad 8 (sweep)"
+	"97. FX 1 (rain)"
+	"98. FX 2 (soundtrack)"
+	"99. FX 3 (crystal)"
+	"100. FX 4 (atmosphere)"
+	"101. FX 5 (brightness)"
+	"102. FX 6 (goblins)"
+	"103. FX 7 (echoes)"
+	"104. FX 8 (sci-fi)"
+	"105. Sitar"
+	"106. Banjo"
+	"107. Shamisen"
+	"108. Koto"
+	"109. Kalimba"
+	"110. Bag pipe"
+	"111. Fiddle"
+	"112. Shanai"
+	"113. Tinkle Bell"
+	"114. Agogo"
+	"115. Steel Drums"
+	"116. Woodblock"
+	"117. Taiko Drum"
+	"118. Melodic Tom"
+	"119. Synth Drum"
+	"120. Reverse Cymbal"
+	"121. Guitar Fret Noise"
+	"122. Breath Noise"
+	"123. Seashore"
+	"124. Bird Tweet"
+	"125. Telephone Ring"
+	"126. Helicopter"
+	"127. Applause"
+	"128. Gunshot"
+]
+
 # options are initialized from the URL & HTML later
 theme = "white-and-accent-color"
 hue_rotate_degrees = 0
@@ -234,6 +365,8 @@ current_pitch_bend_value = 0
 global_pitch_bends = []
 current_sustain_active = off
 global_sustain_periods = []
+current_instrument = undefined
+global_instrument_selects = []
 
 set_pitch_bend = (value)->
 	current_pitch_bend_value = value
@@ -351,6 +484,10 @@ smi.on 'noteOff', ({event, key})->
 
 smi.on 'pitchWheel', ({event, value})->
 	set_pitch_bend(value / 0x2000)
+
+smi.on 'programChange', (data)->
+	current_instrument = data.program
+	global_instrument_selects.push({time: performance.now(), value: current_instrument})
 
 smi.on 'global', (data)->
 	# if data.event not in ['clock', 'activeSensing']
@@ -498,11 +635,37 @@ do animate = ->
 		x2 = (x2 - midi_x1) * midi_to_canvas_scalar
 		{x: x1, w: x2 - x1, is_accidental}
 
-	for sustain_period, i in global_sustain_periods
+	for sustain_period in global_sustain_periods
 		start_y = (sustain_period.start_time - now) / 1000 * px_per_second
 		end_y = ((sustain_period.end_time ? now) - now) / 1000 * px_per_second
 		ctx.fillStyle = "rgba(128, 128, 128, 0.3)"
 		ctx.fillRect(0, start_y, pitch_axis_canvas_length, end_y - start_y)
+
+	for instrument_select in global_instrument_selects
+		y = (instrument_select.time - now) / 1000 * px_per_second
+		# text = "Instrument: #{instrument_select.value}"
+		text = instrument_names[instrument_select.value]
+
+		# bar line
+		bar_thickness = 2
+		ctx.fillStyle = "rgba(128, 128, 128, 0.6)"
+		ctx.fillRect(0, y, pitch_axis_canvas_length, bar_thickness)
+
+		# text metrics
+		font_size = 16
+		ctx.font = "#{font_size}px sans-serif"
+		ctx.textBaseline = "top"
+		text_width = ctx.measureText(text).width * 2
+		text_background_y = y + bar_thickness
+		text_y = y + 5
+
+		# text background rectangle
+		ctx.fillStyle = "rgba(0, 0, 0, 1)"
+		ctx.fillRect(0, y + bar_thickness, text_width, font_size + (text_y - text_background_y))
+		
+		# text
+		ctx.fillStyle = "rgba(128, 128, 128, 1)"
+		ctx.fillText(text, 5, text_y)
 
 	for note in notes
 		{x, w, is_accidental} = get_note_location_canvas_space(note.key, pitch_axis_canvas_length)
@@ -640,6 +803,16 @@ export_midi_file_button.onclick = ->
 #			param2: ((pitch_bend.value + 1) * 0x2000) / 128
 #			param2: pitch_bend.value * 0x2000 / 128 + 64
 #			param2: pitch_bend.value * 0x1000 / 64 + 64
+		})
+
+	for instrument_select in global_instrument_selects
+		events.push({
+			# delta: <computed later>
+			_time: instrument_select.time
+			type: MIDIEvents.EVENT_MIDI
+			subtype: MIDIEvents.EVENT_MIDI_PROGRAM_CHANGE
+			channel: 0
+			param1: instrument_select.value
 		})
 
 	for sustain_period in global_sustain_periods
