@@ -540,7 +540,7 @@ export_midi_file_button.onclick = ->
 			type: MIDIEvents.EVENT_MIDI
 			subtype: MIDIEvents.EVENT_MIDI_PITCH_BEND
 			channel: 0
-			param1: note.key # TODO: ??
+			param1: 0
 			param2: (pitch_bend.value + 1) * 64
 #			param2: ((pitch_bend.value + 1) * 0x2000) / 128
 #			param2: pitch_bend.value * 0x2000 / 128 + 64
