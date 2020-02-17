@@ -12,6 +12,10 @@ body {
 	overflow: hidden;
 }
 
+canvas {
+background: yellow;
+}
+
 .outer-container {
 	display: flex;
 	height: 100%;
