@@ -84,7 +84,7 @@
 		</div>
 		<div id="controls">
 			<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
-			<fieldset id="viz-controls">
+			<fieldset id="viz-controls" class="ui-section">
 				<legend>Visualization</legend>
 				<div class="control-row">
 					<button class="button-functional" id="fullscreen-button">
@@ -100,14 +100,43 @@
 					</button>
 				</div>
 				<div class="control-row">
-					<label>
-						Key Layout:
-						<select id="layout-select">
-							<option value="equal" selected>Equal Notes</option>
-							<option value="piano">Piano Keys</option>
-							<!-- <option value="piano-non-overlapping">Piano Non-Overlapping</option> -->
-						</select>
-					</label>
+					<fieldset class="labeled-radio-buttons">
+						<legend>
+							Key Layout:
+						</legend>
+						<label>
+							<input type="radio" name="key-layout" value="equal"/>
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+								<g color="#000">
+									<path fill="#fff" d="M1 .75h2v14.5H1z" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+									<path fill="red" d="M3 .75h2v14.5H3z" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+									<path fill="#fff" d="M5 .75h2v14.5H5z" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+									<path fill="red" d="M7 .75h2v14.5H7z" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+									<path fill="#fff" d="M9 .75h2v14.5H9z" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+									<path fill="red" d="M11 .75h2v14.5h-2z" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+									<path fill="#fff" d="M13 .5h2V15h-2z" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+									<path d="M1 12.5C1 13 1 14 2 14h12c1 0 1-1 1-1.5l.5 2.5H.5z" opacity=".3" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+									<rect width="15" height="15" x=".5" y=".5" fill="none" stroke="#000" stroke-width="1.002" overflow="visible" rx="1" ry="1" style="isolation:auto;mix-blend-mode:normal"/>
+								</g>
+							</svg>
+							Equal Notes
+						</label>
+						<label>
+							<input type="radio" name="key-layout" value="piano"/>
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+								<rect width="15" height="15" x=".5" y=".5" fill="#fff" stroke="#000" stroke-width="1.002" color="#000" overflow="visible" rx="1" ry="1" style="isolation:auto;mix-blend-mode:normal"/>
+								<path fill="#b3b3b3" d="M1 12.5C1 13 1 14 2 14h12c1 0 1-1 1-1.5l.5 2.5H.5z" color="#000" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+								<g fill="none" stroke="#000">
+									<path d="M4.25 15.5V.5M8 15.5V.5M11.75 15.5V.5"/>
+								</g>
+								<rect width="15" height="15" x=".5" y=".5" fill="none" stroke="#000" stroke-width="1.002" color="#000" overflow="visible" rx="1" ry="1" style="isolation:auto;mix-blend-mode:normal"/>
+								<g color="#000">
+									<path d="M11 .5h2.5v9H11zM2.5.5H5v9H2.5zM6.75.5h2.5v9h-2.5z" overflow="visible" style="isolation:auto;mix-blend-mode:normal"/>
+								</g>
+							</svg>
+							Piano Keys
+						</label>
+					</fieldset>
 				</div>
 				<div class="control-row">
 					<label>
@@ -199,7 +228,7 @@
 					</label>
 				</div>
 			</fieldset>
-			<fieldset id="midi-exporting">
+			<fieldset id="midi-exporting" class="ui-section">
 				<legend>Export</legend>
 				<button class="button-functional" id="export-midi-file-button" disabled>
 					<span class="button-visual">

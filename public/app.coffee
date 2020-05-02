@@ -12,7 +12,7 @@ export_midi_file_button = document.getElementById("export-midi-file-button")
 fullscreen_button = document.getElementById("fullscreen-button")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
 note_gravity_direction_select = document.getElementById("note-gravity-direction-select")
-layout_select = document.getElementById("layout-select")
+layout_radio_buttons = Array.from(document.getElementsByName("key-layout"))
 theme_select = document.getElementById("theme-select")
 perspective_rotate_vertically_input = document.getElementById("perspective-rotate-vertically")
 perspective_distance_input = document.getElementById("perspective-distance")
@@ -253,7 +253,7 @@ load_options = ->
 		note_gravity_direction_select.value = note_gravity_direction
 	if data["layout"]
 		layout = data["layout"].toLowerCase()
-		layout_select.value = layout
+		layout_radio_buttons.find((radio)=> radio.value is layout).checked = true
 	if data["theme"]
 		theme = data["theme"].toLowerCase()
 		theme_select.value = theme
@@ -266,7 +266,7 @@ update_options_from_inputs = ->
 	px_per_second = parseFloat(px_per_second_input.value) || 20
 	hue_rotate_degrees = parseFloat(hue_rotate_degrees_input.value) || 0
 	note_gravity_direction = note_gravity_direction_select.value
-	layout = layout_select.value
+	layout = layout_radio_buttons.find((radio)=> radio.checked).value
 	theme = theme_select.value
 	
 	perspective_rotate_vertically = perspective_rotate_vertically_input.value
@@ -286,7 +286,7 @@ for control_element in [
 	midi_range_right_input
 	px_per_second_input
 	note_gravity_direction_select
-	layout_select
+	layout_radio_buttons...
 	perspective_rotate_vertically_input
 	perspective_distance_input
 	scale_x_input
