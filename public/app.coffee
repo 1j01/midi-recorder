@@ -14,7 +14,9 @@ px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
 note_gravity_direction_select = document.getElementById("note-gravity-direction-select")
 layout_select = document.getElementById("layout-select")
 theme_select = document.getElementById("theme-select")
-# scale_x_input = document.getElementById("scale-x")
+perspective_rotate_vertically_input = document.getElementById("perspective-rotate-vertically")
+perspective_distance_input = document.getElementById("perspective-distance")
+scale_x_input = document.getElementById("scale-x")
 hue_rotate_degrees_input = document.getElementById("hue-rotate-degrees")
 midi_range_left_input = document.getElementById("midi-range-min")
 midi_range_right_input = document.getElementById("midi-range-max")
@@ -30,7 +32,9 @@ hue_rotate_degrees = 0
 layout = "equal"
 px_per_second = 20
 note_gravity_direction = "up"
-# scale_x = 1
+perspective_rotate_vertically = 0
+perspective_distance = 0
+scale_x = 1
 selected_range = [0, 128]
 
 is_learning_range = false
@@ -70,7 +74,9 @@ save_options = ->
 		"layout": layout
 		"gravity-direction": note_gravity_direction
 		"pixels-per-second": px_per_second
-		# "scale-x": scale_x
+		"3d-vertical": perspective_rotate_vertically
+		"3d-distance": perspective_distance
+		"scale-x": scale_x
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 		"theme": theme
 		"hue-rotate": hue_rotate_degrees
@@ -102,9 +108,15 @@ load_options = ->
 	if data["pixels-per-second"]
 		px_per_second = parseFloat(data["pixels-per-second"])
 		px_per_second_input.value = px_per_second
-	# if data["scale-x"]
-	# 	scale_x = parseFloat(data["scale-x"])
-	# 	scale_x_input.value = scale_x
+	if data["3d-vertical"]
+		perspective_rotate_vertically = parseFloat(data["3d-vertical"])
+		perspective_rotate_vertically_input.value = perspective_rotate_vertically
+	if data["3d-distance"]
+		perspective_distance = parseFloat(data["3d-distance"])
+		perspective_distance_input.value = perspective_distance
+	if data["scale-x"]
+		scale_x = parseFloat(data["scale-x"])
+		scale_x_input.value = scale_x
 	if data["gravity-direction"]
 		note_gravity_direction = data["gravity-direction"].toLowerCase()
 		note_gravity_direction_select.value = note_gravity_direction
@@ -126,11 +138,13 @@ update_options_from_inputs = ->
 	layout = layout_select.value
 	theme = theme_select.value
 	
+	perspective_rotate_vertically = perspective_rotate_vertically_input.value
+	perspective_distance = perspective_distance_input.value
 	# canvas.style.transform = "translate(0, -20px) perspective(50vw) rotateX(-10deg) scale(0.9, 1)"
 	# canvas.style.transformOrigin = "50% 0%"
-	# scale_x = scale_x_input.value
-	# canvas.style.transform = "perspective(#{perspective_distance}vw) rotateX(-#{perspective_rotate_vertically}deg) scaleX(#{scale_x})"
-	# canvas.style.transformOrigin = "50% 0%"
+	scale_x = scale_x_input.value
+	canvas.style.transform = "perspective(#{perspective_distance}vw) rotateX(-#{perspective_rotate_vertically}deg) scaleX(#{scale_x})"
+	canvas.style.transformOrigin = "50% 0%"
 
 	# TODO: debounce saving
 	save_options()
@@ -142,7 +156,9 @@ for control_element in [
 	px_per_second_input
 	note_gravity_direction_select
 	layout_select
-	# scale_x_input
+	perspective_rotate_vertically_input
+	perspective_distance_input
+	scale_x_input
 	theme_select
 	hue_rotate_degrees_input
 ]

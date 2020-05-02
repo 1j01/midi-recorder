@@ -1,3 +1,4 @@
+###
 element_to_transform = document.querySelector(".element-to-transform")
 svg_root = document.getElementById("perspective-registration-svg")
 polygon = document.getElementById("perspective-registration-polygon")
@@ -166,3 +167,4 @@ init_video = ->
 
 # TODO: optional
 init_video()
+###

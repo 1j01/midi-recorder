@@ -163,7 +163,7 @@
 					</button>
 				</div>
 				<div class="control-row">
-					<button class="button-functional" id="setup-3d-button">
+					<!-- <button class="button-functional" id="setup-3d-button">
 						<span class="button-visual">
 							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="16" viewBox="0 0 24 16">
 								<path fill="#fff" d="M2.7414 2.3942c.2505-.3377.6833-.545 1.1732-.5496.4055-.0006.8116 0 1.2172-.0003C5.728 5.11 6.228 7.8549 6.6549 10.1937c.0223.1348.1891.2362.3493.287.2633.0901.5405.0607.8076.0658.1658 1.1462.4839 3.3434.6138 4.2444-.37-.001-.7398-.0002-1.1099-.0005-.178-.0008-.3562.0048-.5362-.0142-.4312-.0417-.8653-.1868-1.1816-.4094-.1028-.07-.1849-.1504-.2671-.2307-.0878-.2996-.4688-1.7782-.5619-2.1218-.6154-2.3395-1.3457-5.1142-2.2252-8.4583-.113-.4197-.041-.8455.1977-1.1618M8.5833 1.8443h1.6909c.1506 3.2664.2755 6.0113.383 8.3506.005.1395.1677.2416.327.2915.2472.0837.5211.0549.7816.06.0093 1.1463.0263 3.222.0332 4.1312a1818.001 1818.001 0 0 0-2.921 0c-.1149-.9093-.3757-2.9849-.5199-4.1311.235-.002.4838.016.6957-.0601.1524-.05.3021-.1526.2865-.2927-.2114-2.3388-.4616-5.0836-.757-8.3494M13.7257 1.8443c.5974 0 1.1949.0003 1.7924 0-.3042 3.266-.5616 6.0108-.7799 8.35-.015.1403.135.2428.288.2927.2194.078.477.0564.7196.0595-.1483 1.1462-.4165 3.2218-.5346 4.1311-.981-.0006-1.9623-.0009-2.9434 0 .0093-.9092.032-2.9849.0443-4.1311.2596-.0002.5375.0164.7743-.086.1313-.053.2546-.1485.2561-.2668.108-2.3388.2326-5.0836.3832-8.3494M18.9696 1.8443c.3948.0016.7909-.003 1.185.0023.7405.03 1.3.5393 1.3484 1.1976.0359.3024-.0794.621-.1554.9245l-2.0286 7.7108c-.124.4615-.5367 2.0606-.6499 2.4565-.1764.1875-.4184.352-.706.4634-.2532.1002-.5351.1624-.8141.183-.1413.0109-.2807.0076-.4204.008-.3553.0003-.7101-.0005-1.0655.0005.1331-.901.4591-3.0982.629-4.2444.2255-.0047.454.0174.6801-.0372.151-.0362.3085-.0995.3984-.206.057-.0636.0563-.1383.0716-.2082.429-2.3169.9306-5.03 1.5274-8.2508"/>
@@ -176,7 +176,19 @@
 							</svg>
 							Setup 3D
 						</span>
-					</button>
+					</button> -->
+					<label>
+						3D perspective camera distance:
+						<input type="number" value="0" min="0" max="1000" id="perspective-distance" />
+					</label>
+					<label>
+						Rotate vertically:
+						<input type="number" value="0" min="0" max="360" id="perspective-rotate-vertically" />
+					</label>
+					<label>
+						Scale horizontally:
+						<input type="number" value="1" min="0.1" max="2" step="0.01" id="scale-x" />
+					</label>
 				</div>
 			</fieldset>
 			<fieldset id="midi-exporting">
@@ -198,7 +210,7 @@
 				</button>
 				<span id="no-notes-recorded-message" tabIndex="0">&nbsp;- No notes recorded</span>
 			</fieldset>
-			<div id="perspective-registration-container">
+			<!-- <div id="perspective-registration-container">
 				<video id="perspective-registration-video">Video stream not available.</video>
 				
 				<svg id="perspective-registration-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -232,7 +244,7 @@
 						fill="none"
 						points="123,144 0,200 400,200 273,144"
 					/>
-				</svg>
+				</svg> -->
 
 				<div id="fullscreen-target">
 					<canvas id="midi-viz-canvas" class="element-to-transform"></canvas>
@@ -250,8 +262,8 @@
 	<script src="lib/midifile/MIDIEvents.js"></script>
 	<script src="lib/midifile/MIDIFile.js"></script>
 	<script src="lib/coffeescript.js"></script>
-	<script src="lib/interact.min.js"></script>
+	<!-- <script src="lib/interact.min.js"></script> -->
 	<script src="app.coffee" type="text/coffeescript"></script>
-	<script src="3d.coffee" type="text/coffeescript"></script>
+	<!-- <script src="3d.coffee" type="text/coffeescript"></script> -->
 </body>
 </html>
