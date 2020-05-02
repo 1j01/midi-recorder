@@ -130,8 +130,9 @@ li {
 .supported {
 	color: lime;
 }
-.caveat {
+.caveats-list {
 	color: #dedede;
+	padding-left: 1.1em;
 }
 
 .button-functional {
