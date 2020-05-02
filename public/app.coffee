@@ -307,6 +307,8 @@ smi = new SimpleMidiInput()
 
 loading_midi_devices_message_el.hidden = false
 
+connected_port_ids = new Set
+
 on_success = (midi)->
 	smi.attach(midi)
 #	console.log 'smi: ', smi
@@ -319,6 +321,7 @@ on_success = (midi)->
 			no_midi_devices_message_el.hidden = true
 
 			connected = e.port.state is "connected" and e.port.connection is "open"
+			if connected then connected_port_ids.add(e.port.id) else connected_port_ids.delete(e.port.id)
 
 			tr = midi_device_ids_to_rows.get(e.port.id)
 			unless tr
@@ -947,3 +950,51 @@ document.body.addEventListener "keydown", (event)->
 document.body.addEventListener "keyup", (event)->
 	if event.keyCode is KEYCODE_ESC
 		end_learn_range()
+
+midi_discovery_iframe = document.createElement("iframe")
+midi_discovery_iframe.src = "midi-discovery.html"
+midi_discovery_iframe.style.position = "absolute"
+midi_discovery_iframe.style.top = "-100%"
+midi_discovery_iframe.style.left = "-100%"
+midi_discovery_iframe.style.opacity = 0
+midi_discovery_iframe.style.pointerEvents = "none"
+document.body.appendChild(midi_discovery_iframe)
+midi_discovery_iframe.addEventListener "load", ->
+	try
+		iframe_window = midi_discovery_iframe.contentWindow
+		setTimeout ->
+			iframe_window.location.reload()
+		, 5000
+		on_success = (midi)->
+			midi_inputs = [...new Map(midi.inputs).values()]
+			# console.log 'From MIDI discovery iframe, inputs: ', midi_inputs
+
+			handle_midi_input = (midi_input)->
+				if midi_input.state is "connected"
+					# give some time for the app to connect to the midi device
+					setTimeout ->
+						if not connected_port_ids.has(midi_input.id)
+							# don't reload if notes have been recorded
+							# TODO: save notes to localStorage/IndexedDB and do actually reload,
+							# unless you're actively playing
+							if not notes.length
+								location.reload() # reload the whole app so it'll get the new MIDI device
+					, 500
+
+			midi_inputs.forEach(handle_midi_input)
+
+			midi.onstatechange = (e)->
+				if e.port.type is "input"
+					handle_midi_input(e.port)
+
+		on_error = (error)->
+			# show_error_screen_replacing_ui("Failed to get MIDI access (for MIDI discovery iframe)", error)
+			console.log "requestMIDIAccess for MIDI discovery iframe failed:", error
+
+		if iframe_window.navigator.requestMIDIAccess
+			iframe_window.navigator.requestMIDIAccess().then on_success, on_error
+		else
+			show_error_screen_replacing_ui("Your browser doesn't support MIDI access.")
+
+	catch error
+		console.log "Failed to access iframe for MIDI discovery"
