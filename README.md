@@ -10,8 +10,6 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 ### TODO
 
-* Attempt to open MIDI port when device is connected but port is closed, so you don't need to refresh the page
-
 * Fix track length (end time)
 
 * Replace fork on github banner with a small link somewhere
