@@ -957,6 +957,9 @@ midi_discovery_iframe.style.top = "-100%"
 midi_discovery_iframe.style.left = "-100%"
 midi_discovery_iframe.style.opacity = 0
 midi_discovery_iframe.style.pointerEvents = "none"
+midi_discovery_iframe.tabIndex = -1
+midi_discovery_iframe.setAttribute("aria-hidden", "true")
+midi_discovery_iframe.title = "This iframe is for discovering MIDI devices, to work around devices not connecting, or not showing up, until the page is refreshed."
 document.body.appendChild(midi_discovery_iframe)
 midi_discovery_iframe.addEventListener "load", ->
 	try
