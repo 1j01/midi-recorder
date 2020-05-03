@@ -952,7 +952,6 @@ document.body.addEventListener "keyup", (event)->
 		end_learn_range()
 
 midi_discovery_iframe = document.createElement("iframe")
-midi_discovery_iframe.src = "midi-discovery.html"
 midi_discovery_iframe.style.position = "absolute"
 midi_discovery_iframe.style.top = "-100%"
 midi_discovery_iframe.style.left = "-100%"
