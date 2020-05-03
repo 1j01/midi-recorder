@@ -17,7 +17,7 @@
 	-->
 	<div class="outer-container">
 	<div class="centering-container">
-	<main class="app-informational-overlay replace-content-on-error">
+	<main class="app-informational-overlay">
 		<noscript>
 			This app requires JavaScript.
 		</noscript>
@@ -80,6 +80,15 @@
 				<p id="loading-midi-devices-message" hidden>Loading...</p>
 				<p id="no-midi-devices-message" hidden>No MIDI devices detected</p>
 				<table id="midi-devices" aria-live="assertive"></table>
+				<div id="midi-not-supported" class="error-message" hidden>
+					This browser doesn't support MIDI access.
+					Try using Chrome, or for other browsers, the
+					<a href="https://jazz-soft.net/download/web-midi/">Jazz-Soft Web MIDI API extension</a>.
+				</div>
+				<div id="midi-access-failed" class="error-message" hidden>
+					Failed to get MIDI access.
+					<pre id="midi-access-failed-pre"></pre>
+				</div>
 			</div>
 		</div>
 		<div id="controls">

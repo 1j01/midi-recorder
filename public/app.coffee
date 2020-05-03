@@ -2,7 +2,9 @@
 for el in document.querySelectorAll("noscript")
 	el.remove() # for screenreaders (maybe should be earlier than this asynchronously loaded coffeescript)
 
-el_to_replace_content_of_on_error = document.querySelector(".replace-content-on-error") ? document.body
+midi_not_supported = document.getElementById("midi-not-supported")
+midi_access_failed = document.getElementById("midi-access-failed")
+midi_access_failed_pre = document.getElementById("midi-access-failed-pre")
 fullscreen_target_el = document.getElementById("fullscreen-target")
 canvas = document.getElementById("midi-viz-canvas")
 no_notes_recorded_message_el = document.getElementById("no-notes-recorded-message")
@@ -172,18 +174,6 @@ is_learning_range = false
 learning_range = [null, null]
 view_range_while_learning = [0, 128]
 
-
-show_error_screen_replacing_ui = (message, error)->
-	error_message_el = document.createElement("div")
-	error_message_el.className = "error-message"
-	error_message_el.textContent = message
-	if error
-		error_pre = document.createElement("pre")
-		error_pre.textContent = error
-		error_message_el.appendChild(error_pre)
-	el_to_replace_content_of_on_error.innerHTML = ""
-	el_to_replace_content_of_on_error.appendChild(error_message_el)
-
 normalize_range = (range)->
 	valid_int_0_to_128 = (value)->
 		int = parseInt(value)
@@ -352,13 +342,16 @@ on_success = (midi)->
 
 
 on_error = (error)->
-	show_error_screen_replacing_ui("Failed to get MIDI access", error)
+	loading_midi_devices_message_el.hidden = true
+	midi_access_failed_pre.textContent = error
+	midi_access_failed.hidden = false
 	console.log "requestMIDIAccess failed:", error
 
 if navigator.requestMIDIAccess
 	navigator.requestMIDIAccess().then on_success, on_error
 else
-	show_error_screen_replacing_ui("Your browser doesn't support MIDI access.")
+	loading_midi_devices_message_el.hidden = true
+	midi_not_supported.hidden = false
 
 notes = []
 current_notes = new Map
@@ -990,13 +983,12 @@ midi_discovery_iframe.addEventListener "load", ->
 					handle_midi_input(e.port)
 
 		on_error = (error)->
-			# show_error_screen_replacing_ui("Failed to get MIDI access (for MIDI discovery iframe)", error)
 			console.log "requestMIDIAccess for MIDI discovery iframe failed:", error
 
 		if iframe_window.navigator.requestMIDIAccess
 			iframe_window.navigator.requestMIDIAccess().then on_success, on_error
-		else
-			show_error_screen_replacing_ui("Your browser doesn't support MIDI access.")
+		# else
+			# a message should already be shown
 
 	catch error
 		console.log "Failed to access iframe for MIDI discovery"
