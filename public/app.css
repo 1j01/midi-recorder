@@ -279,12 +279,12 @@ input[type="number"]:invalid {
 .select-wrapper::after {
 	content: "▼";
 	position: absolute;
-	top: 1px;
-	right: 1px;
-	bottom: 1px;
+	top: 2px;
+	right: 2px;
+	bottom: 2px;
 	font-family: monospace;
 	font-size: 100%;
-	line-height: 2.3em;
+	line-height: 2.2em;
 	padding: 0 7px;
 	background: #000;
 	color: white;
