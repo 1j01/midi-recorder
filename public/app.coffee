@@ -243,7 +243,7 @@ load_options = ->
 		note_gravity_direction_select.value = note_gravity_direction
 	if data["layout"]
 		layout = data["layout"].toLowerCase()
-		layout_radio_buttons.find((radio)=> radio.value is layout).checked = true
+		layout_radio_buttons.find((radio)=> radio.value is layout)?.checked = true
 	if data["theme"]
 		theme = data["theme"].toLowerCase()
 		theme_select.value = theme
@@ -256,7 +256,7 @@ update_options_from_inputs = ->
 	px_per_second = parseFloat(px_per_second_input.value) || 20
 	hue_rotate_degrees = parseFloat(hue_rotate_degrees_input.value) || 0
 	note_gravity_direction = note_gravity_direction_select.value
-	layout = layout_radio_buttons.find((radio)=> radio.checked).value
+	layout = layout_radio_buttons.find((radio)=> radio.checked)?.value ? "equal"
 	theme = theme_select.value
 	
 	perspective_rotate_vertically = perspective_rotate_vertically_input.value
