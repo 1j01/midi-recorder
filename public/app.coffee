@@ -896,7 +896,10 @@ export_midi_file_button.onclick = ->
 	output_array_buffer = midi_file.getContent()
 	
 	blob = new Blob([output_array_buffer], {type: "audio/midi"})
-	saveAs(blob, "recording.midi")
+	# Colons are optional in ISO 8601 format, and invalid in Windows filenames.
+	# Sub-second precision is optional and unnecessary.
+	iso_date_string = new Date().toISOString().replace(/:/g, "").replace(/\..*Z/, "Z")
+	saveAs(blob, "#{iso_date_string}.midi")
 
 
 fullscreen_button.onclick = ->
