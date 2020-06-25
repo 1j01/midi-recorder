@@ -66,12 +66,13 @@
 				</ul>
 				<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
 				<h3>Caveats:</h3>
-				<ul class="caveats-list">
+				<ul class="bulleted-list">
 					<li>Aftertouch pressure and miscellaneous MIDI events are not recorded.</li>
 					<li>Generated MIDI file currently has excess length.</li>
 					<li>Instrument is assumed to be piano at start of each recording.</li>
 					<li>Only one channel is supported, so split/dual instrument settings won't work.</li>
 					<li>Pitch bend range is assumed to be ± 2 semitones (a common default).</li>
+					<li>If the page lags, note timing gets messed up.</li>
 				</ul>
 			</div>
 			<div>
@@ -89,6 +90,13 @@
 					Failed to get MIDI access.
 					<pre id="midi-access-failed-pre"></pre>
 				</div>
+				<p>
+					<h4>MIDI device not showing up?</h4>
+					<ul class="bulleted-list">
+						<li>Make sure it's plugged in and turned on.</li>
+						<li>Try <a href="JavaScript:location.reload();">refreshing the page</a>.</li>
+					</ul>
+				</p>
 			</div>
 		</div>
 		<div id="controls">
