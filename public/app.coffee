@@ -12,6 +12,7 @@ no_midi_devices_message_el = document.getElementById("no-midi-devices-message")
 loading_midi_devices_message_el = document.getElementById("loading-midi-devices-message")
 export_midi_file_button = document.getElementById("export-midi-file-button")
 fullscreen_button = document.getElementById("fullscreen-button")
+visualization_enabled_checkbox = document.getElementById("visualization-enabled")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
 note_gravity_direction_select = document.getElementById("note-gravity-direction-select")
 layout_radio_buttons = Array.from(document.getElementsByName("key-layout"))
@@ -160,6 +161,7 @@ instrument_names = [
 ]
 
 # options are initialized from the URL & HTML later
+visualization_enabled = true
 theme = "white-and-accent-color"
 hue_rotate_degrees = 0
 layout = "equal"
@@ -192,6 +194,7 @@ set_selected_range = (range)->
 save_options = ->
 	[from_midi_val, to_midi_val] = selected_range
 	data =
+		"viz": if visualization_enabled then "on" else "off"
 		"layout": layout
 		"gravity-direction": note_gravity_direction
 		"pixels-per-second": px_per_second
@@ -224,6 +227,9 @@ load_options = ->
 		val = val.trim()
 		data[key] = val
 	# TODO: reset to original defaults when not in URL, in case you hit the back button
+	if data["viz"]
+		visualization_enabled = data["viz"].toLowerCase() in ["on", "true", "1"]
+		visualization_enabled_checkbox.checked = visualization_enabled
 	if data["midi-range"]
 		set_selected_range(data["midi-range"].split(".."))
 	if data["pixels-per-second"]
@@ -252,6 +258,7 @@ load_options = ->
 		hue_rotate_degrees_input.value = hue_rotate_degrees
 
 update_options_from_inputs = ->
+	visualization_enabled = visualization_enabled_checkbox.checked
 	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
 	px_per_second = parseFloat(px_per_second_input.value) || 20
 	hue_rotate_degrees = parseFloat(hue_rotate_degrees_input.value) || 0
@@ -272,6 +279,7 @@ update_options_from_inputs = ->
 
 # TODO: use oninput
 for control_element in [
+	visualization_enabled_checkbox
 	midi_range_left_input
 	midi_range_right_input
 	px_per_second_input
@@ -561,10 +569,8 @@ piano_layout = for is_accidental, octave_key_index in piano_accidental_pattern
 ctx = canvas.getContext "2d"
 
 do animate = ->
-	filter = "hue-rotate(#{hue_rotate_degrees}deg)"
-	if canvas.style.filter isnt filter
-		canvas.style.filter = filter
-
+	requestAnimationFrame animate
+	
 	if is_learning_range
 		[min_midi_val, max_midi_val] = view_range_while_learning
 	else
@@ -572,7 +578,16 @@ do animate = ->
 		min_midi_val = Math.min(left_midi_val, right_midi_val)
 		max_midi_val = Math.max(left_midi_val, right_midi_val)
 	
-	requestAnimationFrame animate
+	canvas_visible = canvas.style.display is ""
+	if canvas_visible isnt visualization_enabled
+		canvas.style.display = if visualization_enabled then "" else "none"
+	
+	return unless visualization_enabled
+	
+	filter = "hue-rotate(#{hue_rotate_degrees}deg)"
+	if canvas.style.filter isnt filter
+		canvas.style.filter = filter
+
 	now = performance.now()
 
 	canvas.width = innerWidth if canvas.width isnt innerWidth

@@ -102,7 +102,12 @@
 			<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
 			<fieldset id="viz-controls" class="ui-section">
 				<legend>Visualization</legend>
-				<div class="control-row">
+				<div class="control-row" style="display: flex">
+					<label>
+						<input type="checkbox" checked id="visualization-enabled"/>
+						Enable visualization
+					</label>
+					<div style="flex: 1"></div>
 					<button class="button-functional" id="fullscreen-button">
 						<span class="button-visual">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.543 438.543">
