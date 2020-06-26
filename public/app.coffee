@@ -364,9 +364,9 @@ global_sustain_periods = []
 current_instrument = undefined
 global_instrument_selects = []
 
-set_pitch_bend = (value)->
+set_pitch_bend = (value, time=performance.now())->
 	current_pitch_bend_value = value
-	pitch_bend = {time: performance.now(), value}
+	pitch_bend = {time, value}
 	global_pitch_bends.push(pitch_bend)
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
@@ -449,9 +449,9 @@ demo = ->
 # do demo
 window.demo = demo
 
-smi.on 'noteOn', ({event, key, velocity})->
+smi.on 'noteOn', ({event, key, velocity, time})->
 	old_note = current_notes.get(key)
-	start_time = performance.now()
+	start_time = time
 	return if old_note
 	note = {
 		key, velocity, start_time,
@@ -471,31 +471,31 @@ smi.on 'noteOn', ({event, key, velocity})->
 		learning_range[1] = Math.max(learning_range[1] ? key, key)
 		[midi_range_left_input.value, midi_range_right_input.value] = learning_range
 
-smi.on 'noteOff', ({event, key})->
+smi.on 'noteOff', ({event, key, time})->
 	note = current_notes.get(key)
 	if note
-		note.end_time = performance.now()
+		note.end_time = time
 		note.length = note.end_time - note.start_time
 	current_notes.delete(key)
 
-smi.on 'pitchWheel', ({event, value})->
-	set_pitch_bend(value / 0x2000)
+smi.on 'pitchWheel', ({event, value, time})->
+	set_pitch_bend(value / 0x2000, time)
 
-smi.on 'programChange', (data)->
-	current_instrument = data.program
-	global_instrument_selects.push({time: performance.now(), value: current_instrument})
+smi.on 'programChange', ({program, time})->
+	current_instrument = program
+	global_instrument_selects.push({time, value: program})
 
-smi.on 'global', (data)->
+smi.on 'global', ({event, cc, value, time})->
 	# if data.event not in ['clock', 'activeSensing']
 	# 	console.log(data)
-	if data.event is "cc" and data.cc is 64
-		active = data.value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
+	if event is "cc" and cc is 64
+		active = value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
 		if current_sustain_active and not active
-			global_sustain_periods[global_sustain_periods.length - 1]?.end_time = performance.now()
+			global_sustain_periods[global_sustain_periods.length - 1]?.end_time = time
 		else if active and not current_sustain_active
 			global_sustain_periods.push({
-				start_time: performance.now(),
-				end_time: undefined,
+				start_time: time
+				end_time: undefined
 			})
 		current_sustain_active = active
 
