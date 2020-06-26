@@ -108,7 +108,7 @@
 						Enable visualization
 					</label>
 					<div style="flex: 1"></div>
-					<button class="button-functional" id="fullscreen-button">
+					<button class="button-functional disable-if-viz-disabled" id="fullscreen-button">
 						<span class="button-visual">
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.543 438.543">
 								<path
@@ -120,7 +120,7 @@
 						</span>
 					</button>
 				</div>
-				<div class="control-row">
+				<div class="control-row disable-if-viz-disabled">
 					<fieldset class="labeled-radio-buttons">
 						<legend>
 							Key Layout:
@@ -159,7 +159,7 @@
 						</label>
 					</fieldset>
 				</div>
-				<div class="control-row">
+				<div class="control-row disable-if-viz-disabled">
 					<label>
 						Theme:
 						<select id="theme-select">
@@ -175,7 +175,7 @@
 						deg
 					</label>
 				</div>
-				<div class="control-row">
+				<div class="control-row disable-if-viz-disabled">
 					<label>
 						Notes move at
 						<input type="number" value="20" min="1" id="note-gravity-pixels-per-second" aria-label="note speed in pixels per second" />
@@ -191,7 +191,7 @@
 						</select>
 					</label>
 				</div>
-				<div class="control-row">
+				<div class="control-row disable-if-viz-disabled">
 					View note range:
 					<input type="number" value="0" min="0" max="128" id="midi-range-min" aria-label="viewport note range minimum (MIDI value)" />
 					–
@@ -220,7 +220,7 @@
 						</span>
 					</button>
 				</div>
-				<div class="control-row">
+				<div class="control-row disable-if-viz-disabled">
 					<!-- <button class="button-functional" id="setup-3d-button">
 						<span class="button-visual">
 							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24" height="16" viewBox="0 0 24 16">

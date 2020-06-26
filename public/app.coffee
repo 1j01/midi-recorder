@@ -581,6 +581,15 @@ do animate = ->
 	canvas_visible = canvas.style.display is ""
 	if canvas_visible isnt visualization_enabled
 		canvas.style.display = if visualization_enabled then "" else "none"
+		
+		for container_el in Array.from(document.querySelectorAll(".disable-if-viz-disabled"))
+			form_el_selector = "input, button, textarea, select"
+			form_els = Array.from(container_el.querySelectorAll(form_el_selector))
+			if container_el.matches(form_el_selector)
+				form_els.push(container_el)
+			for form_el in form_els
+				form_el.disabled = not visualization_enabled
+			container_el.classList[if visualization_enabled then "remove" else "add"]("disabled")
 	
 	return unless visualization_enabled
 	

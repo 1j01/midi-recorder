@@ -257,6 +257,21 @@ input[type="number"]:invalid {
 	color: white;
 }
 
+input[type="checkbox"]:disabled,
+input[type="radio"]:disabled {
+	opacity: 0.3;
+}
+
+.disabled {
+	color: rgba(128, 128, 128, 0.7);
+}
+.disabled svg {
+	opacity: 0.5;
+}
+.disabled select {
+	opacity: 0.3;
+}
+
 a {
 	color: #00ceff;
 }
