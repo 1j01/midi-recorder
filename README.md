@@ -12,11 +12,9 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 * Fix track length (end time)
 
-* Replace fork on github banner with a small link somewhere
-
 * Improve layout on mobile / small viewport size
 
-* Fade out overlay when playing (with a button to show info again)
+* Fade out overlay when playing (unless viz is disabled), with a button to show info again?
 
 * A way to clear/reset other than refreshing, with a confirmation prompt (unless you just saved?)
 
@@ -32,8 +30,6 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 * Show note velocity (already recorded)
 
 * Record + show aftertouch pressure
-
-* Record instrument changes, maybe show as horizontal line with text for instrument number/name
 
 * Support Pitch Bend Range selection
 
