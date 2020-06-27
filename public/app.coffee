@@ -862,7 +862,7 @@ do animate = ->
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
 
-export_midi_file_button.onclick = ->
+export_midi_file_button.onclick = export_midi_file = ->
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
@@ -1043,11 +1043,15 @@ learn_range_or_apply_button.onclick = ->
 cancel_learn_range_button.onclick = end_learn_range
 
 KEYCODE_ESC = 27
+KEYCODE_S = 83
 
 # supposedly keydown doesn't work consistently in all browsers
 document.body.addEventListener "keydown", (event)->
 	if event.keyCode is KEYCODE_ESC
 		end_learn_range()
+	if event.keyCode is KEYCODE_S and (event.ctrlKey or event.metaKey)
+		export_midi_file()
+		event.preventDefault()
 document.body.addEventListener "keyup", (event)->
 	if event.keyCode is KEYCODE_ESC
 		end_learn_range()
