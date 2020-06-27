@@ -160,6 +160,14 @@ instrument_names = [
 	"128. Gunshot"
 ]
 
+# for filename
+# - first note would be easier to keep track of but if you record more without clearing, it should be a new filename
+# - time-of-save would be easiest, but then it's harder to know if you've already saved something
+# - END of last note would cause problems if you hit save before releasing a note, or if a note gets stuck
+# - so use START of last note
+# - Date.now() is more performant than new Date()
+last_note_datetime = Date.now()
+
 # options are initialized from the URL & HTML later
 visualization_enabled = true
 theme = "white-and-accent-color"
@@ -478,6 +486,8 @@ smi.on 'noteOn', ({event, key, velocity, time})->
 		learning_range[0] = Math.min(learning_range[0] ? key, key)
 		learning_range[1] = Math.max(learning_range[1] ? key, key)
 		[midi_range_left_input.value, midi_range_right_input.value] = learning_range
+	
+	last_note_datetime = Date.now()
 
 smi.on 'noteOff', ({event, key, time})->
 	note = current_notes.get(key)
@@ -922,7 +932,7 @@ export_midi_file_button.onclick = ->
 	blob = new Blob([output_array_buffer], {type: "audio/midi"})
 	# Colons are optional in ISO 8601 format, and invalid in Windows filenames.
 	# Sub-second precision is optional and unnecessary.
-	iso_date_string = new Date().toISOString().replace(/:/g, "").replace(/\..*Z/, "Z")
+	iso_date_string = new Date(last_note_datetime).toISOString().replace(/:/g, "").replace(/\..*Z/, "Z")
 	saveAs(blob, "#{iso_date_string}.midi")
 
 
