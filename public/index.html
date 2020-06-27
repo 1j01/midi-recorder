@@ -70,6 +70,7 @@
 					<li>Aftertouch pressure and miscellaneous MIDI events are not recorded.</li>
 					<li>Generated MIDI file currently has excess length.</li>
 					<li>Instrument is assumed to be piano at start of each recording.</li>
+					<!-- <li>Instrument is assumed to be piano when the app starts up.</li> -->
 					<li>Only one channel is supported, so split/dual instrument settings won't work.</li>
 					<li>Pitch bend range is assumed to be ± 2 semitones (a common default).</li>
 				</ul>
@@ -272,10 +273,21 @@
 							</g>
 							<path fill-rule="evenodd" d="M12.613 9.426c-.125.561-.347 1.012-1.258 1.585v1.165H9.033l3.485 3.838L16 12.176h-2.322v-2.75z"/>
 						</svg>
-						Save MIDI file
+						Save MIDI File
 					</span>
 				</button>
 				<span id="no-notes-recorded-message" tabindex="0">&nbsp;- No notes recorded</span>
+				
+				<button class="button-functional" id="clear-notes-button" disabled>
+					<span class="button-visual">
+						<span id="clear-notes-button-text">
+							Clear Notes
+						</span>
+						<span id="undo-clear-notes-button-text" hidden>
+							Undo Clear Notes
+						</span>
+					</span>
+				</button>
 			</fieldset>
 			<!-- <div id="perspective-registration-container">
 				<video id="perspective-registration-video">Video stream not available.</video>

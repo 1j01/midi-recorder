@@ -16,8 +16,6 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 * Fade out overlay when playing (unless viz is disabled), with a button to show info again?
 
-* A way to clear/reset other than refreshing, with a confirmation prompt (unless you just saved?)
-
 * Save progressively to local storage
     - This is the killer feature IMO, letting you record for long periods of time without fear of loss
     - Note: must handle multiple tabs without conflict
