@@ -165,6 +165,10 @@ li {
 .button-functional[hidden] {
 	visibility: hidden;
 }
+#clear-button[hidden],
+#undo-clear-button[hidden] {
+	display: none;
+}
 
 .button-visual {
 	line-height: 0.8;
@@ -224,9 +228,18 @@ button svg {
 	height: 1em;
 	width: 1em;
 }
+#undo-clear-button svg {
+	height: 1.3em;
+	width: 1.3em;
+}
 #fullscreen-button svg path,
 #export-midi-file-button svg path,
-#export-midi-file-button svg ellipse {
+#export-midi-file-button svg ellipse,
+#clear-button svg path:not([fill]),
+#undo-clear-button svg path {
+	fill: currentColor;
+}
+#clear-button:disabled svg path[fill] {
 	fill: currentColor;
 }
 
@@ -265,7 +278,8 @@ input[type="radio"]:disabled {
 .disabled {
 	color: rgba(128, 128, 128, 0.7);
 }
-.disabled svg {
+.disabled svg,
+:disabled svg {
 	opacity: 0.5;
 }
 .disabled select {

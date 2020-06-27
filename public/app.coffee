@@ -11,7 +11,8 @@ no_notes_recorded_message_el = document.getElementById("no-notes-recorded-messag
 no_midi_devices_message_el = document.getElementById("no-midi-devices-message")
 loading_midi_devices_message_el = document.getElementById("loading-midi-devices-message")
 export_midi_file_button = document.getElementById("export-midi-file-button")
-clear_notes_button = document.getElementById("clear-notes-button")
+clear_button = document.getElementById("clear-button")
+undo_clear_button = document.getElementById("undo-clear-button")
 fullscreen_button = document.getElementById("fullscreen-button")
 visualization_enabled_checkbox = document.getElementById("visualization-enabled")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
@@ -380,19 +381,23 @@ current_instrument = undefined
 global_instrument_selects = []
 
 export_midi_file_button.disabled = true
-clear_notes_button.disabled = true
+clear_button.disabled = true
 
 save_state = ->
-	{
+	# use JSON to (inefficiently) copy state so that it's not just saving references to mutable data structures
+	# Map can't be JSON-stringified
+	state = JSON.parse(JSON.stringify({
 		notes
-		current_notes
+		current_notes: "placeholder"
 		current_pitch_bend_value
 		global_pitch_bends
 		current_sustain_active
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
-	}
+	}))
+	state.current_notes = new Map(current_notes)
+	state
 
 restore_state = (state)->
 	{
@@ -406,30 +411,30 @@ restore_state = (state)->
 		global_instrument_selects
 	} = state
 
+initial_state = save_state()
 undo_state = save_state()
 
 clear_notes = ->
 	undo_state = save_state()
-
-	notes = []
-	current_notes = new Map
-	current_pitch_bend_value = 0
-	global_pitch_bends = []
-	current_sustain_active = off
-	global_sustain_periods = []
-	# TODO: include instrument select for start of next recording
+	# TODO: keep current instrument and include instrument select at start of next recording
 	# (and update caveat in caveats list)
-	current_instrument = undefined
-	global_instrument_selects = []
+	restore_state(initial_state)
 
 	export_midi_file_button.disabled = true
-	# TODO: undo button
-	clear_notes_button.disabled = true
+	clear_button.hidden = true
+	undo_clear_button.hidden = false
+	undo_clear_button.focus()
 
 undo_clear_notes = ->
 	restore_state(undo_state)
 	export_midi_file_button.disabled = notes.length is 0
-	clear_notes_button.disabled = false
+	clear_button.disabled = false
+	clear_button.hidden = false
+	undo_clear_button.hidden = true
+	clear_button.focus()
+
+clear_button.onclick = clear_notes
+undo_clear_button.onclick = undo_clear_notes
 
 set_pitch_bend = (value, time=performance.now())->
 	current_pitch_bend_value = value
@@ -437,7 +442,9 @@ set_pitch_bend = (value, time=performance.now())->
 	global_pitch_bends.push(pitch_bend)
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
-	clear_notes_button.disabled = false
+	clear_button.disabled = false
+	clear_button.hidden = false
+	undo_clear_button.hidden = true
 
 demo = ->
 	iid = setInterval ->
@@ -511,7 +518,9 @@ demo = ->
 
 		no_notes_recorded_message_el.hidden = true
 		export_midi_file_button.disabled = false
-		clear_notes_button.disabled = false
+		clear_button.disabled = false
+		clear_button.hidden = false
+		undo_clear_button.hidden = true
 
 	, 10
 
@@ -534,7 +543,9 @@ smi.on 'noteOn', ({event, key, velocity, time})->
 
 	no_notes_recorded_message_el.hidden = true
 	export_midi_file_button.disabled = false
-	clear_notes_button.disabled = false
+	clear_button.disabled = false
+	clear_button.hidden = false
+	undo_clear_button.hidden = true
 
 	if is_learning_range
 		learning_range[0] = Math.min(learning_range[0] ? key, key)
@@ -556,7 +567,9 @@ smi.on 'pitchWheel', ({event, value, time})->
 smi.on 'programChange', ({program, time})->
 	current_instrument = program
 	global_instrument_selects.push({time, value: program})
-	clear_notes_button.disabled = false
+	clear_button.disabled = false
+	clear_button.hidden = false
+	undo_clear_button.hidden = true
 
 smi.on 'global', ({event, cc, value, time})->
 	# if data.event not in ['clock', 'activeSensing']
@@ -570,7 +583,9 @@ smi.on 'global', ({event, cc, value, time})->
 				start_time: time
 				end_time: undefined
 			})
-			clear_notes_button.disabled = false
+			clear_button.disabled = false
+			clear_button.hidden = false
+			undo_clear_button.hidden = true
 		current_sustain_active = active
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
@@ -846,8 +861,6 @@ do animate = ->
 				ctx.fillStyle = "red"
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
-
-clear_notes_button.onclick = clear_notes
 
 export_midi_file_button.onclick = ->
 	midi_file = new MIDIFile()
