@@ -400,16 +400,19 @@ save_state = ->
 	state
 
 restore_state = (state)->
+	# need to make data copy when restoring as well,
+	# so that if you restore a state it's not going to then mutate that state
+	# so that if you clear a second recording it'll work (play notes, clear, play notes, clear)
 	{
 		notes
-		current_notes
 		current_pitch_bend_value
 		global_pitch_bends
 		current_sustain_active
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
-	} = state
+	} = JSON.parse(JSON.stringify(state))
+	current_notes = new Map(state.current_notes)
 
 initial_state = save_state()
 undo_state = save_state()
