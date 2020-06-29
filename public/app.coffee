@@ -447,6 +447,7 @@ clear_button.onclick = clear_notes
 undo_clear_button.onclick = undo_clear_notes
 
 set_pitch_bend = (value, time=performance.now())->
+	if (time % 1000) > 200 then return
 	current_pitch_bend_value = value
 	pitch_bend = {time, value}
 	global_pitch_bends.push(pitch_bend)
@@ -806,7 +807,7 @@ do animate = ->
 		if smooth
 			ctx.beginPath()
 			points = []
-			# data_points = []
+			data_points = []
 			for pitch_bend, i in note.pitch_bends
 				next_pitch_bend = note.pitch_bends[i + 1]
 				segment_end_time = next_pitch_bend?.time ? note.end_time ? now
@@ -816,9 +817,12 @@ do animate = ->
 				bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
 				segment_end_bent_x = x + (next_pitch_bend ? pitch_bend).value * 2 * midi_to_canvas_scalar
 				points.push({x: bent_x, y: y1})
-				# data_points.push({x: bent_x, y: y1})
+				data_points.push({x: bent_x, y: y1})
 
 				if y2 - y1 > 10
+					# points.push({x: (bent_x * 2 + segment_end_bent_x) / 3, y: y2 - 10})
+					# points.push({x: (bent_x + segment_end_bent_x) / 2, y: y2 - 5})
+					# points.push({x: segment_end_bent_x, y: y2})
 					points.push({x: bent_x, y: y2 - 5})
 				if i is note.pitch_bends.length - 1
 					points.push({x: bent_x, y: y2})
@@ -833,13 +837,13 @@ do animate = ->
 			ctx.stroke()
 
 			# debug
-			# ctx.globalAlpha = 1
-			# ctx.fillStyle = "red"
-			# for point in points
-			# 	ctx.fillRect(point.x, point.y, 2, 2)
-			# ctx.fillStyle = "lime"
-			# for point in data_points
-			# 	ctx.fillRect(point.x, point.y, 2, 2)
+			ctx.globalAlpha = 1
+			ctx.fillStyle = "red"
+			for point in points
+				ctx.fillRect(point.x, point.y, 2, 2)
+			ctx.fillStyle = "lime"
+			for point in data_points
+				ctx.fillRect(point.x, point.y, 2, 2)
 		else
 			for pitch_bend, i in note.pitch_bends
 				next_pitch_bend = note.pitch_bends[i + 1]
