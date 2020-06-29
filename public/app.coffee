@@ -417,6 +417,14 @@ restore_state = (state)->
 initial_state = save_state()
 undo_state = save_state()
 
+notes = JSON.parse(document.getElementById("test-data").textContent)
+test_data_time_offset = -10000 #1000 - notes[0].start_time
+notes.forEach (note)->
+	note.start_time += test_data_time_offset
+	note.end_time += test_data_time_offset
+	note.pitch_bends.forEach (pitch_bend)->
+		pitch_bend.time += test_data_time_offset
+
 clear_notes = ->
 	undo_state = save_state()
 	# TODO: keep current instrument and include instrument select at start of next recording
