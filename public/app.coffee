@@ -651,7 +651,7 @@ piano_layout = for is_accidental, octave_key_index in piano_accidental_pattern
 ctx = canvas.getContext "2d"
 
 do animate = ->
-	requestAnimationFrame animate
+	requestAnimationFrame animate unless window.paused
 	
 	if is_learning_range
 		[min_midi_val, max_midi_val] = view_range_while_learning
@@ -679,7 +679,12 @@ do animate = ->
 	if canvas.style.filter isnt filter
 		canvas.style.filter = filter
 
-	now = performance.now()
+	if window.paused
+		window.paused_time ?= performance.now()
+		now = window.paused_time
+	else
+		delete window.paused_time
+		now = performance.now()
 
 	canvas.width = innerWidth if canvas.width isnt innerWidth
 	canvas.height = innerHeight if canvas.height isnt innerHeight
