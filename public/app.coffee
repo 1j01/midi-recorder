@@ -844,9 +844,10 @@ do animate = ->
 				# 	points.push({x: bent_x, y: y2 - 20})
 				
 				if y2 - y1 > 10
-					points.push({x: (bent_x * 2 + segment_end_bent_x) / 3, y: y2 - 10})
-					points.push({x: (bent_x + segment_end_bent_x) / 2, y: y2 - 5})
-					points.push({x: segment_end_bent_x, y: y2})
+					# points.push({x: (bent_x * 2 + segment_end_bent_x) / 3, y: y2 - 10})
+					# points.push({x: (bent_x + segment_end_bent_x) / 2, y: y2 - 5})
+					# points.push({x: segment_end_bent_x, y: y2})
+					points.push({x: bent_x, y: y2 - 5})
 				if i is note.pitch_bends.length - 1
 					points.push({x: bent_x, y: y2})
 			for point in points
@@ -858,7 +859,7 @@ do animate = ->
 
 			# debug
 			ctx.globalAlpha = 1
-			ctx.fillStyle = "aqua"
+			ctx.fillStyle = "red"
 			for point in points
 				ctx.fillRect(point.x, point.y, 2, 2)
 			ctx.fillStyle = "lime"
