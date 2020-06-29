@@ -845,22 +845,6 @@ do animate = ->
 			for point in points by -1
 				ctx.lineTo(point.x + w, point.y)
 
-			# ctx.lineTo(bent_x, y2)
-			# ctx.lineTo(bent_x + w, y2)
-
-			# for pitch_bend, i in note.pitch_bends by -1
-			# 	next_pitch_bend = note.pitch_bends[i - 1]
-			# 	segment_end_time = next_pitch_bend?.time ? note.start_time
-			# 	y1 = (pitch_bend.time) / 1000 * px_per_second
-			# 	y2 = (segment_end_time) / 1000 * px_per_second
-			# 	bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
-			# 	if y2 - y1 < -5
-			# 		ctx.lineTo(bent_x + w, y1 - 4)
-			# 	ctx.lineTo(bent_x + w, y1)
-
-			# for point in points_to_get_back_around_to by -1
-			# 	ctx.lineTo(point.x, point.y)
-
 			ctx.fill()
 		else
 			for pitch_bend, i in note.pitch_bends
