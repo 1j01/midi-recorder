@@ -770,10 +770,7 @@ do animate = ->
 
 	for note in notes
 		{x, w, is_accidental} = get_note_location_canvas_space(note.key, pitch_axis_canvas_length)
-		# TODO: visualize note velocity (loudness)
-		# - maybe include an outline that's visible regardless of the loudness
-		# - don't show it brighter when pitch bending
-		# ctx.globalAlpha = note.velocity / 127
+		ctx.globalAlpha = note.velocity / 127
 		unless note.length?
 			# for ongoing (held) notes, display a bar at the bottom like a key
 			# TODO: maybe bend this?
@@ -805,7 +802,6 @@ do animate = ->
 						"rgb(255, 0, 0)"
 					else
 						"white"
-		# ctx.strokeStyle = if note.length then "yellow" else "lime"
 		smooth = yes
 		if smooth
 			ctx.beginPath()
@@ -835,6 +831,9 @@ do animate = ->
 				ctx.lineTo(point.x + w, point.y)
 
 			ctx.fill()
+			ctx.globalAlpha = 1
+			ctx.strokeStyle = "rgba(255, 255, 255, 0.5)"
+			ctx.stroke()
 
 			# debug
 			# ctx.globalAlpha = 1
@@ -853,7 +852,7 @@ do animate = ->
 				h = y2 - y1 + 0.5
 				bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
 				ctx.fillRect(bent_x, y1, w, h)
-	# ctx.globalAlpha = 1
+	ctx.globalAlpha = 1
 	if is_learning_range
 		for extremity_midi_val, i in learning_range
 			if extremity_midi_val?
