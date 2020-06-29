@@ -806,10 +806,11 @@ do animate = ->
 					else
 						"white"
 		# ctx.strokeStyle = if note.length then "yellow" else "lime"
-		smooth = no
+		smooth = yes
 		if smooth
 			ctx.beginPath()
-			points_to_get_back_around_to = []
+			points = []
+			data_points = []
 			for pitch_bend, i in note.pitch_bends
 				next_pitch_bend = note.pitch_bends[i + 1]
 				segment_end_time = next_pitch_bend?.time ? note.end_time ? now
@@ -818,37 +819,33 @@ do animate = ->
 				h = y2 - y1 + 0.5
 				bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
 				segment_end_bent_x = x + (next_pitch_bend ? pitch_bend).value * 2 * midi_to_canvas_scalar
-				ctx.lineTo(bent_x, y1)
-				points_to_get_back_around_to.push({x: bent_x + w,y: y1})
-				# if y2 - y1 > 5 # and Math.abs(pitch_bend.value - next_pitch_bend?.value) < 0.1
-				# 	ctx.lineTo(bent_x, y2 - 4)
-					# points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 4})
-				if y2 - y1 > 5
-					ctx.lineTo((bent_x + segment_end_bent_x) / 2, y2 - 5)
-					points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 5})
-				if y2 - y1 > 10
-					ctx.lineTo((bent_x * 2 + segment_end_bent_x) / 3, y2 - 10)
-					points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 10})
-				if y2 - y1 > 20
-					ctx.lineTo(bent_x, y2 - 20)
-					points_to_get_back_around_to.push({x: bent_x + w, y: y2 - 20})
-			ctx.lineTo(bent_x, y2)
-			ctx.lineTo(bent_x + w, y2)
+				points.push({x: bent_x, y: y1})
+				data_points.push({x: bent_x, y: y1})
 
-			# for pitch_bend, i in note.pitch_bends by -1
-			# 	next_pitch_bend = note.pitch_bends[i - 1]
-			# 	segment_end_time = next_pitch_bend?.time ? note.start_time
-			# 	y1 = (pitch_bend.time - now) / 1000 * px_per_second
-			# 	y2 = (segment_end_time - now) / 1000 * px_per_second
-			# 	bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
-			# 	if y2 - y1 < -5
-			# 		ctx.lineTo(bent_x + w, y1 - 4)
-			# 	ctx.lineTo(bent_x + w, y1)
-
-			for point in points_to_get_back_around_to by -1
+				# if y2 - y1 > 10
+				# 	# points.push({x: (bent_x * 2 + segment_end_bent_x) / 3, y: y2 - 10})
+				# 	# points.push({x: (bent_x + segment_end_bent_x) / 2, y: y2 - 5})
+				# 	# points.push({x: segment_end_bent_x, y: y2})
+				# 	points.push({x: bent_x, y: y2 - 5})
+				# if i is note.pitch_bends.length - 1
+				# 	points.push({x: bent_x, y: y2})
+				
+				points.push({x: bent_x, y: y2})
+			for point in points
 				ctx.lineTo(point.x, point.y)
+			for point in points by -1
+				ctx.lineTo(point.x + w, point.y)
 
 			ctx.fill()
+
+			# debug
+			# ctx.globalAlpha = 1
+			# ctx.fillStyle = "red"
+			# for point in points
+			# 	ctx.fillRect(point.x, point.y, 2, 2)
+			# ctx.fillStyle = "lime"
+			# for point in data_points
+			# 	ctx.fillRect(point.x, point.y, 2, 2)
 		else
 			for pitch_bend, i in note.pitch_bends
 				next_pitch_bend = note.pitch_bends[i + 1]
