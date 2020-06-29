@@ -853,6 +853,12 @@ do animate = ->
 				ctx.lineTo(point.x + w, point.y)
 
 			ctx.fill()
+
+			# debug
+			ctx.globalAlpha = 1
+			ctx.fillStyle = "aqua"
+			for point in points
+				ctx.fillRect(point.x, point.y, 2, 2)
 		else
 			for pitch_bend, i in note.pitch_bends
 				next_pitch_bend = note.pitch_bends[i + 1]
