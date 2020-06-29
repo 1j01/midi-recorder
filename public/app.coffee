@@ -436,6 +436,13 @@ undo_clear_notes = ->
 	undo_clear_button.hidden = true
 	clear_button.focus()
 
+enable_clearing = ->
+	clear_button.disabled = false
+	clear_button.hidden = false
+	if undo_clear_button is document.activeElement
+		export_midi_file_button.focus()
+	undo_clear_button.hidden = true
+
 clear_button.onclick = clear_notes
 undo_clear_button.onclick = undo_clear_notes
 
@@ -445,11 +452,7 @@ set_pitch_bend = (value, time=performance.now())->
 	global_pitch_bends.push(pitch_bend)
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
-	clear_button.disabled = false
-	clear_button.hidden = false
-	if undo_clear_button is document.activeElement
-		export_midi_file_button.focus()
-	undo_clear_button.hidden = true
+	enable_clearing()
 
 demo = ->
 	iid = setInterval ->
@@ -523,11 +526,7 @@ demo = ->
 
 		no_notes_recorded_message_el.hidden = true
 		export_midi_file_button.disabled = false
-		clear_button.disabled = false
-		clear_button.hidden = false
-		if undo_clear_button is document.activeElement
-			export_midi_file_button.focus()
-		undo_clear_button.hidden = true
+		enable_clearing()
 
 	, 10
 
@@ -550,11 +549,7 @@ smi.on 'noteOn', ({event, key, velocity, time})->
 
 	no_notes_recorded_message_el.hidden = true
 	export_midi_file_button.disabled = false
-	clear_button.disabled = false
-	clear_button.hidden = false
-	if undo_clear_button is document.activeElement
-		export_midi_file_button.focus()
-	undo_clear_button.hidden = true
+	enable_clearing()
 
 	if is_learning_range
 		learning_range[0] = Math.min(learning_range[0] ? key, key)
@@ -576,11 +571,7 @@ smi.on 'pitchWheel', ({event, value, time})->
 smi.on 'programChange', ({program, time})->
 	current_instrument = program
 	global_instrument_selects.push({time, value: program})
-	clear_button.disabled = false
-	clear_button.hidden = false
-	if undo_clear_button is document.activeElement
-		export_midi_file_button.focus()
-	undo_clear_button.hidden = true
+	enable_clearing()
 
 smi.on 'global', ({event, cc, value, time})->
 	# if data.event not in ['clock', 'activeSensing']
@@ -594,11 +585,7 @@ smi.on 'global', ({event, cc, value, time})->
 				start_time: time
 				end_time: undefined
 			})
-			clear_button.disabled = false
-			clear_button.hidden = false
-			if undo_clear_button is document.activeElement
-				export_midi_file_button.focus()
-			undo_clear_button.hidden = true
+			enable_clearing()
 		current_sustain_active = active
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
