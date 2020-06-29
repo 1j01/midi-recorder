@@ -418,7 +418,7 @@ initial_state = save_state()
 undo_state = save_state()
 
 notes = JSON.parse(document.getElementById("test-data").textContent)
-test_data_time_offset = -10000 #1000 - notes[0].start_time
+test_data_time_offset = -21899 #1000-notes[0].start_time
 notes.forEach (note)->
 	note.start_time += test_data_time_offset
 	note.end_time += test_data_time_offset
@@ -745,13 +745,13 @@ do animate = ->
 		{x: x1, w: x2 - x1, is_accidental}
 
 	for sustain_period in global_sustain_periods
-		start_y = (sustain_period.start_time - now) / 1000 * px_per_second
-		end_y = ((sustain_period.end_time ? now) - now) / 1000 * px_per_second
+		start_y = (sustain_period.start_time) / 1000 * px_per_second
+		end_y = ((sustain_period.end_time ? now)) / 1000 * px_per_second
 		ctx.fillStyle = "rgba(128, 128, 128, 0.3)"
 		ctx.fillRect(0, start_y, pitch_axis_canvas_length, end_y - start_y)
 
 	for instrument_select in global_instrument_selects
-		y = (instrument_select.time - now) / 1000 * px_per_second
+		y = (instrument_select.time) / 1000 * px_per_second
 		# text = "Instrument: #{instrument_select.value}"
 		text = instrument_names[instrument_select.value]
 
@@ -781,7 +781,7 @@ do animate = ->
 		# TODO: visualize note velocity (loudness)
 		# - maybe include an outline that's visible regardless of the loudness
 		# - don't show it brighter when pitch bending
-		# ctx.globalAlpha = note.velocity / 127
+		ctx.globalAlpha = note.velocity / 127
 		unless note.length?
 			# for ongoing (held) notes, display a bar at the bottom like a key
 			# TODO: maybe bend this?
@@ -821,8 +821,9 @@ do animate = ->
 			for pitch_bend, i in note.pitch_bends
 				next_pitch_bend = note.pitch_bends[i + 1]
 				segment_end_time = next_pitch_bend?.time ? note.end_time ? now
-				y1 = (pitch_bend.time - now) / 1000 * px_per_second
-				y2 = (segment_end_time - now) / 1000 * px_per_second
+				y1 = (pitch_bend.time) / 1000 * px_per_second
+				window.y1 = y1
+				y2 = (segment_end_time) / 1000 * px_per_second
 				h = y2 - y1 + 0.5
 				bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
 				segment_end_bent_x = x + (next_pitch_bend ? pitch_bend).value * 2 * midi_to_canvas_scalar
@@ -846,8 +847,8 @@ do animate = ->
 			# for pitch_bend, i in note.pitch_bends by -1
 			# 	next_pitch_bend = note.pitch_bends[i - 1]
 			# 	segment_end_time = next_pitch_bend?.time ? note.start_time
-			# 	y1 = (pitch_bend.time - now) / 1000 * px_per_second
-			# 	y2 = (segment_end_time - now) / 1000 * px_per_second
+			# 	y1 = (pitch_bend.time) / 1000 * px_per_second
+			# 	y2 = (segment_end_time) / 1000 * px_per_second
 			# 	bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
 			# 	if y2 - y1 < -5
 			# 		ctx.lineTo(bent_x + w, y1 - 4)
@@ -861,12 +862,13 @@ do animate = ->
 			for pitch_bend, i in note.pitch_bends
 				next_pitch_bend = note.pitch_bends[i + 1]
 				segment_end_time = next_pitch_bend?.time ? note.end_time ? now
-				y1 = (pitch_bend.time - now) / 1000 * px_per_second
-				y2 = (segment_end_time - now) / 1000 * px_per_second
+				y1 = (pitch_bend.time) / 1000 * px_per_second
+				window.y1 = y1
+				y2 = (segment_end_time) / 1000 * px_per_second
 				h = y2 - y1 + 0.5
 				bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
 				ctx.fillRect(bent_x, y1, w, h)
-	# ctx.globalAlpha = 1
+	ctx.globalAlpha = 1
 	if is_learning_range
 		for extremity_midi_val, i in learning_range
 			if extremity_midi_val?
