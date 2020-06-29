@@ -25,8 +25,6 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
     - Specifically stress test the length of recording
     - Make it clear it's continuing off a previous recording session / recording was recovered
 
-* Show note velocity (already recorded)
-
 * Record + show aftertouch pressure
 
 * Support Pitch Bend Range selection
