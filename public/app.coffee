@@ -418,7 +418,7 @@ initial_state = save_state()
 undo_state = save_state()
 
 notes = JSON.parse(document.getElementById("test-data").textContent)
-test_data_time_offset = -21899 #1000-notes[0].start_time
+test_data_time_offset = -22000 #1000-notes[0].start_time
 notes.forEach (note)->
 	note.start_time += test_data_time_offset
 	note.end_time += test_data_time_offset
@@ -658,7 +658,7 @@ piano_layout = for is_accidental, octave_key_index in piano_accidental_pattern
 ctx = canvas.getContext "2d"
 
 do animate = ->
-	requestAnimationFrame animate
+	# requestAnimationFrame animate
 	
 	if is_learning_range
 		[min_midi_val, max_midi_val] = view_range_while_learning
@@ -667,20 +667,20 @@ do animate = ->
 		min_midi_val = Math.min(left_midi_val, right_midi_val)
 		max_midi_val = Math.max(left_midi_val, right_midi_val)
 	
-	canvas_visible = canvas.style.display is ""
-	if canvas_visible isnt visualization_enabled
-		canvas.style.display = if visualization_enabled then "" else "none"
+	# canvas_visible = canvas.style.display is ""
+	# if canvas_visible isnt visualization_enabled
+	# 	canvas.style.display = if visualization_enabled then "" else "none"
 		
-		for container_el in Array.from(document.querySelectorAll(".disable-if-viz-disabled"))
-			form_el_selector = "input, button, textarea, select"
-			form_els = Array.from(container_el.querySelectorAll(form_el_selector))
-			if container_el.matches(form_el_selector)
-				form_els.push(container_el)
-			for form_el in form_els
-				form_el.disabled = not visualization_enabled
-			container_el.classList[if visualization_enabled then "remove" else "add"]("disabled")
+	# 	for container_el in Array.from(document.querySelectorAll(".disable-if-viz-disabled"))
+	# 		form_el_selector = "input, button, textarea, select"
+	# 		form_els = Array.from(container_el.querySelectorAll(form_el_selector))
+	# 		if container_el.matches(form_el_selector)
+	# 			form_els.push(container_el)
+	# 		for form_el in form_els
+	# 			form_el.disabled = not visualization_enabled
+	# 		container_el.classList[if visualization_enabled then "remove" else "add"]("disabled")
 	
-	return unless visualization_enabled
+	# return unless visualization_enabled
 	
 	filter = "hue-rotate(#{hue_rotate_degrees}deg)"
 	if canvas.style.filter isnt filter
