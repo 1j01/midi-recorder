@@ -447,6 +447,8 @@ set_pitch_bend = (value, time=performance.now())->
 		note.pitch_bends.push(pitch_bend)
 	clear_button.disabled = false
 	clear_button.hidden = false
+	if undo_clear_button is document.activeElement
+		export_midi_file_button.focus()
 	undo_clear_button.hidden = true
 
 demo = ->
@@ -523,6 +525,8 @@ demo = ->
 		export_midi_file_button.disabled = false
 		clear_button.disabled = false
 		clear_button.hidden = false
+		if undo_clear_button is document.activeElement
+			export_midi_file_button.focus()
 		undo_clear_button.hidden = true
 
 	, 10
@@ -548,6 +552,8 @@ smi.on 'noteOn', ({event, key, velocity, time})->
 	export_midi_file_button.disabled = false
 	clear_button.disabled = false
 	clear_button.hidden = false
+	if undo_clear_button is document.activeElement
+		export_midi_file_button.focus()
 	undo_clear_button.hidden = true
 
 	if is_learning_range
@@ -572,6 +578,8 @@ smi.on 'programChange', ({program, time})->
 	global_instrument_selects.push({time, value: program})
 	clear_button.disabled = false
 	clear_button.hidden = false
+	if undo_clear_button is document.activeElement
+		export_midi_file_button.focus()
 	undo_clear_button.hidden = true
 
 smi.on 'global', ({event, cc, value, time})->
@@ -588,6 +596,8 @@ smi.on 'global', ({event, cc, value, time})->
 			})
 			clear_button.disabled = false
 			clear_button.hidden = false
+			if undo_clear_button is document.activeElement
+				export_midi_file_button.focus()
 			undo_clear_button.hidden = true
 		current_sustain_active = active
 
@@ -1027,6 +1037,7 @@ end_learn_range = ->
 	midi_range_left_input.disabled = false
 	midi_range_right_input.disabled = false
 	[midi_range_left_input.value, midi_range_right_input.value] = selected_range
+	learn_range_or_apply_button.focus()
 
 learn_range_or_apply_button.onclick = ->
 	if is_learning_range
