@@ -818,6 +818,7 @@ do animate = ->
 		if smooth
 			ctx.beginPath()
 			points = []
+			data_points = []
 			for pitch_bend, i in note.pitch_bends
 				next_pitch_bend = note.pitch_bends[i + 1]
 				segment_end_time = next_pitch_bend?.time ? note.end_time ? now
@@ -827,6 +828,7 @@ do animate = ->
 				bent_x = x + pitch_bend.value * 2 * midi_to_canvas_scalar
 				segment_end_bent_x = x + (next_pitch_bend ? pitch_bend).value * 2 * midi_to_canvas_scalar
 				points.push({x: bent_x, y: y1})
+				data_points.push({x: bent_x, y: y1})
 				# points.push({x: bent_x, y: y2})
 				# if y2 - y1 > 5 # and Math.abs(pitch_bend.value - next_pitch_bend?.value) < 0.1
 				# 	ctx.lineTo(bent_x, y2 - 4)
@@ -858,6 +860,9 @@ do animate = ->
 			ctx.globalAlpha = 1
 			ctx.fillStyle = "aqua"
 			for point in points
+				ctx.fillRect(point.x, point.y, 2, 2)
+			ctx.fillStyle = "lime"
+			for point in data_points
 				ctx.fillRect(point.x, point.y, 2, 2)
 		else
 			for pitch_bend, i in note.pitch_bends
