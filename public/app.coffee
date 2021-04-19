@@ -201,6 +201,7 @@ set_selected_range = (range)->
 	unless is_learning_range
 		[midi_range_left_input.value, midi_range_right_input.value] = selected_range
 
+first_url_update = true
 save_options = ->
 	[from_midi_val, to_midi_val] = selected_range
 	data =
@@ -217,7 +218,15 @@ save_options = ->
 	keyvals =
 		for key, val of data
 			"#{key}=#{val}"
-	location.hash = keyvals.join("&")
+	if first_url_update
+		first_url_update = false
+		try
+			# avoid hijacking the browser back button / creating an extra step to go back thru
+			history.replaceState(null, null, "##{keyvals.join("&")}")
+		catch
+			location.hash = keyvals.join("&")
+	else
+		location.hash = keyvals.join("&")
 	
 	# NOTE: (sort of) redundantly loading options from hash on hashchange after setting hash
 	# This actually applies the normalization tho so it's kind of nice
