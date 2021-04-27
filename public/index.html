@@ -81,10 +81,17 @@
 				<p id="loading-midi-devices-message" hidden>Loading...</p>
 				<p id="no-midi-devices-message" hidden>No MIDI devices detected</p>
 				<table id="midi-devices" aria-live="assertive"></table>
-				<div id="midi-not-supported" class="error-message" hidden>
-					This browser doesn't support MIDI access.
-					Try using Chrome, or for other browsers, the
-					<a href="https://jazz-soft.net/download/web-midi/">Jazz-Soft Web MIDI API extension</a>.
+				<div id="midi-not-supported" hidden>
+					<div class="error-message">
+						This browser doesn't support MIDI access.
+						Try using Chrome, or for other browsers, the
+						<a href="https://jazz-soft.net/download/web-midi/">Jazz-Soft Web MIDI API extension</a>.
+					</div>
+					<button class="button-functional" id="demo-button">
+						<span class="button-visual">
+							<span id="demo-button-stop-text" hidden>Stop</span>&nbsp;Demo
+						</span>
+					</button>
 				</div>
 				<div id="midi-access-failed" class="error-message" hidden>
 					Failed to get MIDI access.

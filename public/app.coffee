@@ -31,6 +31,8 @@ learn_range_text_el = document.getElementById("learn-midi-range-button-text")
 apply_text_el = document.getElementById("apply-midi-range-button-text")
 cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-button")
 midi_devices_table = document.getElementById("midi-devices")
+demo_button = document.getElementById("demo-button")
+demo_button_stop_span = document.getElementById("demo-button-stop-text")
 
 instrument_names = [
 	"1. Acoustic Grand Piano"
@@ -468,8 +470,21 @@ set_pitch_bend = (value, time=performance.now())->
 		note.pitch_bends.push(pitch_bend)
 	enable_clearing()
 
+demo_iid = null
+stop_demo = ->
+	clearInterval demo_iid
+	demo_iid = null
+	current_notes.forEach (note, note_key)->
+		note.end_time = performance.now()
+		note.length = note.end_time - note.start_time
+		current_notes.delete(note_key)
+	demo_button_stop_span.hidden = true
 demo = ->
-	iid = setInterval ->
+	if demo_iid
+		stop_demo()
+		return
+	demo_button_stop_span.hidden = false
+	demo_iid = setInterval ->
 		velocity = 127 # ??? range TBD - my MIDI keyboard isn't working right now haha, I'll have to restart my computer
 
 		start_time = performance.now()
@@ -547,6 +562,8 @@ demo = ->
 
 # do demo
 window.demo = demo
+window.stop_demo = stop_demo
+demo_button.onclick = demo
 
 smi.on 'noteOn', ({event, key, velocity, time})->
 	old_note = current_notes.get(key)
