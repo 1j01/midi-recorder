@@ -249,6 +249,11 @@ button svg {
 	color: gray;
 }
 
+#recording-name {
+	margin-left: 7px;
+	width: auto;
+}
+
 input[type="text"],
 input[type="number"] {
 	background: #111;

@@ -11,6 +11,7 @@ no_notes_recorded_message_el = document.getElementById("no-notes-recorded-messag
 no_midi_devices_message_el = document.getElementById("no-midi-devices-message")
 loading_midi_devices_message_el = document.getElementById("loading-midi-devices-message")
 export_midi_file_button = document.getElementById("export-midi-file-button")
+recording_name_input = document.getElementById("recording-name")
 clear_button = document.getElementById("clear-button")
 undo_clear_button = document.getElementById("undo-clear-button")
 fullscreen_button = document.getElementById("fullscreen-button")
@@ -404,8 +405,10 @@ save_state = ->
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
+		recording_name: "placeholder",
 	}))
 	state.current_notes = new Map(current_notes)
+	state.recording_name = recording_name_input.value
 	state
 
 restore_state = (state)->
@@ -420,8 +423,10 @@ restore_state = (state)->
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
+		recording_name
 	} = JSON.parse(JSON.stringify(state))
 	current_notes = new Map(state.current_notes)
+	recording_name_input.value = state.recording_name
 
 initial_state = save_state()
 undo_state = save_state()
@@ -534,6 +539,7 @@ demo = ->
 		# 	set_pitch_bend(Math.sin(t * 4))
 
 		no_notes_recorded_message_el.hidden = true
+		recording_name_input.hidden = false
 		export_midi_file_button.disabled = false
 		enable_clearing()
 
@@ -557,6 +563,7 @@ smi.on 'noteOn', ({event, key, velocity, time})->
 	notes.push(note)
 
 	no_notes_recorded_message_el.hidden = true
+	recording_name_input.hidden = false
 	export_midi_file_button.disabled = false
 	enable_clearing()
 
@@ -1010,7 +1017,33 @@ export_midi_file_button.onclick = export_midi_file = ->
 	# Colons are optional in ISO 8601 format, and invalid in Windows filenames.
 	# Sub-second precision is optional and unnecessary.
 	iso_date_string = new Date(last_note_datetime).toISOString().replace(/:/g, "").replace(/\..*Z/, "Z")
-	saveAs(blob, "#{iso_date_string}.midi")
+	# Sanitize filename in a fun way
+	# We don't need to worry about Windows reserved filenames, dot or space at end of filename, length, etc.
+	# because the browser should take care of that,
+	# but the browser will sanitize reserved characters in a bland way,
+	# such as replacing with underscores.
+	# I want to preserve the intention as much as possible, of the entered name.
+	recording_name = recording_name_input.value
+	recording_name = recording_name.replace(/\//g, "⧸")
+	recording_name = recording_name.replace(/\\/g, "⧹")
+	recording_name = recording_name.replace(/</g, "ᐸ")
+	recording_name = recording_name.replace(/>/g, "ᐳ")
+	recording_name = recording_name.replace(/:/g, "꞉")
+	recording_name = recording_name.replace(/\|/g, "∣")
+	recording_name = recording_name.replace(/\?/g, "？")
+	recording_name = recording_name.replace(/\*/g, "∗")
+	recording_name = recording_name.replace(/(^|[-—\s(\["])'/g, "$1\u2018")  # opening singles
+	recording_name = recording_name.replace(/'/g, "\u2019")                  # closing singles & apostrophes
+	recording_name = recording_name.replace(/(^|[-—/\[(‘\s])"/g, "$1\u201c") # opening doubles
+	recording_name = recording_name.replace(/"/g, "\u201d")                  # closing doubles
+	recording_name = recording_name.replace(/--/g, "\u2014")                 # em-dashes
+	recording_name = recording_name.replace(/\.\.\./g, "…")                  # ellipses
+	recording_name = recording_name.replace(/~/g, "\u223C")                  # Chrome at least doesn't like tildes
+	recording_name = recording_name.trim()
+
+	file_name = "#{iso_date_string}#{if recording_name.length then " - #{recording_name}" else ""}.midi"
+
+	saveAs(blob, file_name)
 
 
 fullscreen_button.onclick = ->
