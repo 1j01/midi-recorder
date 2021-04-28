@@ -973,7 +973,7 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 
 	events = events.filter((event)-> isFinite(event._time))
 	events.sort((a, b)-> a._time - b._time)
-	total_track_time = events[events.length - 1]._time
+	total_track_time = events[events.length - 1]._time - events[0]._time
 	BPM = 120 # beats per minute
 	PPQ = 192 # pulses per quarter note
 	ms_per_tick = 60000 / (BPM * PPQ)
@@ -1080,7 +1080,7 @@ window.test_midi_files_of_different_lengths = ->
 	for [1..12]
 		velocity = 127 # ??? range TBD
 
-		for [1..s**1.1]
+		for [1..s**1.01]
 			start_time = overall_start_time + s*1000
 			end_time = start_time + 1000
 			notes.push({key: 60 + (s % 12), velocity, start_time, end_time, length: end_time - start_time, pitch_bends: []})
