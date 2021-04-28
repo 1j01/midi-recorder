@@ -1073,6 +1073,27 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 
 setInterval (-> export_midi_file("testing")), 500
 
+window.test_midi_files_of_different_lengths = ->
+	s = 0
+	for [0..10]
+		velocity = 127 # ??? range TBD
+
+		for [0..10]
+
+			start_time = performance.now() + s*1000
+			end_time = start_time + 1000
+
+			note = {key: s + 60, velocity, start_time, end_time, pitch_bends: []}
+			note.length = note.end_time - note.start_time
+			notes.push(note)
+
+		s += 1
+
+		recording_name_input.value = "s=#{s}"
+		export_midi_file()
+
+
+
 fullscreen_button.onclick = ->
 	if fullscreen_target_el.requestFullscreen
 		fullscreen_target_el.requestFullscreen()
