@@ -986,7 +986,7 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 				event.delta = (event._time - last_time) / ms_per_tick
 			else
 				event.delta = 0
-			last_time = event._time
+			last_time = event._time if isFinite(event._time)
 		delete event._time
 
 	events.push({
