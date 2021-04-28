@@ -913,15 +913,16 @@ export_midi_file_button.onclick = export_midi_file = ->
 			param1: note.key
 			param2: note.velocity
 		})
-		events.push({
-			# delta: <computed later>
-			_time: note.end_time
-			type: MIDIEvents.EVENT_MIDI
-			subtype: MIDIEvents.EVENT_MIDI_NOTE_OFF
-			channel: 0
-			param1: note.key
-			param2: 5 # TODO?
-		})
+		if note.end_time?
+			events.push({
+				# delta: <computed later>
+				_time: note.end_time
+				type: MIDIEvents.EVENT_MIDI
+				subtype: MIDIEvents.EVENT_MIDI_NOTE_OFF
+				channel: 0
+				param1: note.key
+				param2: 5 # TODO?
+			})
 
 	# TODO: EVENT_MIDI_CHANNEL_AFTERTOUCH
 
@@ -969,6 +970,7 @@ export_midi_file_button.onclick = export_midi_file = ->
 			param2: 0
 		})
 
+	events = events.filter((event)-> isFinite(event._time))
 	events.sort((a, b)-> a._time - b._time)
 	total_track_time = events[events.length - 1]._time
 	last_time = null
@@ -982,7 +984,7 @@ export_midi_file_button.onclick = export_midi_file = ->
 				event.delta = (event._time - last_time) / ms_per_tick
 			else
 				event.delta = 0
-			last_time = event._time
+			last_time = event._time if isFinite(event._time)
 		delete event._time
 
 	events.push({
