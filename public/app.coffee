@@ -33,6 +33,7 @@ cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-but
 midi_devices_table = document.getElementById("midi-devices")
 demo_button = document.getElementById("demo-button")
 demo_button_stop_span = document.getElementById("demo-button-stop-text")
+demo_button_start_span = document.getElementById("demo-button-start-text")
 
 instrument_names = [
 	"1. Acoustic Grand Piano"
@@ -479,11 +480,13 @@ stop_demo = ->
 		note.length = note.end_time - note.start_time
 		current_notes.delete(note_key)
 	demo_button_stop_span.hidden = true
+	demo_button_start_span.hidden = false
 demo = ->
 	if demo_iid
 		stop_demo()
 		return
 	demo_button_stop_span.hidden = false
+	demo_button_start_span.hidden = true
 	demo_iid = setInterval ->
 		velocity = 127 # ??? range TBD - my MIDI keyboard isn't working right now haha, I'll have to restart my computer
 

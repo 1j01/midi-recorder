@@ -156,7 +156,9 @@ li {
 	padding: 0;
 }
 .button-functional,
-.button-visual {
+.button-visual,
+#demo-button-stop-text:not([hidden]),
+#demo-button-start-text:not([hidden]) {
 	vertical-align: middle;
 	display: inline-flex; /* NOTE: overrides display: none implicit style from "hidden" attribute*/
 	justify-content: center;
@@ -224,7 +226,8 @@ button svg {
 	height: 1.5em;
 	width: 3em;
 }
-#fullscreen-button svg {
+#fullscreen-button svg,
+#demo-button svg {
 	height: 1em;
 	width: 1em;
 }
@@ -236,7 +239,8 @@ button svg {
 #export-midi-file-button svg path,
 #export-midi-file-button svg ellipse,
 #clear-button svg path:not([fill]),
-#undo-clear-button svg path {
+#undo-clear-button svg path,
+#demo-button svg polygon {
 	fill: currentColor;
 }
 #clear-button:disabled svg path[fill] {
