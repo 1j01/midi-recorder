@@ -895,11 +895,12 @@ do animate = ->
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
 
-export_midi_file_button.onclick = export_midi_file = ->
+export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
+	testing = testing_flag_or_event is "testing"
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
-		alert "No notes have been recorded!"
+		alert "No notes have been recorded!" unless testing
 		return
 
 	events = []
@@ -973,11 +974,12 @@ export_midi_file_button.onclick = export_midi_file = ->
 	events = events.filter((event)-> isFinite(event._time))
 	events.sort((a, b)-> a._time - b._time)
 	total_track_time = events[events.length - 1]._time
-	last_time = null
 	BPM = 120 # beats per minute
 	PPQ = 192 # pulses per quarter note
 	ms_per_tick = 60000 / (BPM * PPQ)
-#	console.log({total_track_time, ms_per_tick})
+	total_track_time_seconds = total_track_time / 1000
+	console.log({total_track_time, ms_per_tick, total_track_time_seconds})
+	last_time = null
 	for event in events
 		unless event.delta?
 			if last_time?
@@ -1033,6 +1035,8 @@ export_midi_file_button.onclick = export_midi_file = ->
 
 #	console.log({first_track_events, events})
 
+	return if testing
+
 	output_array_buffer = midi_file.getContent()
 	
 	blob = new Blob([output_array_buffer], {type: "audio/midi"})
@@ -1066,6 +1070,27 @@ export_midi_file_button.onclick = export_midi_file = ->
 	file_name = "#{iso_date_string}#{if recording_name.length then " - #{recording_name}" else ""}.midi"
 
 	saveAs(blob, file_name)
+
+# setInterval (-> export_midi_file("testing")), 500
+
+window.test_midi_files_of_different_lengths = ->
+	restore_state(initial_state)
+	s = 0
+	overall_start_time = performance.now()
+	for [1..12]
+		velocity = 127 # ??? range TBD
+
+		for [1..s**1.01]
+			start_time = overall_start_time + s*1000
+			end_time = start_time + 1000
+			notes.push({key: 60 + (s % 12), velocity, start_time, end_time, length: end_time - start_time, pitch_bends: []})
+
+			s += 1
+
+		recording_name_input.value = "s=#{s}"
+		console.log "export s=#{s}"
+		export_midi_file()
+
 
 
 fullscreen_button.onclick = ->
