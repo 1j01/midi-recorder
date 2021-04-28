@@ -15,22 +15,6 @@ MIT-licensed. See [LICENSE.md](LICENSE.md)
 
 ### TODO
 
-
-| Number of notes (1 sec each) | Duration shown in VLC |
-|------------------------------|-----------------------|
-|2 | 5|
-|4 | 10|
-|8 | 20|
-|16 | 41|
-|32 | 83|
-|65 | 166|
-|132 | 343|
-|270 | 703|
-|555 | 1445|
-|4941 | 12867|
-
-* Fix track length (end time).......................
-
 * Improve layout on mobile / small viewport size
 
 * Fade out overlay when playing (unless viz is disabled), with a button to show info again?
