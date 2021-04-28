@@ -10,7 +10,7 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 ### TODO
 
-* Fix track length (end time)
+* Fix track length (end time)..................
 
 * Improve layout on mobile / small viewport size
 
