@@ -186,6 +186,7 @@ li {
 	padding: 9px 16px;
 	margin-bottom: 3px;
 	color: #ddd;
+	transition: filter .5s ease;
 }
 
 .button-functional:disabled .button-visual {
@@ -194,7 +195,20 @@ li {
 	box-shadow: inset 0 1px 2px rgba(255,255,255,0.05), 0 4px 0 #111, 0 0 0 2px black, 0 4px 0 2px black, 0 0 0 3px #222, 0 4px 0 3px #222;
 }
 
-.button-functional:enabled:hover .button-visual { color: white }
+.button-functional:enabled:hover .button-visual,
+.button-functional:enabled:focus .button-visual {
+	color: white;
+	text-shadow: 0 0 5px #51efff;
+}
+.button-functional:enabled:focus .button-visual {
+	filter: drop-shadow(0 0 5px #51efff);
+}
+#learn-range-or-apply-button:enabled:hover .button-visual svg > * {
+	filter: drop-shadow(0 0 2px #51efff);
+}
+.button-functional:enabled:hover:not(#learn-range-or-apply-button) .button-visual svg {
+	filter: drop-shadow(0 0 2px #51efff);
+}
 
 .button-functional:enabled:active .button-visual {
 	margin-top: 3px;
