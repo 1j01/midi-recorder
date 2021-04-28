@@ -8,6 +8,11 @@ If you've got a MIDI keyboard, plug in and [try it out][app].
 
 Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js) and [MidiFile.js](https://github.com/nfroidure/midifile)
 
+
+### License
+
+MIT-licensed. See [LICENSE.md](LICENSE.md)
+
 ### TODO
 
 * Improve layout on mobile / small viewport size
