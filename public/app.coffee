@@ -974,12 +974,12 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 	events = events.filter((event)-> isFinite(event._time))
 	events.sort((a, b)-> a._time - b._time)
 	total_track_time = events[events.length - 1]._time
-	last_time = null
 	BPM = 120 # beats per minute
 	PPQ = 192 # pulses per quarter note
 	ms_per_tick = 60000 / (BPM * PPQ)
 	total_track_time_seconds = total_track_time / 1000
 	console.log({total_track_time, ms_per_tick, total_track_time_seconds})
+	last_time = null
 	for event in events
 		unless event.delta?
 			if last_time?
