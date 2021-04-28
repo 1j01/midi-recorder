@@ -1078,7 +1078,7 @@ window.test_midi_files_of_different_lengths = ->
 	for [1..5]
 		velocity = 127 # ??? range TBD
 
-		for [1..100]
+		for [1..s**1.5]
 			start_time = performance.now() + s*1000
 			end_time = start_time + 1000
 			notes.push({key: 60 + (s % 12), velocity, start_time, end_time, length: end_time - start_time, pitch_bends: []})
