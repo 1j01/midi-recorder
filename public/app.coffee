@@ -1013,8 +1013,7 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 			type: MIDIEvents.EVENT_META
 			subtype: MIDIEvents.EVENT_META_SET_TEMPO
 			length: 3
-			tempo: 500000
-			tempoBPM: 120 # not used
+			tempo: 60000000 / BPM
 		}
 #		{
 #			delta: 0
