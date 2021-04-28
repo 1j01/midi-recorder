@@ -34,6 +34,29 @@ MIT-licensed. See [LICENSE.md](LICENSE.md)
 | 400                          | 19:15 = 1155          |
 | 500                          | 23:36 = 1416          |
 
+| Number of notes (1 sec each) | Duration shown in VLC |
+|------------------------------|-----------------------|
+|2 | 22|
+|4 | 28|
+|12 | 48|
+|53 | 155|
+|438 | 1158|
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+|                              |                       |
+
 * Fix track length (end time)..................
 
 * Improve layout on mobile / small viewport size
