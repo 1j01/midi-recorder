@@ -973,12 +973,12 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 
 	events = events.filter((event)-> isFinite(event._time))
 	events.sort((a, b)-> a._time - b._time)
-	total_track_time = events[events.length - 1]._time - events[0]._time
+	total_track_time_ms = events[events.length - 1]._time - events[0]._time
 	BPM = 120 # beats per minute
 	PPQN = 192 # pulses per quarter note
 	pulses_per_ms = PPQN * BPM / 60000
-	total_track_time_seconds = total_track_time / 1000
-	console.log({total_track_time_seconds})
+	total_track_time_seconds = total_track_time_ms / 1000
+	console.log({total_track_time_seconds, pulses_per_ms})
 	last_time = null
 	for event in events
 		unless event.delta?
@@ -1022,7 +1022,7 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 #			length: 0 # TODO: name "Tempo track" / "Meta track" / "Conductor track"
 #		}
 		{
-			delta: ~~total_track_time
+			delta: ~~(total_track_time_ms * pulses_per_ms)
 			type: MIDIEvents.EVENT_META
 			subtype: MIDIEvents.EVENT_META_END_OF_TRACK
 			length: 0
