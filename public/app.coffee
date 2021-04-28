@@ -895,11 +895,12 @@ do animate = ->
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
 
-export_midi_file_button.onclick = export_midi_file = ->
+export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
+	testing = testing_flag_or_event is "testing"
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
-		alert "No notes have been recorded!"
+		alert "No notes have been recorded!" unless testing
 		return
 
 	events = []
@@ -977,7 +978,8 @@ export_midi_file_button.onclick = export_midi_file = ->
 	BPM = 120 # beats per minute
 	PPQ = 192 # pulses per quarter note
 	ms_per_tick = 60000 / (BPM * PPQ)
-#	console.log({total_track_time, ms_per_tick})
+	total_track_time_seconds = total_track_time / 1000
+	console.log({total_track_time, ms_per_tick, total_track_time_seconds})
 	for event in events
 		unless event.delta?
 			if last_time?
@@ -1033,6 +1035,8 @@ export_midi_file_button.onclick = export_midi_file = ->
 
 #	console.log({first_track_events, events})
 
+	return if testing
+
 	output_array_buffer = midi_file.getContent()
 	
 	blob = new Blob([output_array_buffer], {type: "audio/midi"})
@@ -1067,6 +1071,7 @@ export_midi_file_button.onclick = export_midi_file = ->
 
 	saveAs(blob, file_name)
 
+setInterval (-> export_midi_file("testing")), 500
 
 fullscreen_button.onclick = ->
 	if fullscreen_target_el.requestFullscreen
