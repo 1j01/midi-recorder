@@ -1071,7 +1071,7 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 
 	saveAs(blob, file_name)
 
-setInterval (-> export_midi_file("testing")), 500
+# setInterval (-> export_midi_file("testing")), 500
 
 window.test_midi_files_of_different_lengths = ->
 	s = 0
@@ -1086,6 +1086,7 @@ window.test_midi_files_of_different_lengths = ->
 			s += 1
 
 		recording_name_input.value = "s=#{s}"
+		console.log "export s=#{s}"
 		export_midi_file()
 
 
