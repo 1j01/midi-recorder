@@ -1075,15 +1075,15 @@ setInterval (-> export_midi_file("testing")), 500
 
 window.test_midi_files_of_different_lengths = ->
 	s = 0
-	for [0..5]
+	for [1..5]
 		velocity = 127 # ??? range TBD
 
-		for [0..100]
+		for [1..100]
 
 			start_time = performance.now() + s*1000
 			end_time = start_time + 1000
 
-			note = {key: s + 60, velocity, start_time, end_time, pitch_bends: []}
+			note = {key: (if s > 50 then 100 - s else s + 60), velocity, start_time, end_time, pitch_bends: []}
 			note.length = note.end_time - note.start_time
 			notes.push(note)
 
