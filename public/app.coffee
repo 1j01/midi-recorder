@@ -1074,12 +1074,14 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 # setInterval (-> export_midi_file("testing")), 500
 
 window.test_midi_files_of_different_lengths = ->
+	restore_state(initial_state)
 	s = 0
-	for [1..5]
+	overall_start_time = performance.now()
+	for [1..12]
 		velocity = 127 # ??? range TBD
 
-		for [1..s**1.5]
-			start_time = performance.now() + s*1000
+		for [1..s**1.1]
+			start_time = overall_start_time + s*1000
 			end_time = start_time + 1000
 			notes.push({key: 60 + (s % 12), velocity, start_time, end_time, length: end_time - start_time, pitch_bends: []})
 
