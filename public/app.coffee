@@ -1058,7 +1058,7 @@ export_midi_file_button.onclick = export_midi_file = ->
 	recording_name = recording_name.replace(/"/g, "\u201d")                  # closing doubles
 	recording_name = recording_name.replace(/--/g, "\u2014")                 # em-dashes
 	recording_name = recording_name.replace(/\.\.\./g, "…")                  # ellipses
-	recording_name = recording_name.replace(/~/g, "\u223C")                  # Chrome at least doesn't like tildes
+	recording_name = recording_name.replace(/~/g, "\u301C")                  # Chrome at least doesn't like tildes
 	recording_name = recording_name.trim()
 
 	file_name = "#{iso_date_string}#{if recording_name.length then " - #{recording_name}" else ""}.midi"
