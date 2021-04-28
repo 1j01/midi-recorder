@@ -973,7 +973,7 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 
 	events = events.filter((event)-> isFinite(event._time))
 	events.sort((a, b)-> a._time - b._time)
-	total_track_time = events[events.length - 1]._time
+	total_track_time = events[events.length - 1]._time - events[0]._time
 	BPM = 120 # beats per minute
 	PPQ = 192 # pulses per quarter note
 	ms_per_tick = 60000 / (BPM * PPQ)
