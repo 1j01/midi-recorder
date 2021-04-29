@@ -642,27 +642,29 @@ localforage.config({
 	name: "MIDI Recorder"
 })
 
-recording_session_id = nanoid()
-chunk_n = 1
+recording_session_id = "recording_#{nanoid()}"
+latest_chunk_n = 1
 save_chunk = ->
-	saving_chunk_n = chunk_n
-	localforage.setItem("recording_#{recording_session_id}:chunk_#{saving_chunk_n}", chunk_events)
+	saving_chunk_n = latest_chunk_n
+	saving_chunk_id = "chunk_#{saving_chunk_n.toString().padStart(5, "0")}"
+	localforage.setItem("#{recording_session_id}:#{saving_chunk_id}", chunk_events)
 	.then ->
 		chunk_events.length = 0
 	, (error)->
 		# chunk_events.length = 0 # maybe?? in case some events case it to fail to save? but what if it was just a fluke that it failed to save (disk busy etc.)?
 		# TODO: warning message
 		console.log "Failed to save recording chunk #{saving_chunk_n}"
-	chunk_n += 1
+	latest_chunk_n += 1
 
 setInterval save_chunk, 1000
 
 localforage.keys().then (keys)->
 	for key in keys
-		match = key.match(/recording_([^:]+):chunk_(\d+)/)
+		match = key.match(/(recording_[^:]+):chunk_(\d+)/)
 		if match
-			[, recovery_recording_id, recovery_chunk_n] = match
-			console.log "Could recover chunk", {recovery_recording_id, recovery_chunk_n}
+			recovery_recording_session_id = match[1]
+			recovery_chunk_n = parseInt(match[2], 10)
+			console.log "Could recover chunk #{recovery_chunk_n} of #{recovery_recording_session_id}"
 		else
 			console.log "Not matching key:", key
 , (error)->
