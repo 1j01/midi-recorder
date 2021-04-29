@@ -638,6 +638,10 @@ nanoid = (length = 21) ->
 		id += if n < 36 then n.toString(36) else if n < 62 then (n - 26).toString(36).toUpperCase() else if n < 63 then '_' else '-'
 	id
 
+localforage.config({
+	name: "MIDI Recorder"
+})
+
 recording_session_id = nanoid()
 chunk_n = 1
 save_chunk = ->
