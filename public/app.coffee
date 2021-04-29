@@ -611,9 +611,13 @@ smi.on 'programChange', ({program, time})->
 	global_instrument_selects.push({time, value: program})
 	enable_clearing()
 
-smi.on 'global', ({event, cc, value, time})->
+chunk_events = []
+smi.on 'global', ({event, cc, value, time, data})->
 	# if data.event not in ['clock', 'activeSensing']
 	# 	console.log(data)
+
+	chunk_events.push {data, time}
+
 	if event is "cc" and cc is 64
 		active = value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
 		if current_sustain_active and not active
@@ -625,6 +629,39 @@ smi.on 'global', ({event, cc, value, time})->
 			})
 			enable_clearing()
 		current_sustain_active = active
+
+# nanoid=`(t=21)=>{let e="",r=crypto.getRandomValues(new Uint8Array(t));for(;t--;){let n=63&r[t];e+=n<36?n.toString(36):n<62?(n-26).toString(36).toUpperCase():n<63?"_":"-"}return e};`
+nanoid = (length = 21) ->
+	id = ''
+	for n in crypto.getRandomValues(new Uint8Array(length))
+		n = 63 & n
+		id += if n < 36 then n.toString(36) else if n < 62 then (n - 26).toString(36).toUpperCase() else if n < 63 then '_' else '-'
+	id
+
+recording_session_id = nanoid()
+chunk_n = 1
+save_chunk = ->
+	saving_chunk_n = chunk_n
+	localforage.setItem("recording_#{recording_session_id}:chunk_#{saving_chunk_n}", chunk_events)
+	.then ->
+		chunk_events.length = 0
+	, (error)->
+		# chunk_events.length = 0 # maybe?? in case some events case it to fail to save? but what if it was just a fluke that it failed to save (disk busy etc.)?
+		# TODO: warning message
+		console.log "Failed to save recording chunk #{saving_chunk_n}"
+	chunk_n += 1
+
+setInterval save_chunk, 1000
+
+localforage.keys().then (keys)->
+	for key in keys
+		match = key.match(/recording_([^:+]):chunk_(\d+)/)
+		if match
+			[, recovery_recording_id, recovery_chunk_n] = match
+			console.log "Could recover chunk", {recovery_recording_id, recovery_chunk_n}
+, (error)->
+	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
+	console.log "Failed to list keys to look for recordings to recover"
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
 
