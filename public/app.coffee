@@ -321,6 +321,9 @@ update_options_from_inputs()
 
 addEventListener("hashchange", load_options)
 
+##############################
+# Connecting to Devices
+##############################
 
 midi_device_ids_to_rows = new Map
 
@@ -383,6 +386,10 @@ if navigator.requestMIDIAccess
 else
 	loading_midi_devices_message_el.hidden = true
 	midi_not_supported.hidden = false
+
+##############################
+# State Handling
+##############################
 
 notes = []
 current_notes = new Map
@@ -470,6 +477,10 @@ set_pitch_bend = (value, time=performance.now())->
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
 	enable_clearing()
+
+##############################
+# Demonstration Mode
+##############################
 
 demo_iid = null
 stop_demo = ->
@@ -567,6 +578,10 @@ window.demo = demo
 window.stop_demo = stop_demo
 demo_button.onclick = demo
 
+##############################
+# Recording
+##############################
+
 smi.on 'noteOn', ({event, key, velocity, time})->
 	# Note: noteOn with velocity of 0 is supposed to be equivalent to noteOff in MIDI,
 	# but SimpleMidiInput abstracts that away for us, sending a noteOff instead,
@@ -613,10 +628,10 @@ smi.on 'programChange', ({program, time})->
 
 chunk_events = []
 smi.on 'global', ({event, cc, value, time, data})->
-	# if data.event not in ['clock', 'activeSensing']
-	# 	console.log(data)
+	if event not in ['clock', 'activeSensing']
+		# console.log({event, cc, value, time, data})
 
-	chunk_events.push {data, time}
+		chunk_events.push {data, time}
 
 	if event is "cc" and cc is 64
 		active = value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
@@ -630,6 +645,10 @@ smi.on 'global', ({event, cc, value, time, data})->
 			enable_clearing()
 		current_sustain_active = active
 
+##############################
+# Recording Recovery
+##############################
+
 # nanoid=`(t=21)=>{let e="",r=crypto.getRandomValues(new Uint8Array(t));for(;t--;){let n=63&r[t];e+=n<36?n.toString(36):n<62?(n-26).toString(36).toUpperCase():n<63?"_":"-"}return e};`
 nanoid = (length = 21) ->
 	id = ''
@@ -642,34 +661,52 @@ localforage.config({
 	name: "MIDI Recorder"
 })
 
-recording_session_id = "recording_#{nanoid()}"
-latest_chunk_n = 1
+active_recording_session_id = "recording_#{nanoid()}"
+active_chunk_n = 1
 save_chunk = ->
-	saving_chunk_n = latest_chunk_n
+	if chunk_events.length is 0
+		return
+	saving_chunk_n = active_chunk_n
 	saving_chunk_id = "chunk_#{saving_chunk_n.toString().padStart(5, "0")}"
-	localforage.setItem("#{recording_session_id}:#{saving_chunk_id}", chunk_events)
+	localforage.setItem("#{active_recording_session_id}:#{saving_chunk_id}", chunk_events)
 	.then ->
 		chunk_events.length = 0
 	, (error)->
 		# chunk_events.length = 0 # maybe?? in case some events case it to fail to save? but what if it was just a fluke that it failed to save (disk busy etc.)?
 		# TODO: warning message
 		console.log "Failed to save recording chunk #{saving_chunk_n}"
-	latest_chunk_n += 1
+	active_chunk_n += 1
 
 setInterval save_chunk, 1000
 
+# TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
+	recovery_recordings = {}
 	for key in keys
 		match = key.match(/(recording_[^:]+):chunk_(\d+)/)
 		if match
-			recovery_recording_session_id = match[1]
+			recovery_id = match[1]
 			recovery_chunk_n = parseInt(match[2], 10)
-			console.log "Could recover chunk #{recovery_chunk_n} of #{recovery_recording_session_id}"
+			# console.log "Could recover chunk #{recovery_chunk_n} of #{recovery_id}"
+			recovery_recordings[recovery_id] ?= {chunks: []}
+			recovery_recordings[recovery_id].chunks.push({n: recovery_chunk_n, key})
 		else
 			console.log "Not matching key:", key
+	for recovery_id, recovery_recording of recovery_recordings
+		recovery_name = recovery_id # TODO: time of start of recording, maybe just change IDs to be this
+		if confirm("Recover recording #{recovery_name}?")
+			;
+	# TODO: present UI to recover one recording at a time?
 , (error)->
 	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
 	console.log "Failed to list keys to look for recordings to recover", error
+
+# TODO: handle clearing/unclearing for recording session
+
+
+##############################
+# Rendering (Visualization)
+##############################
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
 
@@ -942,6 +979,10 @@ do animate = ->
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
 
+##############################
+# MIDI File Export
+##############################
+
 export_midi_file_button.onclick = export_midi_file = ()->
 	midi_file = new MIDIFile()
 
@@ -1114,6 +1155,9 @@ export_midi_file_button.onclick = export_midi_file = ()->
 
 	saveAs(blob, file_name)
 
+##############################
+# User Interface
+##############################
 
 fullscreen_button.onclick = ->
 	if fullscreen_target_el.requestFullscreen
@@ -1164,6 +1208,10 @@ document.body.addEventListener "keydown", (event)->
 document.body.addEventListener "keyup", (event)->
 	if event.keyCode is KEYCODE_ESC
 		end_learn_range()
+
+##############################
+# Device Discovery Helper
+##############################
 
 midi_discovery_iframe = document.createElement("iframe")
 midi_discovery_iframe.style.position = "absolute"
