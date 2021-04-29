@@ -488,7 +488,7 @@ demo = ->
 	demo_button_stop_span.hidden = false
 	demo_button_start_span.hidden = true
 	demo_iid = setInterval ->
-		velocity = 127 # ??? range TBD - my MIDI keyboard isn't working right now haha, I'll have to restart my computer
+		velocity = 127 # range is 0-127, with 0 being equivalent to noteOff
 
 		start_time = performance.now()
 
@@ -563,12 +563,14 @@ demo = ->
 
 	, 10
 
-# do demo
 window.demo = demo
 window.stop_demo = stop_demo
 demo_button.onclick = demo
 
 smi.on 'noteOn', ({event, key, velocity, time})->
+	# Note: noteOn with velocity of 0 is supposed to be equivalent to noteOff in MIDI,
+	# but SimpleMidiInput abstracts that away for us, sending a noteOff instead,
+	# so we don't need to handle noteOn of 0.
 	old_note = current_notes.get(key)
 	start_time = time
 	return if old_note
@@ -895,12 +897,11 @@ do animate = ->
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
 
-export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
-	testing = testing_flag_or_event is "testing"
+export_midi_file_button.onclick = export_midi_file = ()->
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
-		alert "No notes have been recorded!" unless testing
+		alert "No notes have been recorded!"
 		return
 
 	events = []
@@ -979,7 +980,6 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 	PPQN = 192 # pulses per quarter note
 	pulses_per_ms = PPQN * BPM / 60000
 	total_track_time_seconds = total_track_time_ms / 1000
-	console.log({total_track_time_seconds, pulses_per_ms})
 	last_time = null
 	for event in events
 		unless event.delta?
@@ -1035,8 +1035,6 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 
 #	console.log({first_track_events, events})
 
-	return if testing
-
 	output_array_buffer = midi_file.getContent()
 	
 	blob = new Blob([output_array_buffer], {type: "audio/midi"})
@@ -1070,27 +1068,6 @@ export_midi_file_button.onclick = export_midi_file = (testing_flag_or_event)->
 	file_name = "#{iso_date_string}#{if recording_name.length then " - #{recording_name}" else ""}.midi"
 
 	saveAs(blob, file_name)
-
-# setInterval (-> export_midi_file("testing")), 500
-
-window.test_midi_files_of_different_lengths = ->
-	restore_state(initial_state)
-	s = 0
-	overall_start_time = performance.now()
-	for [1..12]
-		velocity = 127 # ??? range TBD
-
-		for [1..s**1.01]
-			start_time = overall_start_time + s*1000
-			end_time = start_time + 1000
-			notes.push({key: 60 + (s % 12), velocity, start_time, end_time, length: end_time - start_time, pitch_bends: []})
-
-			s += 1
-
-		recording_name_input.value = "s=#{s}"
-		console.log "export s=#{s}"
-		export_midi_file()
-
 
 
 fullscreen_button.onclick = ->
