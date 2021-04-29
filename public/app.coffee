@@ -679,23 +679,36 @@ save_chunk = ->
 
 setInterval save_chunk, 1000
 
+recover = (recoverable)->
+	# TODO: what about if stuff is recorded before we get here?
+	# maybe separate from SMI
+
+	for chunk in recoverable.chunks
+		chunk_events = await localforage.getItem(chunk.key)
+	
+
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
-	recovery_recordings = {}
+	recoverables = {}
 	for key in keys
 		match = key.match(/(recording_[^:]+):chunk_(\d+)/)
 		if match
-			recovery_id = match[1]
-			recovery_chunk_n = parseInt(match[2], 10)
-			# console.log "Could recover chunk #{recovery_chunk_n} of #{recovery_id}"
-			recovery_recordings[recovery_id] ?= {chunks: []}
-			recovery_recordings[recovery_id].chunks.push({n: recovery_chunk_n, key})
-		else
-			console.log "Not matching key:", key
-	for recovery_id, recovery_recording of recovery_recordings
-		recovery_name = recovery_id # TODO: time of start of recording, maybe just change IDs to be this
-		if confirm("Recover recording #{recovery_name}?")
-			;
+			recoverable_id = match[1]
+			recoverable_chunk_n = parseInt(match[2], 10)
+			# console.log "Could recover chunk #{recoverable_chunk_n} of #{recoverable_id}"
+			recoverables[recoverable_id] ?= {chunks: []}
+			recoverables[recoverable_id].chunks.push({n: recoverable_chunk_n, key})
+		# else
+		# 	console.log "Not matching key:", key
+	for recoverable_id, recoverable of recoverables
+		# TODO: for understandable identification, use time of start of recording,
+		# maybe just change IDs to be such instead of nanoid()
+		# (but I could store it as a separate field if I'm worried about collision)
+		# (if you have two tabs open of the app when loading the browser, say by accident,
+		# you may only need one of their recording sessions, but they need to not mess each other up!)
+		# (I could also include the name in the input field, if you so happen to type it before/while recording)
+		if confirm("Recover recording #{recoverable_id}?")
+			recover(recoverable)
 	# TODO: present UI to recover one recording at a time?
 , (error)->
 	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
