@@ -2,7 +2,9 @@
 
 The simplest way to record MIDI.
 
-Also a nice simple live MIDI visualizer.
+- Records right away, no install or setup required. Automatically connects to new MIDI devices.
+- Visualizes notes, pitch bends, and instrument changes, as you play, so you know its recording.
+- Records **while you play**, so if you close the tab by accident, or refresh the page, or your browser crashes, or there's a power outage, you can recover the recording.
 
 If you've got a MIDI keyboard, plug in and [try it out][app].
 
@@ -20,14 +22,7 @@ MIT-licensed. See [LICENSE.md](LICENSE.md)
 * Fade out overlay when playing (unless viz is disabled), with a button to show info again?
     - But there's a fullscreen button now (for the viz), is that good enough?
 
-* Save progressively to local storage
-    - This is the killer feature IMO, letting you record for long periods of time without fear of loss
-    - Note: must handle multiple tabs without conflict
-        - Could be separate recording slots per tab, but then there'd have to be a way to recover different sessions, vs having just one
-        - Could use a scheme of saving chunks including notes since the last time of the last chunk (where the last write wins for a chunk) (and assume connected inputs are the same, which should be fine) - with potential complexity around trying not to duplicate or drop notes around chunk borders
-        - Could use a scheme where one tab is somehow elected as the one to save MIDI to local storage, but this doesn't seem nice... it would probably have to be chunked anyways
-    - Specifically stress test the length of recording
-    - Make it clear it's continuing off a previous recording session / recording was recovered
+* Stress test the length of recording
 
 * Record + show aftertouch pressure
     - I don't have a keyboard that supports this.

@@ -37,6 +37,10 @@
 					</li>
 					<li class="supported">
 						<span>✓</span>
+						<span>Saves while you play, so you can recover recordings!</span>
+					</li>
+					<li class="supported">
+						<span>✓</span>
 						<span>Note velocity / loudness</span>
 					</li>
 					<li class="supported">
@@ -65,11 +69,12 @@
 					</li>
 				</ul>
 				<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
-				<h3>Caveats:</h3>
+				<h3>Limitations:</h3>
 				<ul class="bulleted-list">
 					<li>Aftertouch pressure and miscellaneous MIDI events are not recorded.</li>
-					<li>Instrument is assumed to be piano at start of each recording.</li>
+					<li>Instrument is assumed to be piano at start of each recording. If you want to keep playing with a different instrument, change the instrument and change it back to send an instrument change event.</li>
 					<!-- <li>Instrument is assumed to be piano when the app starts up.</li> -->
+					<li>Some pianos give different numbers for instruments than the GM standard, and/or use bank selects, which aren't supported. You may want to note the instruments in the file name.</li>
 					<li>Only one channel is supported, so split/dual instrument settings won't work.</li>
 					<li>Pitch bend range is assumed to be ± 2 semitones (a common default).</li>
 				</ul>
