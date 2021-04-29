@@ -611,9 +611,13 @@ smi.on 'programChange', ({program, time})->
 	global_instrument_selects.push({time, value: program})
 	enable_clearing()
 
-smi.on 'global', ({event, cc, value, time})->
-	# if data.event not in ['clock', 'activeSensing']
-	# 	console.log(data)
+active_chunk_events = []
+smi.on 'global', ({event, cc, value, time, data})->
+	if event not in ['clock', 'activeSensing']
+		# console.log({event, cc, value, time, data})
+
+		active_chunk_events.push {data, time}
+
 	if event is "cc" and cc is 64
 		active = value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
 		if current_sustain_active and not active
@@ -625,6 +629,88 @@ smi.on 'global', ({event, cc, value, time})->
 			})
 			enable_clearing()
 		current_sustain_active = active
+
+# nanoid=`(t=21)=>{let e="",r=crypto.getRandomValues(new Uint8Array(t));for(;t--;){let n=63&r[t];e+=n<36?n.toString(36):n<62?(n-26).toString(36).toUpperCase():n<63?"_":"-"}return e};`
+nanoid = (length = 21) ->
+	id = ''
+	for n in crypto.getRandomValues(new Uint8Array(length))
+		n = 63 & n
+		id += if n < 36 then n.toString(36) else if n < 62 then (n - 26).toString(36).toUpperCase() else if n < 63 then '_' else '-'
+	id
+
+localforage.config({
+	name: "MIDI Recorder"
+})
+
+active_recording_session_id = "recording_#{nanoid()}"
+active_chunk_n = 1
+save_chunk = ->
+	if active_chunk_events.length is 0
+		return
+	saving_chunk_n = active_chunk_n
+	saving_chunk_id = "chunk_#{saving_chunk_n.toString().padStart(5, "0")}"
+	localforage.setItem("#{active_recording_session_id}:#{saving_chunk_id}", active_chunk_events)
+	.then ->
+		active_chunk_events.length = 0
+	, (error)->
+		# active_chunk_events.length = 0 # maybe?? in case some events case it to fail to save? but what if it was just a fluke that it failed to save (disk busy etc.)?
+		# TODO: warning message
+		console.log "Failed to save recording chunk #{saving_chunk_n}"
+	active_chunk_n += 1
+
+setInterval save_chunk, 1000
+
+recover = (recoverable)->
+	# TODO: what about if stuff is recorded before we get here?
+	# should we restore_state(initial_state)?
+	# maybe separate from SMI, separate concerns; maybe ditch the library entirely
+	
+	recoverable.chunks.sort((a, b)-> a.n - b.n)
+	console.log(recoverable.chunks)
+
+	# TODO: maybe parallelize getItem? but make sure to keep order of chunks
+	# not sure it'd help, anyways.
+	recovered_events = []
+	for chunk in recoverable.chunks
+		recovered_chunk_events = await localforage.getItem(chunk.key)
+		recovered_events = recovered_events.concat(recovered_chunk_events)
+		chunk.events = recovered_chunk_events
+		for event in recovered_chunk_events
+			event.timeStamp ?= event.time
+	
+	console.log(recovered_chunk_events)
+	for event in recovered_events
+		smi.processMidiMessage(event)
+
+# TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
+localforage.keys().then (keys)->
+	recoverables = {}
+	for key in keys
+		match = key.match(/(recording_[^:]+):chunk_(\d+)/)
+		if match
+			recoverable_id = match[1]
+			recoverable_chunk_n = parseInt(match[2], 10)
+			# console.log "Could recover chunk #{recoverable_chunk_n} of #{recoverable_id}"
+			recoverables[recoverable_id] ?= {chunks: []}
+			recoverables[recoverable_id].chunks.push({n: recoverable_chunk_n, key})
+		# else
+		# 	console.log "Not matching key:", key
+	for recoverable_id, recoverable of recoverables
+		# TODO: for understandable identification, use time of start of recording,
+		# maybe just change IDs to be such instead of nanoid()
+		# (but I could store it as a separate field if I'm worried about collision)
+		# (if you have two tabs open of the app when loading the browser, say by accident,
+		# you may only need one of their recording sessions, but they need to not mess each other up!)
+		# (I could also include the name in the input field, if you so happen to type it before/while recording)
+		if confirm("Recover recording #{recoverable_id}?")
+			recover(recoverable)
+		break
+	# TODO: present UI to recover recordings, but always recover in serial in case of its too much to store all in memory
+, (error)->
+	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
+	console.log "Failed to list keys to look for recordings to recover", error
+
+# TODO: handle clearing/unclearing for recording session
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
 
