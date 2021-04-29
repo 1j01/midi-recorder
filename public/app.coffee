@@ -659,13 +659,15 @@ setInterval save_chunk, 1000
 
 localforage.keys().then (keys)->
 	for key in keys
-		match = key.match(/recording_([^:+]):chunk_(\d+)/)
+		match = key.match(/recording_([^:]+):chunk_(\d+)/)
 		if match
 			[, recovery_recording_id, recovery_chunk_n] = match
 			console.log "Could recover chunk", {recovery_recording_id, recovery_chunk_n}
+		else
+			console.log "Not matching key:", key
 , (error)->
 	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
-	console.log "Failed to list keys to look for recordings to recover"
+	console.log "Failed to list keys to look for recordings to recover", error
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
 
