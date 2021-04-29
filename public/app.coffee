@@ -626,12 +626,12 @@ smi.on 'programChange', ({program, time})->
 	global_instrument_selects.push({time, value: program})
 	enable_clearing()
 
-chunk_events = []
+active_chunk_events = []
 smi.on 'global', ({event, cc, value, time, data})->
 	if event not in ['clock', 'activeSensing']
 		# console.log({event, cc, value, time, data})
 
-		chunk_events.push {data, time}
+		active_chunk_events.push {data, time}
 
 	if event is "cc" and cc is 64
 		active = value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
@@ -664,15 +664,15 @@ localforage.config({
 active_recording_session_id = "recording_#{nanoid()}"
 active_chunk_n = 1
 save_chunk = ->
-	if chunk_events.length is 0
+	if active_chunk_events.length is 0
 		return
 	saving_chunk_n = active_chunk_n
 	saving_chunk_id = "chunk_#{saving_chunk_n.toString().padStart(5, "0")}"
-	localforage.setItem("#{active_recording_session_id}:#{saving_chunk_id}", chunk_events)
+	localforage.setItem("#{active_recording_session_id}:#{saving_chunk_id}", active_chunk_events)
 	.then ->
-		chunk_events.length = 0
+		active_chunk_events.length = 0
 	, (error)->
-		# chunk_events.length = 0 # maybe?? in case some events case it to fail to save? but what if it was just a fluke that it failed to save (disk busy etc.)?
+		# active_chunk_events.length = 0 # maybe?? in case some events case it to fail to save? but what if it was just a fluke that it failed to save (disk busy etc.)?
 		# TODO: warning message
 		console.log "Failed to save recording chunk #{saving_chunk_n}"
 	active_chunk_n += 1
@@ -681,11 +681,14 @@ setInterval save_chunk, 1000
 
 recover = (recoverable)->
 	# TODO: what about if stuff is recorded before we get here?
-	# maybe separate from SMI
-
-	for chunk in recoverable.chunks
-		chunk_events = await localforage.getItem(chunk.key)
+	# should we restore_state(initial_state)?
+	# maybe separate from SMI, separate concerns; maybe ditch the library entirely
 	
+	recovered_events = []
+	for chunk in recoverable.chunks
+		recovered_chunk_events = await localforage.getItem(chunk.key)
+		recovered_events = recovered_events.concat(recovered_chunk_events)
+	recovered_events
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
