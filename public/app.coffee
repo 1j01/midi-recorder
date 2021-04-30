@@ -680,12 +680,12 @@ save_chunk = ->
 setInterval save_chunk, 1000
 
 recover = (recoverable)->
-	# TODO: what about if stuff is recorded before we get here?
-	# should we restore_state(initial_state)?
-	# maybe separate from SMI, separate concerns; maybe ditch the library entirely
-	
+	# TODO: separate concerns, avoid affecting app state
+	# maybe ditch SimpleMidiInput.js
+	before_recovery = save_state()
+	restore_state(initial_state)
+
 	recoverable.chunks.sort((a, b)-> a.n - b.n)
-	console.log(recoverable.chunks)
 
 	# TODO: maybe parallelize getItem? but make sure to keep order of chunks
 	# not sure it'd help, anyways.
@@ -697,9 +697,13 @@ recover = (recoverable)->
 		for event in recovered_chunk_events
 			event.timeStamp ?= event.time
 	
-	console.log(recovered_chunk_events)
 	for event in recovered_events
 		smi.processMidiMessage(event)
+
+	recording_name_input.value = "recovered"
+	export_midi_file()
+
+	restore_state(before_recovery)
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
