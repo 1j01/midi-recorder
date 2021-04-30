@@ -321,6 +321,9 @@ update_options_from_inputs()
 
 addEventListener("hashchange", load_options)
 
+##############################
+# Connecting to Devices
+##############################
 
 midi_device_ids_to_rows = new Map
 
@@ -383,6 +386,10 @@ if navigator.requestMIDIAccess
 else
 	loading_midi_devices_message_el.hidden = true
 	midi_not_supported.hidden = false
+
+##############################
+# State Handling
+##############################
 
 notes = []
 current_notes = new Map
@@ -470,6 +477,10 @@ set_pitch_bend = (value, time=performance.now())->
 	current_notes.forEach (note, key)->
 		note.pitch_bends.push(pitch_bend)
 	enable_clearing()
+
+##############################
+# Demonstration Mode
+##############################
 
 demo_iid = null
 stop_demo = ->
@@ -567,6 +578,10 @@ window.demo = demo
 window.stop_demo = stop_demo
 demo_button.onclick = demo
 
+##############################
+# Recording
+##############################
+
 smi.on 'noteOn', ({event, key, velocity, time})->
 	# Note: noteOn with velocity of 0 is supposed to be equivalent to noteOff in MIDI,
 	# but SimpleMidiInput abstracts that away for us, sending a noteOff instead,
@@ -629,6 +644,10 @@ smi.on 'global', ({event, cc, value, time, data})->
 			})
 			enable_clearing()
 		current_sustain_active = active
+
+##############################
+# Recording Recovery
+##############################
 
 # nanoid=`(t=21)=>{let e="",r=crypto.getRandomValues(new Uint8Array(t));for(;t--;){let n=63&r[t];e+=n<36?n.toString(36):n<62?(n-26).toString(36).toUpperCase():n<63?"_":"-"}return e};`
 nanoid = (length = 21) ->
@@ -711,6 +730,11 @@ localforage.keys().then (keys)->
 	console.log "Failed to list keys to look for recordings to recover", error
 
 # TODO: handle clearing/unclearing for recording session
+
+
+##############################
+# Rendering (Visualization)
+##############################
 
 piano_accidental_pattern = [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0].map((bit_num)-> bit_num > 0)
 
@@ -983,6 +1007,10 @@ do animate = ->
 				ctx.fillRect(x, 0, w, time_axis_canvas_length)
 	ctx.restore()
 
+##############################
+# MIDI File Export
+##############################
+
 export_midi_file_button.onclick = export_midi_file = ()->
 	midi_file = new MIDIFile()
 
@@ -1155,6 +1183,9 @@ export_midi_file_button.onclick = export_midi_file = ()->
 
 	saveAs(blob, file_name)
 
+##############################
+# User Interface
+##############################
 
 fullscreen_button.onclick = ->
 	if fullscreen_target_el.requestFullscreen
@@ -1205,6 +1236,10 @@ document.body.addEventListener "keydown", (event)->
 document.body.addEventListener "keyup", (event)->
 	if event.keyCode is KEYCODE_ESC
 		end_learn_range()
+
+##############################
+# Device Discovery Helper
+##############################
 
 midi_discovery_iframe = document.createElement("iframe")
 midi_discovery_iframe.style.position = "absolute"
