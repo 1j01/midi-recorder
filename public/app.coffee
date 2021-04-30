@@ -688,7 +688,14 @@ setInterval save_chunk, 1000
 recover = (recoverable)->
 	# TODO: separate concerns, avoid affecting app state
 	# maybe ditch SimpleMidiInput.js
-	before_recovery = save_state()
+	original_state = save_state()
+	original_focus = document.activeElement
+	original_clear_button_hidden                 = clear_button.hidden
+	original_clear_button_disabled               = clear_button.disabled
+	original_undo_clear_button_hidden            = undo_clear_button.hidden
+	original_no_notes_recorded_message_el_hidden = no_notes_recorded_message_el.hidden
+	original_recording_name_input_hidden         = recording_name_input.hidden
+	original_export_midi_file_button_disabled    = export_midi_file_button.disabled
 	restore_state(initial_state)
 
 	recoverable.chunks.sort((a, b)-> a.n - b.n)
@@ -709,7 +716,16 @@ recover = (recoverable)->
 	recording_name_input.value = "recovered"
 	export_midi_file()
 
-	restore_state(before_recovery)
+	# all of this could be avoided if UI concerns were separated from MIDI input and export
+	restore_state(original_state)
+	clear_button.hidden                 = original_clear_button_hidden
+	clear_button.disabled               = original_clear_button_disabled
+	undo_clear_button.hidden            = original_undo_clear_button_hidden
+	no_notes_recorded_message_el.hidden = original_no_notes_recorded_message_el_hidden
+	recording_name_input.hidden         = original_recording_name_input_hidden
+	export_midi_file_button.disabled    = original_export_midi_file_button_disabled
+	original_focus?.focus()
+
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
