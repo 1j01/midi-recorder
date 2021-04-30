@@ -684,11 +684,22 @@ recover = (recoverable)->
 	# should we restore_state(initial_state)?
 	# maybe separate from SMI, separate concerns; maybe ditch the library entirely
 	
+	recoverable.chunks.sort((a, b)-> a.n - b.n)
+	console.log(recoverable.chunks)
+
+	# TODO: maybe parallelize getItem? but make sure to keep order of chunks
+	# not sure it'd help, anyways.
 	recovered_events = []
 	for chunk in recoverable.chunks
 		recovered_chunk_events = await localforage.getItem(chunk.key)
 		recovered_events = recovered_events.concat(recovered_chunk_events)
-	recovered_events
+		chunk.events = recovered_chunk_events
+		for event in recovered_chunk_events
+			event.timeStamp ?= event.time
+	
+	console.log(recovered_chunk_events)
+	for event in recovered_events
+		smi.processMidiMessage(event)
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
@@ -712,7 +723,8 @@ localforage.keys().then (keys)->
 		# (I could also include the name in the input field, if you so happen to type it before/while recording)
 		if confirm("Recover recording #{recoverable_id}?")
 			recover(recoverable)
-	# TODO: present UI to recover one recording at a time?
+		break
+	# TODO: present UI to recover recordings, but always recover in serial in case of its too much to store all in memory
 , (error)->
 	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
 	console.log "Failed to list keys to look for recordings to recover", error
