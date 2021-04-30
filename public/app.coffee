@@ -166,6 +166,17 @@ instrument_names = [
 	"128. Gunshot"
 ]
 
+nanoid = (length = 21) ->
+	id = ''
+	for n in crypto.getRandomValues(new Uint8Array(length))
+		n = 63 & n
+		id += if n < 36 then n.toString(36) else if n < 62 then (n - 26).toString(36).toUpperCase() else if n < 63 then '_' else '-'
+	id
+
+localforage.config({
+	name: "MIDI Recorder"
+})
+
 # for filename
 # - first note would be easier to keep track of but if you record more without clearing, it should be a new filename
 # - time-of-save would be easiest, but then it's harder to know if you've already saved something
@@ -399,6 +410,8 @@ current_sustain_active = off
 global_sustain_periods = []
 current_instrument = undefined
 global_instrument_selects = []
+active_recording_session_id = "recording_#{nanoid()}"
+active_chunk_n = 1
 
 export_midi_file_button.disabled = true
 clear_button.disabled = true
@@ -416,6 +429,8 @@ save_state = ->
 		current_instrument
 		global_instrument_selects
 		recording_name: "placeholder",
+		active_recording_session_id
+		active_chunk_n
 	}))
 	state.current_notes = new Map(current_notes)
 	state.recording_name = recording_name_input.value
@@ -434,6 +449,8 @@ restore_state = (state)->
 		current_instrument
 		global_instrument_selects
 		recording_name
+		active_recording_session_id
+		active_chunk_n
 	} = JSON.parse(JSON.stringify(state))
 	current_notes = new Map(state.current_notes)
 	recording_name_input.value = state.recording_name
@@ -451,6 +468,9 @@ clear_notes = ->
 	clear_button.hidden = true
 	undo_clear_button.hidden = false
 	undo_clear_button.focus()
+
+	active_recording_session_id = "recording_#{nanoid()}"
+	active_chunk_n = 1
 
 undo_clear_notes = ->
 	restore_state(undo_state)
@@ -649,20 +669,6 @@ smi.on 'global', ({event, cc, value, time, data})->
 # Recording Recovery
 ##############################
 
-# nanoid=`(t=21)=>{let e="",r=crypto.getRandomValues(new Uint8Array(t));for(;t--;){let n=63&r[t];e+=n<36?n.toString(36):n<62?(n-26).toString(36).toUpperCase():n<63?"_":"-"}return e};`
-nanoid = (length = 21) ->
-	id = ''
-	for n in crypto.getRandomValues(new Uint8Array(length))
-		n = 63 & n
-		id += if n < 36 then n.toString(36) else if n < 62 then (n - 26).toString(36).toUpperCase() else if n < 63 then '_' else '-'
-	id
-
-localforage.config({
-	name: "MIDI Recorder"
-})
-
-active_recording_session_id = "recording_#{nanoid()}"
-active_chunk_n = 1
 save_chunk = ->
 	if active_chunk_events.length is 0
 		return
@@ -732,8 +738,6 @@ localforage.keys().then (keys)->
 , (error)->
 	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
 	console.log "Failed to list keys to look for recordings to recover", error
-
-# TODO: handle clearing/unclearing for recording session
 
 
 ##############################
