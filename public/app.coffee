@@ -688,6 +688,7 @@ save_chunk = ->
 		# TODO: warning message
 		console.log "Failed to save recording chunk #{saving_chunk_n}"
 	active_chunk_n += 1
+	try localStorage["name:#{active_recording_session_id}"] = new Date(last_note_datetime).toISOString()#.replace(/:/g, "").replace(/\..*Z/, "Z")
 
 setInterval save_chunk, 1000
 
@@ -738,16 +739,11 @@ recover = (recoverable)->
 
 list_recoverable_recording = (recoverable)->
 	recovery_section.hidden = false
-	# TODO: for understandable identification, use time of start of recording,
-	# maybe just change IDs to be such instead of nanoid()
-	# (but I could store it as a separate field if I'm worried about collision)
-	# (if you have two tabs open of the app when loading the browser, say by accident,
-	# you may only need one of their recording sessions, but they need to not mess each other up!)
-	# (I could also include the name in the input field, if you so happen to type it before/while recording)
+
 	li = document.createElement("li")
 	li.classList.add("recoverable-recording")
 	span = document.createElement("span")
-	span.textContent = recoverable.recoverable_id
+	span.textContent = recoverable.name ? recoverable.recoverable_id
 	recoverables_list.appendChild(li)
 	button = document.createElement("button")
 	button.classList.add("button-functional")
@@ -797,12 +793,14 @@ localforage.keys().then (keys)->
 		# 	console.log "Not matching key:", key
 	for recoverable_id, recoverable of recoverables
 		should_delete = try localStorage["to_delete:#{recoverable_id}"]
+		recoverable.name = try localStorage["name:#{recoverable_id}"]
 		# TODO: hide but delay deletion until after some period after it's marked for deletion, like days maybe?
 		if should_delete
 			for chunk in recoverable.chunks
 				# not sure if I should await this... maybe it should display all the recoverable recordings right away...
 				await localforage.removeItem(chunk.key)
 			try delete localStorage["to_delete:#{recoverable_id}"]
+			try delete localStorage["name:#{recoverable_id}"]
 		else
 			list_recoverable_recording(recoverable)
 	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
