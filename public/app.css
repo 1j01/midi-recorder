@@ -235,17 +235,10 @@ button svg {
 	height: 1.3em;
 	width: 1.3em;
 }
-#fullscreen-button svg path,
-#export-midi-file-button svg path,
-#export-midi-file-button svg ellipse,
-.recoverable-recording button svg path,
-.recoverable-recording button svg ellipse,
-#clear-button svg path:not([fill]),
-#undo-clear-button svg path,
-#demo-button svg polygon {
+.fill-cc {
 	fill: currentColor;
 }
-#clear-button:disabled svg path[fill] {
+button:disabled .fill-cc-if-disabled {
 	fill: currentColor;
 }
 
