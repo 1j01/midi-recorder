@@ -12,6 +12,7 @@ body {
 	overflow: hidden;
 }
 
+#js-modal-page,
 .outer-container {
 	display: flex;
 	height: 100%;
