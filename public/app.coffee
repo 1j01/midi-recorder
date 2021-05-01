@@ -423,19 +423,18 @@ save_state = ->
 	# Map can't be JSON-stringified
 	state = JSON.parse(JSON.stringify({
 		notes
-		current_notes: "placeholder"
+		current_notes: "placeholder for non-serializable Map object"
 		current_pitch_bend_value
 		global_pitch_bends
 		current_sustain_active
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
-		recording_name: "placeholder",
+		recording_name: recording_name_input.value
 		active_recording_session_id
 		active_chunk_n
 	}))
 	state.current_notes = new Map(current_notes)
-	state.recording_name = recording_name_input.value
 	state
 
 restore_state = (state)->
@@ -450,7 +449,6 @@ restore_state = (state)->
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
-		recording_name
 		active_recording_session_id
 		active_chunk_n
 	} = JSON.parse(JSON.stringify(state))
