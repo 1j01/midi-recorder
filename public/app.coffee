@@ -1128,7 +1128,7 @@ do animate = ->
 export_midi_file_button.onclick = -> 
 	export_midi_file("saved")
 
-export_midi_file = (delete_later_reason, recoverable)->
+export_midi_file = (delete_later_reason, file_name)->
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
@@ -1269,34 +1269,36 @@ export_midi_file = (delete_later_reason, recoverable)->
 	output_array_buffer = midi_file.getContent()
 	
 	blob = new Blob([output_array_buffer], {type: "audio/midi"})
-	# Colons are optional in ISO 8601 format, and invalid in Windows filenames.
-	# Sub-second precision is optional and unnecessary.
-	iso_date_string = new Date(last_note_datetime).toISOString().replace(/:/g, "").replace(/\..*Z/, "Z")
-	# Sanitize filename in a fun way
-	# We don't need to worry about Windows reserved filenames, dot or space at end of filename, length, etc.
-	# because the browser should take care of that,
-	# but the browser will sanitize reserved characters in a bland way,
-	# such as replacing with underscores.
-	# I want to preserve the intention as much as possible, of the entered name.
-	recording_name = recording_name_input.value
-	recording_name = recording_name.replace(/\//g, "⧸")
-	recording_name = recording_name.replace(/\\/g, "⧹")
-	recording_name = recording_name.replace(/</g, "ᐸ")
-	recording_name = recording_name.replace(/>/g, "ᐳ")
-	recording_name = recording_name.replace(/:/g, "꞉")
-	recording_name = recording_name.replace(/\|/g, "∣")
-	recording_name = recording_name.replace(/\?/g, "？")
-	recording_name = recording_name.replace(/\*/g, "∗")
-	recording_name = recording_name.replace(/(^|[-—\s(\["])'/g, "$1\u2018")  # opening singles
-	recording_name = recording_name.replace(/'/g, "\u2019")                  # closing singles & apostrophes
-	recording_name = recording_name.replace(/(^|[-—/\[(‘\s])"/g, "$1\u201c") # opening doubles
-	recording_name = recording_name.replace(/"/g, "\u201d")                  # closing doubles
-	recording_name = recording_name.replace(/--/g, "\u2014")                 # em-dashes
-	recording_name = recording_name.replace(/\.\.\./g, "…")                  # ellipses
-	recording_name = recording_name.replace(/~/g, "\u301C")                  # Chrome at least doesn't like tildes
-	recording_name = recording_name.trim()
+	
+	unless file_name
+		# Colons are optional in ISO 8601 format, and invalid in Windows filenames.
+		# Sub-second precision is optional and unnecessary.
+		iso_date_string = new Date(last_note_datetime).toISOString().replace(/:/g, "").replace(/\..*Z/, "Z")
+		# Sanitize filename in a fun way
+		# We don't need to worry about Windows reserved filenames, dot or space at end of filename, length, etc.
+		# because the browser should take care of that,
+		# but the browser will sanitize reserved characters in a bland way,
+		# such as replacing with underscores.
+		# I want to preserve the intention as much as possible, of the entered name.
+		recording_name = recording_name_input.value
+		recording_name = recording_name.replace(/\//g, "⧸")
+		recording_name = recording_name.replace(/\\/g, "⧹")
+		recording_name = recording_name.replace(/</g, "ᐸ")
+		recording_name = recording_name.replace(/>/g, "ᐳ")
+		recording_name = recording_name.replace(/:/g, "꞉")
+		recording_name = recording_name.replace(/\|/g, "∣")
+		recording_name = recording_name.replace(/\?/g, "？")
+		recording_name = recording_name.replace(/\*/g, "∗")
+		recording_name = recording_name.replace(/(^|[-—\s(\["])'/g, "$1\u2018")  # opening singles
+		recording_name = recording_name.replace(/'/g, "\u2019")                  # closing singles & apostrophes
+		recording_name = recording_name.replace(/(^|[-—/\[(‘\s])"/g, "$1\u201c") # opening doubles
+		recording_name = recording_name.replace(/"/g, "\u201d")                  # closing doubles
+		recording_name = recording_name.replace(/--/g, "\u2014")                 # em-dashes
+		recording_name = recording_name.replace(/\.\.\./g, "…")                  # ellipses
+		recording_name = recording_name.replace(/~/g, "\u301C")                  # Chrome at least doesn't like tildes
+		recording_name = recording_name.trim()
 
-	file_name = "#{iso_date_string}#{if recording_name.length then " - #{recording_name}" else ""}.midi"
+		file_name = "#{iso_date_string}#{if recording_name.length then " - #{recording_name}" else ""}.midi"
 
 	saveAs(blob, file_name)
 
