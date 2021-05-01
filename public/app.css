@@ -261,8 +261,11 @@ button:disabled .fill-cc-if-disabled {
 .recoverable-recording {
 	display: flex;
 	flex-direction: row;
-	justify-content: space-between;
-    align-items: center;
+	align-items: center;
+}
+.recoverable-recording-name {
+	margin-left: 5px;
+	margin-right: auto;
 }
 
 input[type="text"],

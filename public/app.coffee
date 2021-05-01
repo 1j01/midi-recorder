@@ -752,11 +752,12 @@ list_recoverable_recording = (recoverable)->
 	li = document.createElement("li")
 	li.classList.add("recoverable-recording")
 	span = document.createElement("span")
+	span.classList.add("recoverable-recording-name")
 	span.textContent = recoverable.name ? recoverable.recoverable_id
 	recoverables_list.appendChild(li)
-	button = document.createElement("button")
-	button.classList.add("button-functional")
-	button.innerHTML = """
+	recover_button = document.createElement("button")
+	recover_button.classList.add("button-functional")
+	recover_button.innerHTML = """
 		<span class="button-visual">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
 				<g stroke-width="48.857" transform="translate(-3.631 -5.26) scale(.02225)">
@@ -772,20 +773,45 @@ list_recoverable_recording = (recoverable)->
 			Recover
 		</span>
 	"""
-	li.appendChild(button)
+	dismiss_button = document.createElement("button")
+	dismiss_button.classList.add("button-functional")
+	dismiss_button.innerHTML = """
+		<span class="button-visual">
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+				<path class="fill-cc" d="M39.294 63.922c-5.91-.629-11.383-2.047-16.826-4.362-1.553-.66-4.626-2.198-5.977-2.99-4.008-2.35-7.353-4.936-10.39-8.035-1.735-1.77-3.048-3.3-3.357-3.91-.179-.353-.194-.438-.194-1.068 0-.613.018-.722.177-1.046.253-.513.57-.856 1.008-1.09.475-.252.926-.324 2.336-.373 3.303-.113 6.816-.77 10.27-1.922 4.89-1.63 8.196-3.606 10.903-6.513.618-.663 1.02-1.184 1.91-2.475.359-.52.69-.953.69-.953l4.228 2.034s-1.344 2.408-2.02 3.307c-4.042 5.372-11.416 9.262-20.634 10.885-.538.095-1.033.195-1.101.222-.104.042-.01.155.62.743 1.15 1.075 4.54 3.748 4.994 3.94.338.141.788.103 1.687-.143 1.986-.544 3.686-1.4 5.189-2.614.564-.455.587-.438.266.204-.452.905-1.627 2.507-2.997 4.088-.333.384-.605.716-.605.738 0 .023.609.336 1.353.696.744.36 1.808.9 2.364 1.2 1.165.63 1.74.81 2.58.81 1.035 0 2.04-.292 3.53-1.023 2.286-1.122 4.338-2.58 7.467-5.306l.309-.268-.127.368c-.446 1.296-1.746 3.565-3.897 6.802-.626.944-1.129 1.726-1.116 1.738.14.134 6.29 1.275 6.87 1.275.363 0 .552-.184 1.181-1.147 2.265-3.465 4.403-7.518 6.223-11.797.612-1.438.874-2.117 1.927-4.981.48-1.306.9-2.712.921-2.733.021-.022 4.55 1.83 4.58 1.856.067.058-1.255 3.727-2.134 5.923-2.08 5.193-4.356 9.659-7.103 13.94-.827 1.289-1.915 2.807-2.283 3.187-.646.667-1.569.926-2.822.793z"/>
+				<path class="fill-cc-if-disabled" fill="red" d="M43.467 30.744c-6.402-2.85-11.665-5.19-11.696-5.202-.08-.028.23-.628.663-1.282 1.021-1.545 2.807-2.714 4.856-3.178.674-.153 2.13-.153 2.852 0 .852.181 1.344.37 3.945 1.513 4.675 2.054 7.29 3.248 7.909 3.61a7.62 7.62 0 013.693 5.22c.13.69.132 1.969.002 2.715-.099.563-.474 1.789-.548 1.787-.02-.001-5.274-2.333-11.676-5.183z"/>
+				<path class="fill-cc" d="M47.999 20.662c-2.008-.897-3.687-1.666-3.731-1.709-.063-.06.954-2.015 4.703-9.043C51.8 4.608 53.853.83 53.996.665c.382-.44.681-.565 1.339-.56a4 4 0 012.68 1.052c.494.457.71.89.71 1.421 0 .367-.296 1.221-3.45 9.925-3.1 8.556-3.56 9.805-3.61 9.793-.008-.002-1.658-.737-3.666-1.634z"/>
+			</svg>
+			Clear
+		</span>
+	"""
+	li.appendChild(recover_button)
 	li.appendChild(span)
-	button.onclick = ->
+	li.appendChild(dismiss_button)
+	recover_button.onclick = ->
 		try
 			recover(recoverable)
 			# don't remove if error occurred,
-			# to let you retry and see there error message again,
-			# and because it'd just be confusing because it'd show up later
+			# to let you retry and (probably) see there error message again,
+			# and because it'd just be confusing for it to show up later
 			li.remove()
 			if recoverables_list.children.length is 0
 				recovery_section.hidden = true
 		catch error
 			alert "An error occured.\n\n#{error}"
 			console.log "Error during recovery:", error
+	dismiss_button.onclick = ->
+		try
+			localStorage["to_delete:#{recoverable.recoverable_id}"] = "cleared_from_recovery #{new Date().toISOString()}"
+			# don't remove if error occurred,
+			# to let you retry and (probably) see there error message again,
+			# and because it'd just be confusing for it to show up later
+			li.remove()
+			if recoverables_list.children.length is 0
+				recovery_section.hidden = true
+		catch error
+			alert "Failed to dismiss recoverable recording.\n\n#{error}"
+			console.log "Failed to dismiss recoverable recording:", error
 
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
