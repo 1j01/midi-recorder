@@ -461,6 +461,8 @@ initial_state = save_state()
 undo_state = save_state()
 
 clear_notes = ->
+	try localStorage["to_delete:#{active_recording_session_id}"] = "cleared #{new Date().toISOString()}"
+
 	undo_state = save_state()
 	# TODO: keep current instrument and include instrument select at start of next recording
 	# (and update caveat in caveats list)
@@ -481,6 +483,10 @@ undo_clear_notes = ->
 	clear_button.hidden = false
 	undo_clear_button.hidden = true
 	clear_button.focus()
+
+	# delete deletion flag to cancel deletion
+	# TODO: what about if you already saved it? maybe I should get rid of the separate saving vs clearing?
+	try delete localStorage["to_delete:#{active_recording_session_id}"]
 
 enable_clearing = ->
 	clear_button.disabled = false
@@ -700,33 +706,37 @@ recover = (recoverable)->
 	original_export_midi_file_button_disabled    = export_midi_file_button.disabled
 	restore_state(initial_state)
 
-	recoverable.chunks.sort((a, b)-> a.n - b.n)
+	try
+		active_recording_session_id = recoverable.recoverable_id
 
-	# TODO: optimize with https://github.com/localForage/localForage-getItems
-	# but make sure to keep order of chunks
-	recovered_events = []
-	for chunk in recoverable.chunks
-		recovered_chunk_events = await localforage.getItem(chunk.key)
-		recovered_events = recovered_events.concat(recovered_chunk_events)
-		chunk.events = recovered_chunk_events
-		for event in recovered_chunk_events
-			event.timeStamp ?= event.time
-	
-	for event in recovered_events
-		smi.processMidiMessage(event)
+		recoverable.chunks.sort((a, b)-> a.n - b.n)
 
-	recording_name_input.value = "recovered"
-	export_midi_file()
+		# TODO: optimize with https://github.com/localForage/localForage-getItems
+		# but make sure to keep order of chunks
+		recovered_events = []
+		for chunk in recoverable.chunks
+			recovered_chunk_events = await localforage.getItem(chunk.key)
+			recovered_events = recovered_events.concat(recovered_chunk_events)
+			chunk.events = recovered_chunk_events
+			for event in recovered_chunk_events
+				event.timeStamp ?= event.time
+		
+		for event in recovered_events
+			smi.processMidiMessage(event)
 
-	# all of this could be avoided if UI concerns were separated from MIDI input and export
-	restore_state(original_state)
-	clear_button.hidden                 = original_clear_button_hidden
-	clear_button.disabled               = original_clear_button_disabled
-	undo_clear_button.hidden            = original_undo_clear_button_hidden
-	no_notes_recorded_message_el.hidden = original_no_notes_recorded_message_el_hidden
-	recording_name_input.hidden         = original_recording_name_input_hidden
-	export_midi_file_button.disabled    = original_export_midi_file_button_disabled
-	original_focus?.focus()
+		recording_name_input.value = "recovered"
+		export_midi_file("recovered")
+
+	finally
+		# all of this could be avoided if UI concerns were separated from MIDI input and export
+		restore_state(original_state)
+		clear_button.hidden                 = original_clear_button_hidden
+		clear_button.disabled               = original_clear_button_disabled
+		undo_clear_button.hidden            = original_undo_clear_button_hidden
+		no_notes_recorded_message_el.hidden = original_no_notes_recorded_message_el_hidden
+		recording_name_input.hidden         = original_recording_name_input_hidden
+		export_midi_file_button.disabled    = original_export_midi_file_button_disabled
+		original_focus?.focus()
 
 list_recoverable_recording = (recoverable)->
 	recovery_section.hidden = false
@@ -760,7 +770,18 @@ list_recoverable_recording = (recoverable)->
 	"""
 	li.appendChild(button)
 	button.onclick = ->
-		recover(recoverable)
+		try
+			recover(recoverable)
+			# don't remove if error occurred,
+			# to let you retry and see there error message again,
+			# and because it'd just be confusing because it'd show up later
+			li.remove()
+			if recoverables_list.children.length is 0
+				recovery_section.hidden = true
+		catch error
+			alert "An error occured.\n\n#{error}"
+			console.log "Error during recovery:", error
+
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
@@ -775,7 +796,15 @@ localforage.keys().then (keys)->
 		# else
 		# 	console.log "Not matching key:", key
 	for recoverable_id, recoverable of recoverables
-		list_recoverable_recording(recoverable)
+		should_delete = try localStorage["to_delete:#{recoverable_id}"]
+		# TODO: hide but delay deletion until after some period after it's marked for deletion, like days maybe?
+		if should_delete
+			for chunk in recoverable.chunks
+				# not sure if I should await this... maybe it should display all the recoverable recordings right away...
+				await localforage.removeItem(chunk.key)
+			try delete localStorage["to_delete:#{recoverable_id}"]
+		else
+			list_recoverable_recording(recoverable)
 	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
 , (error)->
 	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
@@ -1061,7 +1090,10 @@ do animate = ->
 # MIDI File Export
 ##############################
 
-export_midi_file_button.onclick = export_midi_file = ()->
+export_midi_file_button.onclick = -> 
+	export_midi_file("saved")
+
+export_midi_file = (delete_later_reason)->
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
@@ -1233,6 +1265,10 @@ export_midi_file_button.onclick = export_midi_file = ()->
 
 	saveAs(blob, file_name)
 
+	# TODO: timeout?? I wish there was a way to tell if and when the file was actually saved!
+	# probably a multi-tier recovery system is needed, where possibly-saved/recovered recordings are hidden, but still recoverable, for some number of days 
+	try localStorage["to_delete:#{active_recording_session_id}"] = "#{delete_later_reason} #{new Date().toISOString()}"
+
 ##############################
 # User Interface
 ##############################
@@ -1281,7 +1317,7 @@ document.body.addEventListener "keydown", (event)->
 	if event.keyCode is KEYCODE_ESC
 		end_learn_range()
 	if event.keyCode is KEYCODE_S and (event.ctrlKey or event.metaKey)
-		export_midi_file()
+		export_midi_file("saved")
 		event.preventDefault()
 document.body.addEventListener "keyup", (event)->
 	if event.keyCode is KEYCODE_ESC
