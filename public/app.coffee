@@ -414,6 +414,7 @@ current_instrument = undefined
 global_instrument_selects = []
 active_recording_session_id = "recording_#{nanoid()}"
 active_chunk_n = 1
+active_chunk_events = []
 
 export_midi_file_button.disabled = true
 clear_button.disabled = true
@@ -433,14 +434,17 @@ save_state = ->
 		recording_name: recording_name_input.value
 		active_recording_session_id
 		active_chunk_n
+		active_chunk_events
 	}))
 	state.current_notes = new Map(current_notes)
 	state
 
 restore_state = (state)->
 	# need to make data copy when restoring as well,
-	# so that if you restore a state it's not going to then mutate that state
+	# so that if you restore initial_state it's not going to then mutate that state
 	# so that if you clear a second recording it'll work (play notes, clear, play notes, clear)
+
+	# NOTE: these variables must all be declared ABOVE! else they will be local here
 	{
 		notes
 		current_pitch_bend_value
@@ -451,6 +455,7 @@ restore_state = (state)->
 		global_instrument_selects
 		active_recording_session_id
 		active_chunk_n
+		active_chunk_events
 	} = JSON.parse(JSON.stringify(state))
 	current_notes = new Map(state.current_notes)
 	recording_name_input.value = state.recording_name
@@ -652,7 +657,6 @@ smi.on 'programChange', ({program, time})->
 	global_instrument_selects.push({time, value: program})
 	enable_clearing()
 
-active_chunk_events = []
 smi.on 'global', ({event, cc, value, time, data})->
 	if event not in ['clock', 'activeSensing']
 		# console.log({event, cc, value, time, data})
@@ -676,6 +680,7 @@ smi.on 'global', ({event, cc, value, time, data})->
 ##############################
 
 save_chunk = ->
+	# console.log "saving chunk", active_chunk_events
 	if active_chunk_events.length is 0
 		return
 	saving_chunk_n = active_chunk_n
@@ -706,6 +711,7 @@ recover = (recoverable)->
 	restore_state(initial_state)
 
 	try
+		# console.log "saved state; starting recover"
 		active_recording_session_id = recoverable.recoverable_id
 
 		recoverable.chunks.sort((a, b)-> a.n - b.n)
@@ -727,6 +733,8 @@ recover = (recoverable)->
 		export_midi_file("recovered")
 
 	finally
+		# console.log "restoring state from recover"
+
 		# all of this could be avoided if UI concerns were separated from MIDI input and export
 		restore_state(original_state)
 		clear_button.hidden                 = original_clear_button_hidden
@@ -736,6 +744,7 @@ recover = (recoverable)->
 		recording_name_input.hidden         = original_recording_name_input_hidden
 		export_midi_file_button.disabled    = original_export_midi_file_button_disabled
 		original_focus?.focus()
+		# console.log "restored state from recover"
 
 list_recoverable_recording = (recoverable)->
 	recovery_section.hidden = false
