@@ -14,6 +14,8 @@ export_midi_file_button = document.getElementById("export-midi-file-button")
 recording_name_input = document.getElementById("recording-name")
 clear_button = document.getElementById("clear-button")
 undo_clear_button = document.getElementById("undo-clear-button")
+recovery_section = document.getElementById("recovery-section")
+recoverables_list = document.getElementById("recoverables")
 fullscreen_button = document.getElementById("fullscreen-button")
 visualization_enabled_checkbox = document.getElementById("visualization-enabled")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second")
@@ -700,8 +702,8 @@ recover = (recoverable)->
 
 	recoverable.chunks.sort((a, b)-> a.n - b.n)
 
-	# TODO: maybe parallelize getItem? but make sure to keep order of chunks
-	# not sure it'd help, anyways.
+	# TODO: optimize with https://github.com/localForage/localForage-getItems
+	# but make sure to keep order of chunks
 	recovered_events = []
 	for chunk in recoverable.chunks
 		recovered_chunk_events = await localforage.getItem(chunk.key)
@@ -726,6 +728,39 @@ recover = (recoverable)->
 	export_midi_file_button.disabled    = original_export_midi_file_button_disabled
 	original_focus?.focus()
 
+list_recoverable_recording = (recoverable)->
+	recovery_section.hidden = false
+	# TODO: for understandable identification, use time of start of recording,
+	# maybe just change IDs to be such instead of nanoid()
+	# (but I could store it as a separate field if I'm worried about collision)
+	# (if you have two tabs open of the app when loading the browser, say by accident,
+	# you may only need one of their recording sessions, but they need to not mess each other up!)
+	# (I could also include the name in the input field, if you so happen to type it before/while recording)
+	li = document.createElement("li")
+	li.classList.add("recoverable-recording")
+	li.textContent = recoverable.recoverable_id
+	recoverables_list.appendChild(li)
+	button = document.createElement("button")
+	button.classList.add("button-functional")
+	button.innerHTML = """
+		<span class="button-visual">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+				<g stroke-width="48.857" transform="translate(-3.631 -5.26) scale(.02225)">
+					<path d="M301.429 312.422l372.684-76v103.929l-372.684 76z"/>
+					<path d="M301.429 312.342h60v388.5h-60z"/>
+					<ellipse cx="-165" cy="470.362" rx="125" ry="78" transform="matrix(.77274 -.20706 .24886 .92877 273.331 240.338)"/>
+					<path d="M614.113 248.877h60v388.5h-60z"/>
+					<ellipse cx="-165" cy="470.362" rx="125" ry="78" transform="matrix(.77274 -.20706 .24886 .92877 586.016 176.873)"/>
+				</g>
+				<path fill-rule="evenodd" d="M12.613 9.426c-.125.561-.347 1.012-1.258 1.585v1.165H9.033l3.485 3.838L16 12.176h-2.322v-2.75z"/>
+			</svg>
+			<!-- Save MIDI File... but also remove from list -->
+			Recover
+		</span>
+	"""
+	li.appendChild(button)
+	button.onclick = ->
+		recover(recoverable)
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
@@ -735,22 +770,13 @@ localforage.keys().then (keys)->
 		if match
 			recoverable_id = match[1]
 			recoverable_chunk_n = parseInt(match[2], 10)
-			# console.log "Could recover chunk #{recoverable_chunk_n} of #{recoverable_id}"
-			recoverables[recoverable_id] ?= {chunks: []}
+			recoverables[recoverable_id] ?= {chunks: [], recoverable_id}
 			recoverables[recoverable_id].chunks.push({n: recoverable_chunk_n, key})
 		# else
 		# 	console.log "Not matching key:", key
 	for recoverable_id, recoverable of recoverables
-		# TODO: for understandable identification, use time of start of recording,
-		# maybe just change IDs to be such instead of nanoid()
-		# (but I could store it as a separate field if I'm worried about collision)
-		# (if you have two tabs open of the app when loading the browser, say by accident,
-		# you may only need one of their recording sessions, but they need to not mess each other up!)
-		# (I could also include the name in the input field, if you so happen to type it before/while recording)
-		if confirm("Recover recording #{recoverable_id}?")
-			recover(recoverable)
-		break
-	# TODO: present UI to recover recordings, but always recover in serial in case of its too much to store all in memory
+		list_recoverable_recording(recoverable)
+	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
 , (error)->
 	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
 	console.log "Failed to list keys to look for recordings to recover", error
