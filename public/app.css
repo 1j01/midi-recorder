@@ -355,6 +355,77 @@ a {
 	z-index: 667;
 }
 
+/* another modal styling example */
+/* tooltip modal for it’s easy button */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	background: #fff;
+	opacity: .8;
+	z-index: 666;
+	cursor: pointer;
+}
+.modal-overlay[data-background-click="disabled"] {
+	cursor: auto;
+}
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	background: rgba(0, 0, 0, .8);
+	opacity: .8;
+	z-index: 666;
+	cursor: pointer;
+}
+
+.modal {
+	left: auto;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	height: 100%;
+	z-index: 667;
+	position: fixed;
+	width: 40em;
+	max-width: 100%;
+	padding: 0 1em 1em 1em;
+	font-size: 1em;
+	border: 0;
+	overflow: auto;
+	background-color: #aaa ; /* fallback CSS IE9 */
+	background-image:
+		-webkit-linear-gradient(
+			top,
+			#128197 3em,
+			#cfc5c5 3em
+		);
+	background-image:
+		linear-gradient(
+			to bottom,
+			#128197 3em,
+			#f7f7f7 3em
+		);
+	background-attachment: local;
+}
+.modal-close {
+	position: absolute;
+	top: .5em;
+	right: 0;
+	background: transparent;
+	color: #fff;
+	border: 0;
+	cursor: pointer;
+}
+.modal-title {
+	color: #fff;
+	font-size: 1.5em;
+}
 
 /* perspective registration stuff (visual 3D mapping for aligning with a camera) */
 /* not used currently */
