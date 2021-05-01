@@ -156,20 +156,9 @@
     var titleClassName = config.modalPrefixClass + MODAL_TITLE_CLASS_SUFFIX;
     var title = config.modalTitle !== '' ? '<h1 id="' + MODAL_TITLE_ID + '" class="' + titleClassName + '">\n                                          ' + config.modalTitle + '\n                                         </h1>' : '';
     var button_close = '<button type="button" class="' + MODAL_BUTTON_JS_CLASS + ' ' + buttonCloseClassName + '" id="' + MODAL_BUTTON_JS_ID + '" title="' + config.modalCloseTitle + '" ' + MODAL_BUTTON_CONTENT_BACK_ID + '="' + config.modalContentId + '" ' + MODAL_BUTTON_FOCUS_BACK_ID + '="' + config.modalFocusBackId + '">\n                               ' + buttonCloseInner + '\n                              </button>';
-    var content = config.modalText;
     var describedById = config.modalDescribedById !== '' ? ATTR_DESCRIBEDBY + '="' + config.modalDescribedById + '"' : '';
 
-    // If there is no content but an id we try to fetch content id
-    if (content === '' && config.modalContentId) {
-      var contentFromId = findById(config.modalContentId);
-      if (contentFromId) {
-        content = '<div id="' + MODAL_CONTENT_JS_ID + '">\n                              ' + contentFromId.innerHTML + '\n                             </div';
-        // we remove content from its source to avoid id duplicates, etc.
-        contentFromId.innerHTML = '';
-      }
-    }
-
-    return '<dialog id="' + id + '" class="' + modalClassName + '" ' + ATTR_ROLE + '="' + MODAL_ROLE + '" ' + describedById + ' ' + ATTR_OPEN + ' ' + ATTR_LABELLEDBY + '="' + MODAL_TITLE_ID + '">\n                    <div role="document" class="' + modalClassWrapper + '">\n                      ' + button_close + '\n                      <div class="' + contentClassName + '">\n                        ' + title + '\n                        ' + content + '\n                      </div>\n                    </div>\n                  </dialog>';
+    return '<dialog id="' + id + '" class="' + modalClassName + '" ' + ATTR_ROLE + '="' + MODAL_ROLE + '" ' + describedById + ' ' + ATTR_OPEN + ' ' + ATTR_LABELLEDBY + '="' + MODAL_TITLE_ID + '">\n                    <div role="document" class="' + modalClassWrapper + '">\n                      ' + button_close + '\n                      <div class="' + contentClassName + '">\n                        ' + title + '\n                      </div>\n                    </div>\n                  </dialog>';
   };
 
   var closeModal = function closeModal(config) {
@@ -258,7 +247,6 @@
 
             // insert modal
             body.insertAdjacentHTML('beforeEnd', createModal({
-              modalText: modalText,
               modalPrefixClass: modalPrefixClass,
               backgroundEnabled: modalContentId,
               modalTitle: modalTitle,
@@ -269,6 +257,20 @@
               modalDescribedById: modalDescribedById,
               modalFocusBackId: modalLauncher.getAttribute('id')
             }));
+
+            // insert content
+            // This part of the library I've modified to support keeping a reference to the content element, and keeping its id around (before it only copied innerHTML), generally keeping identity in tact 
+            var contentClassName = modalPrefixClass + MODAL_CONTENT_CLASS_SUFFIX;
+            var contentContainer = document.querySelector("." + contentClassName);
+            // If there is no content but an id we try to fetch content id
+            if (modalText === '' && modalContentId) {
+              var content = findById(modalContentId);
+              contentContainer.appendChild(content);
+              // hack
+              content.hidden = false;
+            } else {
+              contentContainer.innerHTML = modalText;
+            }
 
             // hide page
             wrapperBody.setAttribute(ATTR_HIDDEN, 'true');
