@@ -323,10 +323,19 @@
 						</span>
 					</button>
 				</div>
+				<!-- TODO: should this be hidden by default? -->
+				<br>
+				<!-- ID of this element gets overwritten -->
+				<button class="button-functional js-modal show-recovery-button">
+					<span class="button-visual">
+						Recover Recordings
+					</span>
+				</button>
 				<div id="recovery-section" hidden>
 					<h3>Recover Recordings</h3>
 					<ul id="recoverables"></ul>
 				</div>
+
 			</fieldset>
 			<!-- <div id="perspective-registration-container">
 				<video id="perspective-registration-video">Video stream not available.</video>
@@ -380,6 +389,7 @@
 	<script src="lib/midifile/MIDIEvents.js"></script>
 	<script src="lib/midifile/MIDIFile.js"></script>
 	<script src="lib/localforage.js"></script>
+	<script src="lib/van11y-accessible-modal-window-aria.js"></script>
 	<script src="lib/coffeescript.js"></script>
 	<!-- <script src="lib/interact.min.js"></script> -->
 	<script src="app.coffee" type="text/coffeescript"></script>

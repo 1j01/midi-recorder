@@ -318,6 +318,47 @@ a {
 	overflow: hidden;
 }
 
+
+/* modal styles */
+.invisible {
+	border: 0;
+	clip: rect(0 0 0 0);
+	height: 1px;
+	margin: -1px;
+	overflow: hidden;
+	padding: 0;
+	position: absolute;
+	width: 1px;
+}
+.hidden { display: none; }
+/* removes scroll when modal is opened */
+.no-scroll {
+	overflow: hidden;
+}
+/* overlay covers everything */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	z-index: 666;
+}
+/* modal */
+.modal {
+	position: fixed;
+	left: 25%;
+	right: auto;
+	top: 15%;
+	width: 50%;
+	background: #fff;
+	z-index: 667;
+}
+
+
+/* perspective registration stuff (visual 3D mapping for aligning with a camera) */
+/* not used currently */
+
 #perspective-registration-container,
 #perspective-registration-svg,
 #perspective-registration-video {
