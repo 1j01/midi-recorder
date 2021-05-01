@@ -748,7 +748,8 @@ list_recoverable_recording = (recoverable)->
 	# (I could also include the name in the input field, if you so happen to type it before/while recording)
 	li = document.createElement("li")
 	li.classList.add("recoverable-recording")
-	li.textContent = recoverable.recoverable_id
+	span = document.createElement("span")
+	span.textContent = recoverable.recoverable_id
 	recoverables_list.appendChild(li)
 	button = document.createElement("button")
 	button.classList.add("button-functional")
@@ -769,6 +770,7 @@ list_recoverable_recording = (recoverable)->
 		</span>
 	"""
 	li.appendChild(button)
+	li.appendChild(span)
 	button.onclick = ->
 		try
 			recover(recoverable)

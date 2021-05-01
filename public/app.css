@@ -238,6 +238,8 @@ button svg {
 #fullscreen-button svg path,
 #export-midi-file-button svg path,
 #export-midi-file-button svg ellipse,
+.recoverable-recording button svg path,
+.recoverable-recording button svg ellipse,
 #clear-button svg path:not([fill]),
 #undo-clear-button svg path,
 #demo-button svg polygon {
@@ -256,6 +258,18 @@ button svg {
 #recording-name {
 	margin-left: 7px;
 	width: auto;
+}
+
+#recoverables {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+.recoverable-recording {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+    align-items: center;
 }
 
 input[type="text"],
