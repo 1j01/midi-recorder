@@ -432,6 +432,7 @@ save_state = ->
 		current_instrument
 		global_instrument_selects
 		recording_name: recording_name_input.value
+		last_note_datetime
 		active_recording_session_id
 		active_chunk_n
 		active_chunk_events
@@ -453,6 +454,7 @@ restore_state = (state)->
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
+		last_note_datetime
 		active_recording_session_id
 		active_chunk_n
 		active_chunk_events
@@ -730,7 +732,7 @@ recover = (recoverable)->
 			smi.processMidiMessage(event)
 
 		recording_name_input.value = "recovered"
-		export_midi_file("recovered")
+		export_midi_file("recovered", recoverable)
 
 	finally
 		# console.log "restoring state from recover"
@@ -1126,7 +1128,7 @@ do animate = ->
 export_midi_file_button.onclick = -> 
 	export_midi_file("saved")
 
-export_midi_file = (delete_later_reason)->
+export_midi_file = (delete_later_reason, recoverable)->
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
