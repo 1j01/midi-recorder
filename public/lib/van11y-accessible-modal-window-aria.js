@@ -163,6 +163,12 @@
 
   var closeModal = function closeModal(config) {
 
+    // hack!
+    var contentClassName = config.modalPrefixClass + MODAL_CONTENT_CLASS_SUFFIX;
+    var contentContainer = config.modal.querySelector("." + contentClassName);
+    var graveyard = document.getElementById("modal-content-graveyard");
+    graveyard.appendChild(contentContainer);
+
     remove(config.modal);
     remove(config.overlay);
 
@@ -309,7 +315,10 @@
 
             if (!(e.target.getAttribute('id') === MODAL_OVERLAY_ID && backgroundEnabled === 'disabled')) {
 
+              var modalPrefixClass = modalLauncher.hasAttribute(MODAL_PREFIX_CLASS_ATTR) === true ? modalLauncher.getAttribute(MODAL_PREFIX_CLASS_ATTR) + '-' : '';
+
               closeModal({
+                modalPrefixClass,
                 modal: modal,
                 modalContent: modalContent,
                 overlay: overlay,
