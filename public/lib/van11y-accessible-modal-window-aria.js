@@ -9,6 +9,8 @@
 
   'use strict';
 
+  var modalContentHack = document.querySelector("#recovery-section");
+
   var MODAL_JS_CLASS = 'js-modal';
   var MODAL_ID_PREFIX = 'label_modal_';
   var MODAL_CLASS_SUFFIX = 'modal';
@@ -259,15 +261,14 @@
             }));
 
             // insert content
-            // This part of the library I've modified to support keeping a reference to the content element, and keeping its id around (before it only copied innerHTML), generally keeping identity in tact 
+            // This part of the library I've modified to in order to keep a consistent content element, rather than copying only innerHTML.
+            // I would do this nicer, but this is not the library for me.
+            // Hack. Hack. Hack.
             var contentClassName = modalPrefixClass + MODAL_CONTENT_CLASS_SUFFIX;
             var contentContainer = document.querySelector("." + contentClassName);
-            // If there is no content but an id we try to fetch content id
-            if (modalText === '' && modalContentId) {
-              var content = findById(modalContentId);
-              contentContainer.appendChild(content);
-              // hack
-              content.hidden = false;
+            if (modalContentHack) {
+              contentContainer.appendChild(modalContentHack);
+              modalContentHack.hidden = false;
             } else {
               contentContainer.innerHTML = modalText;
             }
