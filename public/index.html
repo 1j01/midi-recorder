@@ -198,14 +198,14 @@
 					</label>
 					<label>
 						Hue Rotate:
-						<input type="number" value="0" min="0" max="360" id="hue-rotate-degrees" aria-label="hue rotate in degrees" />
+						<input type="number" value="0" min="0" max="360" id="hue-rotate-degrees-input" aria-label="hue rotate in degrees" />
 						deg
 					</label>
 				</div>
 				<div class="control-row disable-if-viz-disabled">
 					<label>
 						Notes move at
-						<input type="number" value="20" min="1" id="note-gravity-pixels-per-second" aria-label="note speed in pixels per second" />
+						<input type="number" value="20" min="1" id="note-gravity-pixels-per-second-input" aria-label="note speed in pixels per second" />
 						pixels per second,
 					</label>
 					<label>
@@ -220,9 +220,9 @@
 				</div>
 				<div class="control-row disable-if-viz-disabled">
 					View note range:
-					<input type="number" value="0" min="0" max="128" id="midi-range-min" aria-label="viewport note range minimum (MIDI value)" />
+					<input type="number" value="0" min="0" max="128" id="midi-range-min-input" aria-label="viewport note range minimum (MIDI value)" />
 					–
-					<input type="number" value="128" min="0" max="128" id="midi-range-max" aria-label="viewport note range maximum (MIDI value)" />
+					<input type="number" value="128" min="0" max="128" id="midi-range-max-input" aria-label="viewport note range maximum (MIDI value)" />
 					&nbsp;
 					<button class="button-functional" id="learn-range-or-apply-button" title="Press keys on the keyboard to select the range of notes to view, then hit Apply">
 						<span class="button-visual">
@@ -273,15 +273,15 @@
 					</svg>
 					<label>
 						3D Rotate:
-						<input type="number" value="0" min="0" max="360" id="perspective-rotate-vertically" />
+						<input type="number" value="0" min="0" max="360" id="perspective-rotate-vertically-input" />
 					</label>
 					<label>
 						Camera Distance:
-						<input type="number" value="100" min="0" max="1000" id="perspective-distance" />
+						<input type="number" value="100" min="0" max="1000" id="perspective-distance-input" />
 					</label>
 					<label>
 						Scale X:
-						<input type="number" value="1" min="0.1" max="2" step="0.01" id="scale-x" />
+						<input type="number" value="1" min="0.1" max="2" step="0.01" id="scale-x-input" />
 					</label>
 				</div>
 			</fieldset>
@@ -304,7 +304,7 @@
 						</span>
 					</button>
 					<span id="no-notes-recorded-message" tabindex="0">&nbsp;- No notes recorded</span>
-					<input type="text" id="recording-name" hidden/>
+					<input type="text" id="recording-name-input" hidden/>
 					<span style="flex: 1"></span>
 					<button class="button-functional" id="clear-button" disabled>
 						<span class="button-visual">

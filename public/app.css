@@ -249,7 +249,7 @@ button:disabled .fill-cc-if-disabled {
 	color: gray;
 }
 
-#recording-name {
+#recording-name-input {
 	margin-left: 7px;
 	width: auto;
 }
