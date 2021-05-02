@@ -93,6 +93,7 @@ body.modal-open {
 }
 
 .is-icon-btn {
+  box-sizing: border-box;
   background: none;
   border: none;
   height: 2em;
@@ -111,6 +112,7 @@ body.modal-open {
 }
 
 [data-modal-x] {
+  box-sizing: border-box;
   border-right: 2px solid;
   bottom: 0;
   display: block;
@@ -126,6 +128,7 @@ body.modal-open {
 }
 
 [data-modal-x]:after {
+  box-sizing: border-box;
   border-right: 2px solid;
   content: "";
   height: 100%;
