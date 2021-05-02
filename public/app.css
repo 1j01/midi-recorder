@@ -173,6 +173,7 @@ li {
 }
 
 .button-visual {
+    pointer-events: none; /* needed for ARIAModal library to show dialog */
 	line-height: 0.8;
 	height: 1.5em;
 	width: 10em;
