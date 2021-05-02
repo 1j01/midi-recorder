@@ -319,6 +319,16 @@ a {
 	overflow: hidden;
 }
 
+.a11y-modal {
+	background: #111;
+	color: white;
+}
+
+.is-icon-btn:hover [data-modal-x],
+.is-icon-btn:focus [data-modal-x] {
+  color: white;
+}
+
 #perspective-registration-container,
 #perspective-registration-svg,
 #perspective-registration-video {

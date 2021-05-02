@@ -96,6 +96,7 @@ body.modal-open {
 .is-icon-btn {
   box-sizing: border-box;
   background: none;
+  color: inherit;
   border: none;
   height: 2em;
   padding: 0;
