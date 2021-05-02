@@ -14,7 +14,7 @@ export_midi_file_button = document.getElementById("export-midi-file-button")
 recording_name_input = document.getElementById("recording-name")
 clear_button = document.getElementById("clear-button")
 undo_clear_button = document.getElementById("undo-clear-button")
-recovery_section = document.getElementById("recovery-section")
+show_recovery_button = document.querySelector(".show-recovery-button")
 recoverables_list = document.getElementById("recoverables")
 fullscreen_button = document.getElementById("fullscreen-button")
 visualization_enabled_checkbox = document.getElementById("visualization-enabled")
@@ -750,7 +750,7 @@ recover = (recoverable)->
 		# console.log "restored state from recover"
 
 list_recoverable_recording = (recoverable)->
-	recovery_section.hidden = false
+	show_recovery_button.disabled = false
 
 	li = document.createElement("li")
 	li.classList.add("recoverable-recording")
@@ -772,8 +772,7 @@ list_recoverable_recording = (recoverable)->
 				</g>
 				<path class="fill-cc" fill-rule="evenodd" d="M12.613 9.426c-.125.561-.347 1.012-1.258 1.585v1.165H9.033l3.485 3.838L16 12.176h-2.322v-2.75z"/>
 			</svg>
-			<!-- Save MIDI File... but also remove from list -->
-			Recover
+			Save MIDI File
 		</span>
 	"""
 	dismiss_button = document.createElement("button")
@@ -799,7 +798,7 @@ list_recoverable_recording = (recoverable)->
 			# and because it'd just be confusing for it to show up later
 			li.remove()
 			if recoverables_list.children.length is 0
-				recovery_section.hidden = true
+				show_recovery_button.disabled = true
 		catch error
 			alert "An error occured.\n\n#{error}"
 			console.log "Error during recovery:", error
@@ -811,7 +810,7 @@ list_recoverable_recording = (recoverable)->
 			# and because it'd just be confusing for it to show up later
 			li.remove()
 			if recoverables_list.children.length is 0
-				recovery_section.hidden = true
+				show_recovery_button.disabled = true
 		catch error
 			alert "Failed to dismiss recoverable recording.\n\n#{error}"
 			console.log "Failed to dismiss recoverable recording:", error

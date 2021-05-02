@@ -1,4 +1,4 @@
-*,*:after,*:before{box-sizing:border-box;}
+/* *,*:after,*:before{box-sizing:border-box;} */
 
 /**
  * Including the at-only style with the dialog CSS as it is required
