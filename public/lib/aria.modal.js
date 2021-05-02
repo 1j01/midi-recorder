@@ -610,7 +610,13 @@
 	 * the dialog should run the close function.
 	 */
 	ARIAmodal.outsideClose = function ( e ) {
-		if ( body.classList.contains(activeClass) && !e.target.hasAttribute('data-modal-open') ) {
+		if (body.classList.contains(activeClass) && !e.target.hasAttribute('data-modal-open')) {
+			// In case target element was removed from the DOM with a previous event handler,
+			// such as a button to remove a list item in an editable list
+			if (!document.body.contains(e.target)) {
+				return;
+			}
+
 			var isClickInside = activeModal.contains(e.target);
 
 			if ( !isClickInside && activeModal.getAttribute('role') !== 'alertdialog') {
