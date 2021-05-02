@@ -814,6 +814,9 @@ list_recoverable_recording = (recoverable)->
 		catch error
 			alert "Failed to dismiss recoverable recording.\n\n#{error}"
 			console.log "Failed to dismiss recoverable recording:", error
+	# for modal library
+	document.getElementById("recovery-modal-content").querySelector(".js-first-focus").classList.remove("js-first-focus")
+	document.getElementById("recovery-modal-content").querySelector("li:first-of-type button:first-of-type").classList.add("js-first-focus")
 
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
