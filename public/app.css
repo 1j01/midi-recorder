@@ -254,6 +254,10 @@ button:disabled .fill-cc-if-disabled {
 	width: auto;
 }
 
+.show-recovery-button {
+    float: right;
+}
+
 #recoverables {
 	list-style-type: none;
 	margin: 0;
