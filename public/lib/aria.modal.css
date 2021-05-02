@@ -38,6 +38,7 @@ body.modal-open {
 .a11y-modal {
   -webkit-overflow-scrolling: touch;
   background: #fff;
+  color: #000;
   border: 2px solid;
   bottom: 0;
   box-shadow: 0 0 1800px 400px rgba(0,0,0,.4);
