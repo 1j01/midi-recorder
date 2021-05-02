@@ -63,8 +63,8 @@ body {
 		flex-direction: column;
 	}
 }
-.two-column-layout p {
-	max-width: 25em;
+.two-column-layout > * {
+	max-width: 35em;
 }
 #midi-devices {
 	min-width: 250px;
