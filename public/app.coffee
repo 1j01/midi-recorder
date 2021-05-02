@@ -1322,6 +1322,7 @@ fullscreen_button.onclick = ->
 		fullscreen_target_el.webkitRequestFullScreen()
 
 end_learn_range = ->
+	cancel_learn_range_button_was_focused = cancel_learn_range_button is document.activeElement
 	is_learning_range = false
 	cancel_learn_range_button.hidden = true
 	apply_text_el.hidden = true
@@ -1330,7 +1331,8 @@ end_learn_range = ->
 	midi_range_left_input.disabled = false
 	midi_range_right_input.disabled = false
 	[midi_range_left_input.value, midi_range_right_input.value] = selected_range
-	learn_range_or_apply_button.focus()
+	if cancel_learn_range_button_was_focused
+		learn_range_or_apply_button.focus()
 
 learn_range_or_apply_button.onclick = ->
 	if is_learning_range
