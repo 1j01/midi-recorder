@@ -26,9 +26,6 @@
 	var useAriaModal = false;
 	var returnToBody = false;
 
-	var firstClass = 'js-first-focus';
-	var lastClass = 'js-last-focus';
-
 	var tabFocusElements = 'button:not([hidden]):not([disabled]), [href]:not([hidden]), input:not([hidden]):not([type="hidden"]):not([disabled]), select:not([hidden]):not([disabled]), textarea:not([hidden]):not([disabled]), [tabindex="0"]:not([hidden]):not([disabled]), summary:not([hidden]), [contenteditable]:not([hidden]), audio[controls]:not([hidden]), video[controls]:not([hidden])';
 
 
@@ -293,14 +290,6 @@
 			if ( hideHeading ) {
 				self.querySelector('#' + heading.id).classList.add('at-only');
 			}
-
-			/**
-			 * Get all focusable elements from within a dialog and set the
-			 * first and last elements to have respective classes for later looping.
-			 */
-			var focusable = self.querySelectorAll(tabFocusElements);
-			focusable[0].classList.add(firstClass);
-			focusable[focusable.length - 1].classList.add(lastClass);
 		}
 	}; // ARIAmodal.setupModal
 
@@ -581,20 +570,19 @@
 					break;
 			}
 
-			if ( body.classList.contains(activeClass) ) {
-				// Get first and last focusable elements from activeModal
-				var firstFocus = activeModal.querySelector('.' + firstClass);
-				var lastFocus = activeModal.querySelector('.' + lastClass);
-			}
+			// Get first and last focusable elements from activeModal
+			var focusable = activeModal.querySelectorAll(tabFocusElements);
+			var firstFocus = focusable[0];
+			var lastFocus = focusable[focusable.length - 1];
 
-			if ( doc.activeElement.classList.contains(lastClass) ) {
+			if ( doc.activeElement === lastFocus ) {
 				if ( keyCode === tabKey && !e.shiftKey ) {
 					e.preventDefault();
 					firstFocus.focus();
 				}
 			}
 
-			if ( doc.activeElement.classList.contains(firstClass) ) {
+			if ( doc.activeElement === firstFocus ) {
 				if ( keyCode === tabKey && e.shiftKey ) {
 					e.preventDefault();
 					lastFocus.focus();

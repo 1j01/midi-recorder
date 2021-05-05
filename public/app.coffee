@@ -18,7 +18,6 @@ show_recovery_button = document.querySelector(".show-recovery-button")
 show_recovery_button_loading_indicator = document.querySelector(".show-recovery-button .loading-indicator")
 recoverables_list = document.getElementById("recoverables")
 recovery_empty_message_el = document.getElementById("recovery-empty-message")
-recovery_modal_content_el = document.getElementById("recovery-modal-content")
 fullscreen_button = document.getElementById("fullscreen-button")
 visualization_enabled_checkbox = document.getElementById("visualization-enabled")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second-input")
@@ -752,19 +751,6 @@ recover = (recoverable)->
 		original_focus?.focus()
 		# console.log "restored state from recover"
 
-update_modal_focusables_for_tab_wrapping = ->
-	# the modal library uses classes for the first and last focusable elements
-	# it determines them automatically when creating the dialog, but not when updating the contents of the dialog
-	# this should really be handled automatically by the library (they could just do it when you hit tab!),
-	# but we can copy their logic for determining the focusables, and update it manually
-	recovery_modal_content_el.querySelector(".js-first-focus").classList.remove("js-first-focus")
-	recovery_modal_content_el.querySelector(".js-last-focus").classList.remove("js-last-focus")
-	focusable = recovery_modal_content_el.querySelectorAll(
-		"button:not([hidden]):not([disabled]), [href]:not([hidden]), input:not([hidden]):not([type='hidden']):not([disabled]), select:not([hidden]):not([disabled]), textarea:not([hidden]):not([disabled]), [tabindex='0']:not([hidden]):not([disabled]), summary:not([hidden]), [contenteditable]:not([hidden]), audio[controls]:not([hidden]), video[controls]:not([hidden])"
-	)
-	focusable[0].classList.add("js-first-focus")
-	focusable[focusable.length - 1].classList.add("js-last-focus")
-
 list_recoverable_recording = (recoverable)->
 	li = document.createElement("li")
 	li.classList.add("recoverable-recording")
@@ -814,7 +800,6 @@ list_recoverable_recording = (recoverable)->
 			if recoverables_list.children.length is 0
 				show_recovery_button.disabled = true
 				recovery_empty_message_el.hidden = false
-			update_modal_focusables_for_tab_wrapping()
 		catch error
 			alert "An error occured.\n\n#{error}"
 			console.log "Error during recovery:", error
@@ -828,11 +813,9 @@ list_recoverable_recording = (recoverable)->
 			if recoverables_list.children.length is 0
 				show_recovery_button.disabled = true
 				recovery_empty_message_el.hidden = false
-			update_modal_focusables_for_tab_wrapping()
 		catch error
 			alert "Failed to dismiss recoverable recording.\n\n#{error}"
 			console.log "Failed to dismiss recoverable recording:", error
-	update_modal_focusables_for_tab_wrapping()
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
 localforage.keys().then (keys)->
