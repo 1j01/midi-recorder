@@ -751,8 +751,6 @@ recover = (recoverable)->
 		# console.log "restored state from recover"
 
 list_recoverable_recording = (recoverable)->
-	show_recovery_button.disabled = false
-
 	li = document.createElement("li")
 	li.classList.add("recoverable-recording")
 	span = document.createElement("span")
@@ -844,6 +842,7 @@ localforage.keys().then (keys)->
 			try delete localStorage["to_delete:#{recoverable_id}"]
 			try delete localStorage["name:#{recoverable_id}"]
 		else
+			show_recovery_button.disabled = false
 			list_recoverable_recording(recoverable)
 	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
 , (error)->
