@@ -15,6 +15,7 @@ recording_name_input = document.getElementById("recording-name-input")
 clear_button = document.getElementById("clear-button")
 undo_clear_button = document.getElementById("undo-clear-button")
 show_recovery_button = document.querySelector(".show-recovery-button")
+show_recovery_button_loading_indicator = document.querySelector(".show-recovery-button .loading-indicator")
 recoverables_list = document.getElementById("recoverables")
 fullscreen_button = document.getElementById("fullscreen-button")
 visualization_enabled_checkbox = document.getElementById("visualization-enabled")
@@ -831,6 +832,7 @@ localforage.keys().then (keys)->
 			recoverables[recoverable_id].chunks.push({n: recoverable_chunk_n, key})
 		# else
 		# 	console.log "Not matching key:", key
+	show_recovery_button_loading_indicator.hidden = true
 	for recoverable_id, recoverable of recoverables
 		should_delete = try localStorage["to_delete:#{recoverable_id}"]
 		recoverable.name = try localStorage["name:#{recoverable_id}"]
@@ -845,6 +847,7 @@ localforage.keys().then (keys)->
 			list_recoverable_recording(recoverable)
 	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
 , (error)->
+	show_recovery_button_loading_indicator.hidden = true
 	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
 	console.log "Failed to list keys to look for recordings to recover", error
 
