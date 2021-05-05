@@ -550,7 +550,9 @@
 		var spaceKey = 32;
 		var tabKey   = 9;
 
-		if ( e.target.hasAttribute('data-modal-open') ) {
+		// e.target.hasAttribute is not available if e.target is document node
+		// (This might not happen when the tab wrapping logic is working.)
+		if ( e.target.hasAttribute && e.target.hasAttribute('data-modal-open') ) {
 			switch ( keyCode ) {
 				case enterKey:
 				case spaceKey:
