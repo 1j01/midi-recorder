@@ -17,6 +17,7 @@ undo_clear_button = document.getElementById("undo-clear-button")
 show_recovery_button = document.querySelector(".show-recovery-button")
 show_recovery_button_loading_indicator = document.querySelector(".show-recovery-button .loading-indicator")
 recoverables_list = document.getElementById("recoverables")
+recovery_empty_message_el = document.getElementById("recovery-empty-message")
 fullscreen_button = document.getElementById("fullscreen-button")
 visualization_enabled_checkbox = document.getElementById("visualization-enabled")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second-input")
@@ -798,6 +799,7 @@ list_recoverable_recording = (recoverable)->
 			li.remove()
 			if recoverables_list.children.length is 0
 				show_recovery_button.disabled = true
+				recovery_empty_message_el.hidden = false
 		catch error
 			alert "An error occured.\n\n#{error}"
 			console.log "Error during recovery:", error
@@ -810,6 +812,7 @@ list_recoverable_recording = (recoverable)->
 			li.remove()
 			if recoverables_list.children.length is 0
 				show_recovery_button.disabled = true
+				recovery_empty_message_el.hidden = false
 		catch error
 			alert "Failed to dismiss recoverable recording.\n\n#{error}"
 			console.log "Failed to dismiss recoverable recording:", error
@@ -843,6 +846,7 @@ localforage.keys().then (keys)->
 			try delete localStorage["name:#{recoverable_id}"]
 		else
 			show_recovery_button.disabled = false
+			recovery_empty_message_el.hidden = true
 			list_recoverable_recording(recoverable)
 	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
 , (error)->
