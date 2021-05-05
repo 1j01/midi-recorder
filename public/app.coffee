@@ -18,6 +18,7 @@ show_recovery_button = document.querySelector(".show-recovery-button")
 show_recovery_button_loading_indicator = document.querySelector(".show-recovery-button .loading-indicator")
 recoverables_list = document.getElementById("recoverables")
 recovery_empty_message_el = document.getElementById("recovery-empty-message")
+recovery_error_message_el = document.getElementById("recovery-error-message")
 fullscreen_button = document.getElementById("fullscreen-button")
 visualization_enabled_checkbox = document.getElementById("visualization-enabled")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second-input")
@@ -818,6 +819,7 @@ list_recoverable_recording = (recoverable)->
 			console.log "Failed to dismiss recoverable recording:", error
 
 # TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
+# Update: but it can also take a really long time and succeed :(
 localforage.keys().then (keys)->
 	recoverables = {}
 	for key in keys
@@ -847,8 +849,11 @@ localforage.keys().then (keys)->
 	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
 , (error)->
 	show_recovery_button_loading_indicator.hidden = true
-	# TODO: warning message; test what cases this applies to (disabled storage, etc.)
-	console.log "Failed to list keys to look for recordings to recover", error
+	recovery_error_message_el.hidden = false
+	# recovery_error_message_el.textContent = "Failed to list recoverable recordings. #{error}"
+	recovery_error_message_el.textContent = "Recovery not available. Make sure you have local storage enabled for this site. #{error}"
+	# TODO: test what cases this applies to (disabled storage, etc.)
+	console.error "Failed to list keys to look for recordings to recover", error
 
 
 ##############################
