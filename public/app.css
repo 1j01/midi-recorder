@@ -173,7 +173,7 @@ li {
 }
 
 .button-visual {
-    pointer-events: none; /* needed for ARIAModal library to show dialog */
+	pointer-events: none; /* needed for ARIAModal library to show dialog */
 	line-height: 0.8;
 	height: 1.5em;
 	width: 10em;
@@ -255,7 +255,7 @@ button:disabled .fill-cc-if-disabled {
 }
 
 .show-recovery-button {
-    float: right;
+	float: right;
 }
 
 #recoverables {
@@ -330,7 +330,7 @@ a {
 
 .is-icon-btn:hover [data-modal-x],
 .is-icon-btn:focus [data-modal-x] {
-  color: white;
+	color: white;
 }
 
 #perspective-registration-container,
