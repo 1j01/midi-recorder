@@ -1,0 +1,17 @@
+{
+	"name": "midi-recorder",
+	"description": "The easiest way to record MIDI.",
+	"homepage": "https://midi-recorder.web.app",
+	"author": "Isaiah Odhner <isaiahodhner@gmail.com>",
+	"scripts": {
+		"start": "run-p live-server coffee",
+		"live-server": "live-server public/",
+		"coffee": "coffee --watch --compile --output public/compiled/ public/",
+		"deploy": "firebase deploy"
+	},
+	"dependencies": {
+		"coffeescript": "^2.5.1",
+		"live-server": "^1.2.1",
+		"npm-run-all": "^4.1.5"
+	}
+}

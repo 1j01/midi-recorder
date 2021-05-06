@@ -15,6 +15,14 @@ Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js
 
 MIT-licensed. See [LICENSE.md](LICENSE.md)
 
+### Development Setup
+
+- Install Git and Node.js if you don't already have them installed.
+- Clone the repository.
+- Open a terminal in the project directory.
+- Run `npm i` to install dependencies.
+- Run `npm start` to start a live server and automatically recompile coffeescript on changes.
+
 ### TODO
 
 * Improve layout on mobile / small viewport size

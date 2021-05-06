@@ -1,4 +1,5 @@
 .firebase/
+compiled/
 
 # Logs
 logs

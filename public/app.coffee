@@ -1,6 +1,6 @@
 
 for el in document.querySelectorAll("noscript")
-	el.remove() # for screenreaders (maybe should be earlier than this asynchronously loaded coffeescript)
+	el.remove() # for screenreaders
 
 midi_not_supported = document.getElementById("midi-not-supported")
 midi_access_failed = document.getElementById("midi-access-failed")
