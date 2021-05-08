@@ -647,6 +647,9 @@ smi.on 'noteOn', ({event, key, velocity, time})->
 	
 	last_note_datetime = Date.now()
 
+	# clear delete flag in case you already exported and are playing more
+	try delete localStorage["to_delete:#{active_recording_session_id}"]
+
 smi.on 'noteOff', ({event, key, time})->
 	note = current_notes.get(key)
 	if note
@@ -736,7 +739,7 @@ recover = (recoverable)->
 			smi.processMidiMessage(event)
 
 		# recording_name_input.value = "recovered"
-		export_midi_file("recovered", recoverable.name.replace(/:/g, "").replace(/\..*Z/, "Z") + " [recovered].midi")
+		export_midi_file("recovered", (recoverable.name or "recording").replace(/:/g, "").replace(/\..*Z/, "Z") + " [recovered].midi")
 
 	finally
 		# console.log "restoring state from recover"
@@ -1142,7 +1145,12 @@ export_midi_file = (delete_later_reason, file_name)->
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
-		alert "No notes have been recorded!"
+		if delete_later_reason is "recovered"
+			# setTimeout to avoid current recording's notes gone while alert is shown
+			setTimeout -> alert "No notes in recording!"
+		else
+			alert "No notes have been recorded!"
+		try localStorage["to_delete:#{active_recording_session_id}"] = "no_notes #{new Date().toISOString()}"
 		return
 
 	events = []
