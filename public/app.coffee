@@ -171,6 +171,12 @@ instrument_names = [
 	"128. Gunshot"
 ]
 
+debounce = (func, timeout = 300)->
+	tid = null
+	return (...args)->
+		clearTimeout(tid)
+		tid = setTimeout((-> func(...args)), timeout)
+
 nanoid = (length = 21) ->
 	id = ''
 	for n in crypto.getRandomValues(new Uint8Array(length))
@@ -618,6 +624,9 @@ demo_button.onclick = demo
 # Recording
 ##############################
 
+cancel_deletion = debounce ->
+	try delete localStorage["to_delete:#{active_recording_session_id}"]
+
 smi.on 'noteOn', ({event, key, velocity, time})->
 	# Note: noteOn with velocity of 0 is supposed to be equivalent to noteOff in MIDI,
 	# but SimpleMidiInput abstracts that away for us, sending a noteOff instead,
@@ -648,7 +657,7 @@ smi.on 'noteOn', ({event, key, velocity, time})->
 	last_note_datetime = Date.now()
 
 	# clear delete flag in case you already exported and are playing more
-	try delete localStorage["to_delete:#{active_recording_session_id}"]
+	cancel_deletion()
 
 smi.on 'noteOff', ({event, key, time})->
 	note = current_notes.get(key)
