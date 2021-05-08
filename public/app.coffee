@@ -228,7 +228,7 @@ set_selected_range = (range)->
 		[midi_range_left_input.value, midi_range_right_input.value] = selected_range
 
 first_url_update = true
-save_options = ->
+save_options_soon = debounce ->
 	[from_midi_val, to_midi_val] = selected_range
 	data =
 		"viz": if visualization_enabled then "on" else "off"
@@ -319,8 +319,7 @@ update_options_from_inputs = ->
 	canvas.style.transform = "perspective(#{perspective_distance}vw) rotateX(-#{perspective_rotate_vertically}deg) scaleX(#{scale_x})"
 	canvas.style.transformOrigin = "50% 0%"
 
-	# TODO: debounce saving
-	save_options()
+	save_options_soon()
 
 # TODO: use oninput
 for control_element in [
@@ -624,7 +623,7 @@ demo_button.onclick = demo
 # Recording
 ##############################
 
-cancel_deletion = debounce ->
+cancel_deletion_soon = debounce ->
 	try delete localStorage["to_delete:#{active_recording_session_id}"]
 
 smi.on 'noteOn', ({event, key, velocity, time})->
@@ -657,7 +656,7 @@ smi.on 'noteOn', ({event, key, velocity, time})->
 	last_note_datetime = Date.now()
 
 	# clear delete flag in case you already exported and are playing more
-	cancel_deletion()
+	cancel_deletion_soon()
 
 smi.on 'noteOff', ({event, key, time})->
 	note = current_notes.get(key)
@@ -1361,8 +1360,8 @@ end_learn_range = ->
 learn_range_or_apply_button.onclick = ->
 	if is_learning_range
 		set_selected_range(learning_range)
-		save_options()
 		end_learn_range()
+		save_options_soon()
 	else
 		is_learning_range = true
 		cancel_learn_range_button.hidden = false
