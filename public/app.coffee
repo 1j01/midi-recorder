@@ -736,7 +736,7 @@ recover = (recoverable)->
 			smi.processMidiMessage(event)
 
 		# recording_name_input.value = "recovered"
-		export_midi_file("recovered", recoverable.name.replace(/:/g, "").replace(/\..*Z/, "Z") + " [recovered]")
+		export_midi_file("recovered", recoverable.name.replace(/:/g, "").replace(/\..*Z/, "Z") + " [recovered].midi")
 
 	finally
 		# console.log "restoring state from recover"
