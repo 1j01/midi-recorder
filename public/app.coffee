@@ -321,21 +321,23 @@ update_options_from_inputs = ->
 
 	save_options_soon()
 
-# TODO: use oninput
 for control_element in [
 	visualization_enabled_checkbox
+	note_gravity_direction_select
+	theme_select
+	layout_radio_buttons...
+]
+	control_element.onchange = update_options_from_inputs
+for input_element in [
 	midi_range_left_input
 	midi_range_right_input
 	px_per_second_input
-	note_gravity_direction_select
-	layout_radio_buttons...
 	perspective_rotate_vertically_input
 	perspective_distance_input
 	scale_x_input
-	theme_select
 	hue_rotate_degrees_input
 ]
-	control_element.onchange = update_options_from_inputs
+	input_element.oninput = update_options_from_inputs
 
 load_options()
 update_options_from_inputs()
