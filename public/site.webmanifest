@@ -12,6 +12,24 @@
             "src": "/android-chrome-512x512.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "/maskable-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/maskable-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/safari-pinned-tab.svg",
+            "sizes": "any",
+            "type": "image/svg",
+            "purpose": "monochrome"
         }
     ],
     "theme_color": "#f8e71c",
