@@ -708,7 +708,8 @@ save_chunk = ->
 		active_chunk_events.length = 0
 	, (error)->
 		# active_chunk_events.length = 0 # maybe?? in case some events case it to fail to save? but what if it was just a fluke that it failed to save (disk busy etc.)?
-		# TODO: warning message
+		recovery_error_message_el.hidden = false
+		recovery_error_message_el.textContent = "Failed to save recording chunk #{saving_chunk_n} (for recovery)"
 		console.log "Failed to save recording chunk #{saving_chunk_n}"
 	active_chunk_n += 1
 	# DON'T CHANGE THIS without also changing code that assumes "name" is an iso datetime string
