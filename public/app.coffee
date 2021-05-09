@@ -222,13 +222,14 @@ normalize_range = (range)->
 		valid_int_0_to_128(range[1]) ? 128
 	]
 
-set_selected_range = (range)->
+set_selected_range = (range, do_not_update_inputs)->
 	selected_range = normalize_range(range)
-	unless is_learning_range
+	unless is_learning_range or do_not_update_inputs
 		[midi_range_left_input.value, midi_range_right_input.value] = selected_range
 
-first_url_update = true
-save_options_soon = debounce ->
+first_save_to_url = true
+hashchange_is_new_history_entry = false
+save_options_immediately = ({update_even_focused_inputs}={})->
 	[from_midi_val, to_midi_val] = selected_range
 	data =
 		"viz": if visualization_enabled then "on" else "off"
@@ -244,51 +245,67 @@ save_options_soon = debounce ->
 	keyvals =
 		for key, val of data
 			"#{key}=#{val}"
-	if first_url_update
-		first_url_update = false
+	old_hash = location.hash
+	hashchange_is_new_history_entry = true
+	if first_save_to_url
+		first_save_to_url = false
+		# Note: for first URL update we don't need to load_options()
+		# since it's loading defaults from elements on the page
 		try
 			# avoid hijacking the browser back button / creating an extra step to go back thru
+			# when navigating to the app from another site
 			history.replaceState(null, null, "##{keyvals.join("&")}")
 		catch
 			location.hash = keyvals.join("&")
 	else
 		location.hash = keyvals.join("&")
-	
-	# NOTE: (sort of) redundantly loading options from hash on hashchange after setting hash
-	# This actually applies the normalization tho so it's kind of nice
-	# e.g. 1.0 -> 1, 1.5 -> 1, 1000 -> 128
-	# altho it's inconsistent in when it gets applied - if the hash is the same (i.e. because the normalized values are the same), it doesn't update
-	# so for example 1.0 -> 1 followed by 1.5 -> 1 doesn't actually normalize, and gets left on the invalid value 1.5
+		if old_hash is location.hash
+			# in this case, a hashchange won't occur
+			# but we still want to normalize options, at least to be consistent (I'm not sure this is the best behavior, to apply normalization to invalid user inputs)
+			# e.g. for MIDI range: 1.0 -> 1, 1.5 -> 1, 1000 -> 128
+			load_options({update_even_focused_inputs})
 
-	# I'm not sure this is the best behavior, to apply normalization to invalid user inputs, but let's at least be consistent
-	# (and further redundant in the case that a hashchange will occur)
-	load_options()
+save_options_soon = debounce save_options_immediately
 
-load_options = ->
+load_options = ({update_even_focused_inputs}={})->
 	data = {}
 	for keyval in location.hash.replace(/^#/, "").split("&") when keyval.match(/=/)
 		[key, val] = keyval.split("=")
 		key = key.trim()
 		val = val.trim()
 		data[key] = val
+	
+	# For text based inputs, including number inputs,
+	# in order to let you backspace and type a new value,
+	# don't change the value while focused, only on blur.
+	# Except, if you change the option OTHER than via the input,
+	# such as if you go back/forward in history,
+	# it should update the value of an input even if it's focused.
+
 	# TODO: reset to original defaults when not in URL, in case you hit the back button
+	# (maybe merge load_options and update_options_from_inputs in some way?)
+
 	if data["viz"]
 		visualization_enabled = data["viz"].toLowerCase() in ["on", "true", "1"]
 		visualization_enabled_checkbox.checked = visualization_enabled
 	if data["midi-range"]
-		set_selected_range(data["midi-range"].split(".."))
+		set_selected_range(data["midi-range"].split(".."), not update_even_focused_inputs)
 	if data["pixels-per-second"]
 		px_per_second = parseFloat(data["pixels-per-second"])
-		px_per_second_input.value = px_per_second
+		if update_even_focused_inputs or document.activeElement isnt px_per_second_input
+			px_per_second_input.value = px_per_second
 	if data["3d-vertical"]
 		perspective_rotate_vertically = parseFloat(data["3d-vertical"])
-		perspective_rotate_vertically_input.value = perspective_rotate_vertically
+		if update_even_focused_inputs or document.activeElement isnt perspective_rotate_vertically_input
+			perspective_rotate_vertically_input.value = perspective_rotate_vertically
 	if data["3d-distance"]
 		perspective_distance = parseFloat(data["3d-distance"])
-		perspective_distance_input.value = perspective_distance
+		if update_even_focused_inputs or document.activeElement isnt perspective_distance_input
+			perspective_distance_input.value = perspective_distance
 	if data["scale-x"]
 		scale_x = parseFloat(data["scale-x"])
-		scale_x_input.value = scale_x
+		if update_even_focused_inputs or document.activeElement isnt scale_x_input
+			scale_x_input.value = scale_x
 	if data["gravity-direction"]
 		note_gravity_direction = data["gravity-direction"].toLowerCase()
 		note_gravity_direction_select.value = note_gravity_direction
@@ -300,22 +317,23 @@ load_options = ->
 		theme_select.value = theme
 	if data["hue-rotate"]
 		hue_rotate_degrees = parseFloat(data["hue-rotate"])
-		hue_rotate_degrees_input.value = hue_rotate_degrees
+		if update_even_focused_inputs or document.activeElement isnt hue_rotate_degrees_input
+			hue_rotate_degrees_input.value = hue_rotate_degrees
 
 update_options_from_inputs = ->
 	visualization_enabled = visualization_enabled_checkbox.checked
-	set_selected_range([midi_range_left_input.value, midi_range_right_input.value])
+	set_selected_range([midi_range_left_input.value, midi_range_right_input.value], true)
 	px_per_second = parseFloat(px_per_second_input.value) || 20
 	hue_rotate_degrees = parseFloat(hue_rotate_degrees_input.value) || 0
 	note_gravity_direction = note_gravity_direction_select.value
 	layout = layout_radio_buttons.find((radio)=> radio.checked)?.value ? "equal"
 	theme = theme_select.value
 	
-	perspective_rotate_vertically = perspective_rotate_vertically_input.value
-	perspective_distance = perspective_distance_input.value
+	perspective_rotate_vertically = perspective_rotate_vertically_input.value || 0
+	perspective_distance = perspective_distance_input.value || 100
 	# canvas.style.transform = "translate(0, -20px) perspective(50vw) rotateX(-10deg) scale(0.9, 1)"
 	# canvas.style.transformOrigin = "50% 0%"
-	scale_x = scale_x_input.value
+	scale_x = scale_x_input.value || 1
 	canvas.style.transform = "perspective(#{perspective_distance}vw) rotateX(-#{perspective_rotate_vertically}deg) scaleX(#{scale_x})"
 	canvas.style.transformOrigin = "50% 0%"
 
@@ -338,11 +356,19 @@ for input_element in [
 	hue_rotate_degrees_input
 ]
 	input_element.oninput = update_options_from_inputs
+	# in case you backspaced an input, it shouldn't change the field while focused, but should when unfocused if still empty
+	input_element.onblur = ->
+		# since we're going to load options from the URL, we need to update the URL immediately
+		# otherwise you'd need to wait for the debounce timer before unfocusing the input for the change to take
+		save_options_immediately()
+		load_options({update_even_focused_inputs: true}) # update_even_focused_inputs is probably not needed here
 
-load_options()
+load_options({update_even_focused_inputs: true})
 update_options_from_inputs()
 
-addEventListener("hashchange", load_options)
+addEventListener "hashchange", ->
+	load_options({update_even_focused_inputs: not hashchange_is_new_history_entry})
+	hashchange_is_new_history_entry = false
 
 ##############################
 # Connecting to Devices
@@ -1349,6 +1375,9 @@ fullscreen_button.onclick = ->
 		fullscreen_target_el.webkitRequestFullScreen()
 
 end_learn_range = ->
+	# in case of apply button, selected_range is alredy set to learning_range
+	# in case of cancel button, selected_range is not set to learning_range so this does a reset
+
 	cancel_learn_range_button_was_focused = cancel_learn_range_button is document.activeElement
 	is_learning_range = false
 	cancel_learn_range_button.hidden = true
@@ -1363,9 +1392,12 @@ end_learn_range = ->
 
 learn_range_or_apply_button.onclick = ->
 	if is_learning_range
+		# order matters here: set_selected_range uses is_learning_range,
+		# end_learn_range uses selected_range
+		is_learning_range = false
 		set_selected_range(learning_range)
 		end_learn_range()
-		save_options_soon()
+		save_options_soon({update_even_focused_inputs: true})
 	else
 		is_learning_range = true
 		cancel_learn_range_button.hidden = false
