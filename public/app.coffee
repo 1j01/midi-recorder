@@ -704,13 +704,14 @@ save_chunk = ->
 	saving_chunk_n = active_chunk_n
 	saving_chunk_id = "chunk_#{saving_chunk_n.toString().padStart(5, "0")}"
 	localforage.setItem("#{active_recording_session_id}:#{saving_chunk_id}", active_chunk_events)
-	.then ->
-		active_chunk_events.length = 0
-	, (error)->
-		# active_chunk_events.length = 0 # maybe?? in case some events case it to fail to save? but what if it was just a fluke that it failed to save (disk busy etc.)?
+	.catch (error)->
+		# TODO: maybe restore active_chunk_events/active_chunk_n in case it was a a fluke (disk busy etc.)?
+		# but what if some specific event caused it to fail? in that case it would be better to save further chunks
+		# maybe try again once or twice and then give up on the chunk(s)?
 		recovery_error_message_el.hidden = false
 		recovery_error_message_el.textContent = "Failed to save recording chunk #{saving_chunk_n} (for recovery)"
 		console.log "Failed to save recording chunk #{saving_chunk_n}"
+	active_chunk_events.length = 0
 	active_chunk_n += 1
 	# DON'T CHANGE THIS without also changing code that assumes "name" is an iso datetime string
 	try localStorage["name:#{active_recording_session_id}"] = new Date(last_note_datetime).toISOString()#.replace(/:/g, "").replace(/\..*Z/, "Z")
