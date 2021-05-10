@@ -737,7 +737,10 @@ save_chunk = ->
 		recovery_error_message_el.hidden = false
 		recovery_error_message_el.textContent = "Failed to save recording chunk #{saving_chunk_n} (for recovery)"
 		console.log "Failed to save recording chunk #{saving_chunk_n}"
-	active_chunk_events.length = 0
+	# Note: CANNOT do active_chunk_events.length = 0,
+	# because localforage.setItem uses the object asynchronously
+	# and would save chunks with no notes/events in them!
+	active_chunk_events = []
 	active_chunk_n += 1
 	# DON'T CHANGE THIS without also changing code that assumes "name" is an iso datetime string
 	try localStorage["name:#{active_recording_session_id}"] = new Date(last_note_datetime).toISOString()#.replace(/:/g, "").replace(/\..*Z/, "Z")
