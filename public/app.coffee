@@ -535,6 +535,8 @@ enable_clearing = ->
 	if undo_clear_button is document.activeElement
 		export_midi_file_button.focus()
 	undo_clear_button.hidden = true
+	if not document.activeElement or document.activeElement in [document.documentElement, document.body]
+		recording_name_input.focus()
 
 clear_button.onclick = clear_notes
 undo_clear_button.onclick = undo_clear_notes
