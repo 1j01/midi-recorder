@@ -876,20 +876,24 @@ localforage.keys().then (keys)->
 		# else
 		# 	console.log "Not matching key:", key
 	show_recovery_button_loading_indicator.hidden = true
+	recoverables_to_delete = []
 	for recoverable_id, recoverable of recoverables
 		should_delete = try localStorage["to_delete:#{recoverable_id}"]
 		recoverable.name = try localStorage["name:#{recoverable_id}"]
-		# TODO: hide but delay deletion until after some period after it's marked for deletion, like days maybe?
 		if should_delete
-			for chunk in recoverable.chunks
-				# not sure if I should await this... maybe it should display all the recoverable recordings right away...
-				await localforage.removeItem(chunk.key)
-			try delete localStorage["to_delete:#{recoverable_id}"]
-			try delete localStorage["name:#{recoverable_id}"]
+			recoverables_to_delete.push(recoverable)
 		else
 			show_recovery_button.disabled = false
 			recovery_empty_message_el.hidden = true
 			list_recoverable_recording(recoverable)
+	# after we've updated the screen (theoretically),
+	# delete old recordings
+	# TODO: don't delete until after some period after it's marked for deletion, like days maybe?
+	for recoverable of recoverables_to_delete
+		for chunk in recoverable.chunks
+			await localforage.removeItem(chunk.key)
+		try delete localStorage["to_delete:#{recoverable_id}"]
+		try delete localStorage["name:#{recoverable_id}"]
 	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
 , (error)->
 	show_recovery_button_loading_indicator.hidden = true
