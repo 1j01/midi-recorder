@@ -889,11 +889,22 @@ localforage.keys().then (keys)->
 	# after we've updated the screen (theoretically),
 	# delete old recordings
 	# TODO: don't delete until after some period after it's marked for deletion, like days maybe?
+	# (note: make sure to consider delete flag clean up when implementing that)
 	for recoverable in recoverables_to_delete
 		for chunk in recoverable.chunks
 			await localforage.removeItem(chunk.key)
 		try delete localStorage["to_delete:#{recoverable_id}"]
 		try delete localStorage["name:#{recoverable_id}"]
+	
+	# In case IndexedDB is cleared but not localStorage, or whatever,
+	# clean up delete flags in localStorage.
+	# This has to be backwards loop or it'll get key === null
+	# (alternatively, we could get all the keys in an array first)
+	for i in [localStorage.length-1..0]
+		key = localStorage.key(i)
+		if key.match(/^to_delete:/)
+			delete localStorage[key]
+
 	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
 , (error)->
 	show_recovery_button_loading_indicator.hidden = true
