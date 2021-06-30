@@ -155,6 +155,7 @@ li {
 	background: none;
 	padding: 0;
 }
+/* Note: don't make a [hidden] { display: none !important; } rule as it will break the aria.modal library */
 .button-functional,
 .button-visual,
 #demo-button-stop-text:not([hidden]),

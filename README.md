@@ -52,4 +52,6 @@ MIT-licensed. See [LICENSE.md](LICENSE.md)
 * Offline support with a service worker
     - Service workers are a serious footgun.
 
+* (Little visual bug: if zoomed out, opening recovery modal has a bad transition, the whole overlay flickers out for a bit)
+
 [app]: https://midi-recorder.web.app/

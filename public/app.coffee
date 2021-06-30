@@ -216,7 +216,7 @@ normalize_range = (range)->
 	valid_int_0_to_128 = (value)->
 		int = parseInt(value)
 		return null if isNaN(int) or int < 0 or int > 128
-		return int 
+		return int
 	return [
 		valid_int_0_to_128(range[0]) ? 0
 		valid_int_0_to_128(range[1]) ? 128
@@ -605,7 +605,7 @@ demo = ->
 			# )
 			n for n in [0...128] when (
 				# (n - root) %% 12 < 1
-				# (n - root) %% 12 < Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) 
+				# (n - root) %% 12 < Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5))
 				# ((n - root) %% 12) % Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) > 1
 
 				# ((n - root) %% 12) % Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) %% 0.5 < 0.1 and
@@ -1191,7 +1191,7 @@ do animate = ->
 # MIDI File Export
 ##############################
 
-export_midi_file_button.onclick = -> 
+export_midi_file_button.onclick = ->
 	export_midi_file("saved")
 
 export_midi_file = (delete_later_reason, file_name)->
@@ -1374,7 +1374,7 @@ export_midi_file = (delete_later_reason, file_name)->
 	saveAs(blob, file_name)
 
 	# TODO: timeout?? I wish there was a way to tell if and when the file was actually saved!
-	# probably a multi-tier recovery system is needed, where possibly-saved/recovered recordings are hidden, but still recoverable, for some number of days 
+	# probably a multi-tier recovery system is needed, where possibly-saved/recovered recordings are hidden, but still recoverable, for some number of days
 	try localStorage["to_delete:#{active_recording_session_id}"] = "#{delete_later_reason} #{new Date().toISOString()}"
 
 ##############################
@@ -1469,8 +1469,8 @@ midi_discovery_iframe.addEventListener "load", ->
 					setTimeout ->
 						if not connected_port_ids.has(midi_input.id)
 							# don't reload if notes have been recorded
-							# TODO: save notes to localStorage/IndexedDB and do actually reload,
-							# unless you're actively playing
+							# TODO: now that notes are saved to IndexedDB, maybe reload
+							# as long as you're not actively playing?
 							if not notes.length
 								location.reload() # reload the whole app so it'll get the new MIDI device
 					, 500
