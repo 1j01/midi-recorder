@@ -875,7 +875,6 @@ localforage.keys().then (keys)->
 			recoverables[recoverable_id].chunks.push({n: recoverable_chunk_n, key})
 		# else
 		# 	console.log "Not matching key:", key
-	show_recovery_button_loading_indicator.hidden = true
 	recoverables_to_delete = []
 	for recoverable_id, recoverable of recoverables
 		should_delete = try localStorage["to_delete:#{recoverable_id}"]
@@ -886,6 +885,7 @@ localforage.keys().then (keys)->
 			show_recovery_button.disabled = false
 			recovery_empty_message_el.hidden = true
 			list_recoverable_recording(recoverable)
+	show_recovery_button_loading_indicator.hidden = true
 	# after we've updated the screen (theoretically),
 	# delete old recordings
 	# TODO: don't delete until after some period after it's marked for deletion, like days maybe?
