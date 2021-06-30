@@ -898,10 +898,7 @@ localforage.keys().then (keys)->
 	
 	# In case IndexedDB is cleared but not localStorage, or whatever,
 	# clean up delete flags in localStorage.
-	# This has to be backwards loop or it'll get key === null
-	# (alternatively, we could get all the keys in an array first)
-	for i in [localStorage.length-1..0]
-		key = localStorage.key(i)
+	for key in Object.keys(localStorage)
 		if key.match(/^to_delete:/)
 			delete localStorage[key]
 
