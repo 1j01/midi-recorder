@@ -59,6 +59,13 @@ body {
 	}
 }
 
+#midi-devices-area {
+	/* Prevent layout shift when devices connect, for up to a couple devices. */
+	/* Applying to a wrapper so that:
+	1. it aligns to the top (rows would stretch if applied to the table, leading to some shifting within the device list),
+	and 2. it doesn't create empty space above an error message in the case that MIDI access is unavailable. */
+	min-height: 3em;
+}
 #midi-devices {
 	min-width: 250px;
 }
