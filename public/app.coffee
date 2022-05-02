@@ -1405,6 +1405,13 @@ window.addEventListener "click", (event)->
 			troubleshoot_midi_input_button.ariaExpanded = false
 			troubleshoot_midi_input_popover.hidden = true
 
+# close popover when user presses escape
+window.addEventListener "keydown", ->
+	if event.key is "Escape" and troubleshoot_midi_input_button.ariaExpanded
+		troubleshoot_midi_input_button.ariaExpanded = false
+		troubleshoot_midi_input_popover.hidden = true
+
+
 end_learn_range = ->
 	# in case of apply button, selected_range is already set to learning_range
 	# in case of cancel button, selected_range is not set to learning_range so this does a reset
