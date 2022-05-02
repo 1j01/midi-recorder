@@ -118,16 +118,16 @@ body {
 	content: '';
 	transform: rotate(45deg);
 }
-#tooltip[data-popper-placement^='top'] > #arrow {
+.popover[data-popper-placement^='top'] > .popover-arrow {
 	bottom: -4px;
 }
-#tooltip[data-popper-placement^='bottom'] > #arrow {
+.popover[data-popper-placement^='bottom'] > .popover-arrow {
 	top: -4px;
 }
-#tooltip[data-popper-placement^='left'] > #arrow {
+.popover[data-popper-placement^='left'] > .popover-arrow {
 	right: -4px;
 }
-#tooltip[data-popper-placement^='right'] > #arrow {
+.popover[data-popper-placement^='right'] > .popover-arrow {
 	left: -4px;
 }
 
