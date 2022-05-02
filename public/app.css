@@ -112,6 +112,7 @@ body {
 	height: 8px;
 	background: inherit;
 	border: inherit;
+	box-sizing: border-box;
 	/* can't use z-index here, so have to use clip-path below, for a continuous border */
 }
 .popover-arrow {
@@ -124,19 +125,19 @@ body {
 }
 .popover[data-popper-placement^='top'] > .popover-arrow {
 	bottom: -4px;
-	clip-path: inset(6px -1px -1px -1px);
+	clip-path: inset(4px 0 0 0);
 }
 .popover[data-popper-placement^='bottom'] > .popover-arrow {
 	top: -4px;
-	clip-path: inset(-1px -1px 6px -1px);
+	clip-path: inset(0 0 4px 0);
 }
 .popover[data-popper-placement^='left'] > .popover-arrow {
 	right: -4px;
-	clip-path: inset(6px -1px -1px -1px);
+	clip-path: inset(4px 0 0 0);
 }
 .popover[data-popper-placement^='right'] > .popover-arrow {
 	left: -4px;
-	clip-path: inset(-1px -1px 6px -1px);
+	clip-path: inset(0 0 4px 0);
 }
 
 
