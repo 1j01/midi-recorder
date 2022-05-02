@@ -1405,7 +1405,7 @@ troubleshooting_popper = Popper.createPopper(troubleshoot_midi_input_button, tro
 	]
 )
 
-do troubleshoot_midi_input_button.onclick = ->
+troubleshoot_midi_input_button.onclick = ->
 	if troubleshoot_midi_input_button.getAttribute("aria-expanded") is "false"
 		troubleshoot_midi_input_button.setAttribute("aria-expanded", "true")
 		troubleshoot_midi_input_popover.hidden = false
