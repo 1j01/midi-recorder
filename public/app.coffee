@@ -1392,14 +1392,14 @@ fullscreen_button.onclick = ->
 		fullscreen_target_el.webkitRequestFullScreen()
 
 
-arrow_size = 100
+arrow_size = 10
 troubleshoot_midi_input_popover.style.setProperty("--arrow-size", "#{arrow_size}px")
 troubleshooting_popper = Popper.createPopper(troubleshoot_midi_input_button, troubleshoot_midi_input_popover,
 	modifiers: [
 		{
 			name: 'offset'
 			options: {
-				offset: [0, arrow_size * 2]
+				offset: [0, arrow_size + 5]
 			}
 		}
 	]
