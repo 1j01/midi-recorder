@@ -1394,27 +1394,27 @@ fullscreen_button.onclick = ->
 
 troubleshooting_popper = Popper.createPopper(troubleshoot_midi_input_button, troubleshoot_midi_input_popover)
 troubleshoot_midi_input_button.onclick = ->
-	if troubleshoot_midi_input_button.ariaExpanded is "false"
-		troubleshoot_midi_input_button.ariaExpanded = "true"
+	if troubleshoot_midi_input_button.getAttribute("aria-expanded") is "false"
+		troubleshoot_midi_input_button.setAttribute("aria-expanded", "true")
 		troubleshoot_midi_input_popover.hidden = false
 	else
-		troubleshoot_midi_input_button.ariaExpanded = "false"
+		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
 		troubleshoot_midi_input_popover.hidden = true
 
 # close the popover when the user clicks outside of it
 window.addEventListener "click", (event)->
-	if troubleshoot_midi_input_button.ariaExpanded is "true" and not (
+	if troubleshoot_midi_input_button.getAttribute("aria-expanded") is "true" and not (
 		troubleshoot_midi_input_button.contains(event.target) or
 		troubleshoot_midi_input_popover.contains(event.target)
 	)
 		event.preventDefault() # won't prevent much, would need an overlay to prevent clicks from going through
-		troubleshoot_midi_input_button.ariaExpanded = "false"
+		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
 		troubleshoot_midi_input_popover.hidden = true
 
 # close popover when user presses escape
 window.addEventListener "keydown", ->
-	if event.key is "Escape" and troubleshoot_midi_input_button.ariaExpanded is "true"
-		troubleshoot_midi_input_button.ariaExpanded = "false"
+	if event.key is "Escape" and troubleshoot_midi_input_button.getAttribute("aria-expanded") is "true"
+		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
 		troubleshoot_midi_input_popover.hidden = true
 
 
