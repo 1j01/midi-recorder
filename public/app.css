@@ -85,8 +85,10 @@ body {
 	text-decoration: line-through;
 }
 
-.popover-button {
+#troubleshoot-midi-input-button {
 	margin-top: 1em;
+}
+.popover-button {
 	/* link-style button */
 	border: 0;
 	padding: 0;
@@ -94,14 +96,14 @@ body {
 	color: white;
 	font-size: 1em;
 	cursor: pointer;
-	text-decoration: underline;
+	/* text-decoration: underline; applied to child with <u> to avoid underlined whitespace */
 }
 .popover {
 	z-index: 2;
 	background: #173d60;
 	color: white;
 	border: 1px solid white;
-	padding: 1em;
+	padding: 0.5em;
 	border-radius: 0.5em;
 	/* box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.5); */
 	/* --arrow-size: 4px; */
@@ -274,7 +276,7 @@ li {
 }
 
 button span[aria-hidden],
-button svg {
+button:not(.popover-button) svg {
 	margin-right: 5px;
 }
 button svg {
