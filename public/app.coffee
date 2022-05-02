@@ -36,6 +36,8 @@ learn_range_text_el = document.getElementById("learn-midi-range-button-text")
 apply_text_el = document.getElementById("apply-midi-range-button-text")
 cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-button")
 midi_devices_table = document.getElementById("midi-devices")
+troubleshoot_midi_input_button = document.getElementById("troubleshoot-midi-input-button")
+troubleshoot_midi_input_popover = document.getElementById("midi-input-troubleshooting-steps")
 demo_button = document.getElementById("demo-button")
 demo_button_stop_span = document.getElementById("demo-button-stop-text")
 demo_button_start_span = document.getElementById("demo-button-start-text")
@@ -1388,6 +1390,18 @@ fullscreen_button.onclick = ->
 		fullscreen_target_el.mozRequestFullScreen()
 	else if fullscreen_target_el.webkitRequestFullScreen
 		fullscreen_target_el.webkitRequestFullScreen()
+
+troubleshoot_midi_input_button.onclick = ->
+	troubleshoot_midi_input_button.ariaExpanded = not troubleshoot_midi_input_button.ariaExpanded
+	troubleshoot_midi_input_popover.hidden = not troubleshoot_midi_input_button.ariaExpanded
+
+# close the popover when the user clicks outside of it
+window.addEventListener "click", (event)->
+	if event.target not in [troubleshoot_midi_input_button, troubleshoot_midi_input_popover]
+		if troubleshoot_midi_input_button.ariaExpanded
+			event.preventDefault() # won't prevent much, would need an overlay to prevent clicks from going through
+			troubleshoot_midi_input_button.ariaExpanded = false
+			troubleshoot_midi_input_popover.hidden = true
 
 end_learn_range = ->
 	# in case of apply button, selected_range is already set to learning_range

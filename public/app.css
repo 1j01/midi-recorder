@@ -85,6 +85,31 @@ body {
 	text-decoration: line-through;
 }
 
+.popover-button {
+	margin-top: 1em;
+	/* link-style button */
+	border: 0;
+	padding: 0;
+	background: transparent;
+	color: white;
+	font-size: 1em;
+	cursor: pointer;
+	text-decoration: underline;
+}
+.popover-button-container {
+	position: relative;
+}
+.popover {
+	position: absolute;
+	z-index: 1;
+	background: #1B1B1B;
+	color: white;
+	padding: 1em;
+	border-radius: 0.5em;
+	box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.5);
+}
+
+
 .error-message {
 	background: maroon;
 	color: white;
