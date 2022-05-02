@@ -12,6 +12,12 @@ body {
 	overflow: hidden;
 }
 
+#buttons-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 .outer-container {
 	display: flex;
 	height: 100%;

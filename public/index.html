@@ -22,19 +22,12 @@
 </head>
 
 <body>
-	<!--
-	outer centered layout with scrolling
-		https://codepen.io/1j01/pen/KOKOMg
-		based on https://stackoverflow.com/a/16127018/2624876
-	-->
-	<div class="outer-container">
-	<div class="centering-container">
-	<main class="app-main">
-		<noscript>
-			This app requires JavaScript.
-		</noscript>
-		<h2>Plug in a MIDI keyboard and play away!</h2>
-		<div class="two-column-layout">
+
+	<div id="info-modal-content" hidden data-modal>
+		<div data-modal-document>
+			<h1>MIDI Recorder</h1>
+			<h2>The easiest way to record MIDI.</h2>
+			<!-- TODO: remove redundant div -->
 			<div>
 				<h3>Features:</h3>
 				<span class="visually-hidden">.</span> <!-- so ChromeVox pronounces "Live" with an I sound -->
@@ -91,6 +84,23 @@
 					<li>Pitch bend range is assumed to be ± 2 semitones (a common default).</li>
 				</ul>
 			</div>
+		</div>
+	</div>
+
+	<!--
+	outer centered layout with scrolling
+		https://codepen.io/1j01/pen/KOKOMg
+		based on https://stackoverflow.com/a/16127018/2624876
+	-->
+	<div class="outer-container">
+	<div class="centering-container">
+	<main class="app-main">
+		<noscript>
+			This app requires JavaScript.
+		</noscript>
+		<h2>Plug in a MIDI keyboard and play away!</h2>
+		<!-- TODO: remove redundant div... and two-column-layout class if not gonna use it -->
+		<div>
 			<div>
 				<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
 				<h3>MIDI devices:</h3>
@@ -408,6 +418,19 @@
 		</div>
 	</main>
 	</div>
+	</div>
+
+	<div id="buttons-overlay">
+		<button class="button-functional" id="info-button" data-modal-open="info-modal-content">
+			<span class="button-visual">
+				<svg fill="currentColor" width="1em" height="1em" viewBox="0 0 40 40" style="vertical-align: bottom;">
+					<path
+						d="m18.4 15v-3.4h3.2v3.4h-3.2z m1.6 18.4c7.3 0 13.4-6.1 13.4-13.4s-6.1-13.4-13.4-13.4-13.4 6.1-13.4 13.4 6.1 13.4 13.4 13.4z m0-30c9.2 0 16.6 7.4 16.6 16.6s-7.4 16.6-16.6 16.6-16.6-7.4-16.6-16.6 7.4-16.6 16.6-16.6z m-1.6 25v-10h3.2v10h-3.2z">
+					</path>
+				</svg>
+				Info
+			</span>
+		</button>
 	</div>
 
 	<a href="https://github.com/1j01/midi-recorder/"><img id="fork-me-on-github" style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"></a>
