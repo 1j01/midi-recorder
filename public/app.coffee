@@ -242,7 +242,7 @@ save_options_immediately = ({update_even_focused_inputs}={})->
 		"midi-range": "#{from_midi_val}..#{to_midi_val}"
 		"theme": theme
 		"hue-rotate": hue_rotate_degrees
-	keyvals =
+	option_strings =
 		for key, val of data
 			"#{key}=#{val}"
 	old_hash = location.hash
@@ -254,11 +254,11 @@ save_options_immediately = ({update_even_focused_inputs}={})->
 		try
 			# avoid hijacking the browser back button / creating an extra step to go back thru
 			# when navigating to the app from another site
-			history.replaceState(null, null, "##{keyvals.join("&")}")
+			history.replaceState(null, null, "##{option_strings.join("&")}")
 		catch
-			location.hash = keyvals.join("&")
+			location.hash = option_strings.join("&")
 	else
-		location.hash = keyvals.join("&")
+		location.hash = option_strings.join("&")
 		if old_hash is location.hash
 			# in this case, a hashchange won't occur
 			# but we still want to normalize options, at least to be consistent (I'm not sure this is the best behavior, to apply normalization to invalid user inputs)
@@ -1390,7 +1390,7 @@ fullscreen_button.onclick = ->
 		fullscreen_target_el.webkitRequestFullScreen()
 
 end_learn_range = ->
-	# in case of apply button, selected_range is alredy set to learning_range
+	# in case of apply button, selected_range is already set to learning_range
 	# in case of cancel button, selected_range is not set to learning_range so this does a reset
 
 	cancel_learn_range_button_was_focused = cancel_learn_range_button is document.activeElement
