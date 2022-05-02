@@ -262,59 +262,60 @@
 			This app requires JavaScript.
 		</noscript>
 		<h2>Plug in a MIDI keyboard and play away!</h2>
-		<div>
-			<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
-			<h3>MIDI devices:</h3>
-			<p id="loading-midi-devices-message" hidden>Loading...</p>
-			<p id="no-midi-devices-message" hidden>No MIDI devices detected</p>
-			<table id="midi-devices" aria-live="assertive"></table>
-			<div id="midi-not-supported" hidden>
-				<div class="error-message">
-					This browser doesn't support MIDI access.
-					Try using Chrome, or for other browsers, the
-					<a href="https://jazz-soft.net/download/web-midi/">Jazz-Soft Web MIDI API extension</a>.
-				</div>
-				<button class="button-functional" id="demo-button">
-					<span class="button-visual">
-						<span id="demo-button-stop-text" hidden>
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-								<polygon points="0,0 0,100 100,100 100,0" fill="#FFF" class="fill-cc"/>
-							</svg>
-							Stop Demo
-						</span>
-						<span id="demo-button-start-text">
-							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-								<polygon points="0,0 0,100 100,50" fill="#FFF" class="fill-cc"/>
-							</svg>
-							Demo
-						</span>
-					</span>
-				</button>
-			</div>
-			<div id="midi-access-failed" class="error-message" hidden>
-				Failed to get MIDI access.
-				<pre id="midi-access-failed-pre"></pre>
-			</div>
-			<button id="troubleshoot-midi-input-button" class="popover-button" aria-haspopup="dialog" aria-expanded="false">
-				<svg fill="currentColor" width="1em" height="1em" viewBox="0 0 40 40" style="vertical-align: bottom;">
-					<path
-						d="m18.4 15v-3.4h3.2v3.4h-3.2z m1.6 18.4c7.3 0 13.4-6.1 13.4-13.4s-6.1-13.4-13.4-13.4-13.4 6.1-13.4 13.4 6.1 13.4 13.4 13.4z m0-30c9.2 0 16.6 7.4 16.6 16.6s-7.4 16.6-16.6 16.6-16.6-7.4-16.6-16.6 7.4-16.6 16.6-16.6z m-1.6 25v-10h3.2v10h-3.2z">
-					</path>
-				</svg>
-				<u>MIDI device not showing up?</u>
-			</button>
-			<div id="troubleshoot-midi-input-popover" class="popover" hidden>
-				<ul class="bulleted-list">
-					<li>Make sure it's plugged into your computer and turned on.</li>
-					<li>Try <a href="JavaScript:location.reload();">refreshing the page</a>.</li>
-					<li>If that doesn't work, try unplugging it and plugging it back in.</li>
-					<li>Try restarting your computer.</li>
-				</ul>
-				<div class="popover-arrow" data-popper-arrow></div>
-			</div>
-		</div>
 		<div id="controls">
 			<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
+			<fieldset class="ui-section">
+				<legend>Input</legend>
+				<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
+				<h3>MIDI devices:</h3>
+				<p id="loading-midi-devices-message" hidden>Loading...</p>
+				<p id="no-midi-devices-message" hidden>No MIDI devices detected</p>
+				<table id="midi-devices" aria-live="assertive"></table>
+				<div id="midi-not-supported" hidden>
+					<div class="error-message">
+						This browser doesn't support MIDI access.
+						Try using Chrome, or for other browsers, the
+						<a href="https://jazz-soft.net/download/web-midi/">Jazz-Soft Web MIDI API extension</a>.
+					</div>
+					<button class="button-functional" id="demo-button">
+						<span class="button-visual">
+							<span id="demo-button-stop-text" hidden>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+									<polygon points="0,0 0,100 100,100 100,0" fill="#FFF" class="fill-cc"/>
+								</svg>
+								Stop Demo
+							</span>
+							<span id="demo-button-start-text">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+									<polygon points="0,0 0,100 100,50" fill="#FFF" class="fill-cc"/>
+								</svg>
+								Demo
+							</span>
+						</span>
+					</button>
+				</div>
+				<div id="midi-access-failed" class="error-message" hidden>
+					Failed to get MIDI access.
+					<pre id="midi-access-failed-pre"></pre>
+				</div>
+				<button id="troubleshoot-midi-input-button" class="popover-button" aria-haspopup="dialog" aria-expanded="false">
+					<svg fill="currentColor" width="1em" height="1em" viewBox="0 0 40 40" style="vertical-align: bottom;">
+						<path
+							d="m18.4 15v-3.4h3.2v3.4h-3.2z m1.6 18.4c7.3 0 13.4-6.1 13.4-13.4s-6.1-13.4-13.4-13.4-13.4 6.1-13.4 13.4 6.1 13.4 13.4 13.4z m0-30c9.2 0 16.6 7.4 16.6 16.6s-7.4 16.6-16.6 16.6-16.6-7.4-16.6-16.6 7.4-16.6 16.6-16.6z m-1.6 25v-10h3.2v10h-3.2z">
+						</path>
+					</svg>
+					<u>MIDI device not showing up?</u>
+				</button>
+				<div id="troubleshoot-midi-input-popover" class="popover" hidden>
+					<ul class="bulleted-list">
+						<li>Make sure it's plugged into your computer and turned on.</li>
+						<li>Try <a href="JavaScript:location.reload();">refreshing the page</a>.</li>
+						<li>If that doesn't work, try unplugging it and plugging it back in.</li>
+						<li>Try restarting your computer.</li>
+					</ul>
+					<div class="popover-arrow" data-popper-arrow></div>
+				</div>
+			</fieldset>
 			<fieldset id="midi-exporting" class="ui-section">
 				<legend>Export</legend>
 				<div style="display: flex; flex-direction: row; align-items: center;">
