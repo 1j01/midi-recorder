@@ -1391,6 +1391,8 @@ fullscreen_button.onclick = ->
 	else if fullscreen_target_el.webkitRequestFullScreen
 		fullscreen_target_el.webkitRequestFullScreen()
 
+
+troubleshooting_popper = Popper.createPopper(troubleshoot_midi_input_button, troubleshoot_midi_input_popover)
 troubleshoot_midi_input_button.onclick = ->
 	troubleshoot_midi_input_button.ariaExpanded = not troubleshoot_midi_input_button.ariaExpanded
 	troubleshoot_midi_input_popover.hidden = not troubleshoot_midi_input_button.ariaExpanded
