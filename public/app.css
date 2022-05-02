@@ -100,6 +100,7 @@ body {
 	z-index: 2;
 	background: #45453c;
 	color: white;
+	border: 1px solid white;
 	padding: 1em;
 	border-radius: 0.5em;
 	/* box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.5); */
@@ -110,6 +111,8 @@ body {
 	width: 8px;
 	height: 8px;
 	background: inherit;
+	border: inherit;
+	/* can't use z-index here, so have to use clip-path below, for a continuous border */
 }
 .popover-arrow {
 	visibility: hidden;
@@ -121,15 +124,19 @@ body {
 }
 .popover[data-popper-placement^='top'] > .popover-arrow {
 	bottom: -4px;
+	clip-path: inset(6px -1px -1px -1px);
 }
 .popover[data-popper-placement^='bottom'] > .popover-arrow {
 	top: -4px;
+	clip-path: inset(-1px -1px 6px -1px);
 }
 .popover[data-popper-placement^='left'] > .popover-arrow {
 	right: -4px;
+	clip-path: inset(6px -1px -1px -1px);
 }
 .popover[data-popper-placement^='right'] > .popover-arrow {
 	left: -4px;
+	clip-path: inset(-1px -1px 6px -1px);
 }
 
 
