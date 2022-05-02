@@ -1399,8 +1399,8 @@ end_learn_range = ->
 	apply_text_el.hidden = true
 	learn_range_text_el.hidden = false
 	learning_range = [null, null]
-	midi_range_left_input.disabled = false
-	midi_range_right_input.disabled = false
+	midi_range_left_input.disabled = not visualization_enabled
+	midi_range_right_input.disabled = not visualization_enabled
 	[midi_range_left_input.value, midi_range_right_input.value] = selected_range
 	if cancel_learn_range_button_was_focused
 		learn_range_or_apply_button.focus()
