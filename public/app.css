@@ -289,6 +289,11 @@ button svg {
 	height: 1em;
 	width: 1em;
 }
+#github-button svg {
+	height: 1.3em;
+	width: 1.3em;
+	margin-right: 5px;
+}
 #undo-clear-button svg {
 	height: 1.3em;
 	width: 1.3em;
