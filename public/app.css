@@ -97,11 +97,11 @@ body {
 	text-decoration: underline;
 }
 .popover {
-	background: #1B1B1B;
+	background: #45453c;
 	color: white;
 	padding: 1em;
 	border-radius: 0.5em;
-	box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.5);
+	/* box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.5); */
 }
 .popover-arrow,
 .popover-arrow::before {
