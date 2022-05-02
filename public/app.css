@@ -98,13 +98,13 @@ body {
 }
 .popover {
 	z-index: 2;
-	background: #45453c;
+	background: #173d60;
 	color: white;
 	border: 1px solid white;
 	padding: 1em;
 	border-radius: 0.5em;
 	/* box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.5); */
-	--arrow-size: 4px;
+	/* --arrow-size: 4px; */
 }
 .popover-arrow,
 .popover-arrow::before {

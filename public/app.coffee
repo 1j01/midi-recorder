@@ -1392,18 +1392,20 @@ fullscreen_button.onclick = ->
 		fullscreen_target_el.webkitRequestFullScreen()
 
 
+arrow_size = 100
+troubleshoot_midi_input_popover.style.setProperty("--arrow-size", "#{arrow_size}px")
 troubleshooting_popper = Popper.createPopper(troubleshoot_midi_input_button, troubleshoot_midi_input_popover,
 	modifiers: [
 		{
 			name: 'offset'
 			options: {
-				offset: [0, 8]
+				offset: [0, arrow_size * 2]
 			}
 		}
 	]
 )
 
-troubleshoot_midi_input_button.onclick = ->
+do troubleshoot_midi_input_button.onclick = ->
 	if troubleshoot_midi_input_button.getAttribute("aria-expanded") is "false"
 		troubleshoot_midi_input_button.setAttribute("aria-expanded", "true")
 		troubleshoot_midi_input_popover.hidden = false
