@@ -59,19 +59,6 @@ body {
 	}
 }
 
-.two-column-layout {
-	display: flex;
-	flex-direction: row;
-	margin-bottom: 1em;
-}
-@media (max-width: 60em) {
-	.two-column-layout {
-		flex-direction: column;
-	}
-}
-.two-column-layout > * {
-	max-width: 35em;
-}
 #midi-devices {
 	min-width: 250px;
 }
