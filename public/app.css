@@ -306,6 +306,11 @@ button:disabled .fill-cc-if-disabled {
 	color: gray;
 }
 
+#no-notes-recorded-message {
+	/* need space against the Clear button */
+	margin-right: 1em;
+}
+
 #recording-name-input {
 	margin-left: 7px;
 	width: auto;
