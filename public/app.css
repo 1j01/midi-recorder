@@ -104,12 +104,13 @@ body {
 	padding: 1em;
 	border-radius: 0.5em;
 	/* box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.5); */
+	--arrow-size: 4px;
 }
 .popover-arrow,
 .popover-arrow::before {
 	position: absolute;
-	width: 8px;
-	height: 8px;
+	width: calc(var(--arrow-size) * 2);
+	height: calc(var(--arrow-size) * 2);
 	background: inherit;
 	border: inherit;
 	box-sizing: border-box;
@@ -124,20 +125,20 @@ body {
 	transform: rotate(45deg);
 }
 .popover[data-popper-placement^='top'] > .popover-arrow {
-	bottom: -4px;
-	clip-path: inset(4px 0 0 0);
+	bottom: calc(-1 * var(--arrow-size));
+	clip-path: inset(var(--arrow-size) 0 0 0);
 }
 .popover[data-popper-placement^='bottom'] > .popover-arrow {
-	top: -4px;
-	clip-path: inset(0 0 4px 0);
+	top: calc(-1 * var(--arrow-size));
+	clip-path: inset(0 0 var(--arrow-size) 0);
 }
 .popover[data-popper-placement^='left'] > .popover-arrow {
-	right: -4px;
-	clip-path: inset(4px 0 0 0);
+	right: calc(-1 * var(--arrow-size));
+	clip-path: inset(var(--arrow-size) 0 0 0);
 }
 .popover[data-popper-placement^='right'] > .popover-arrow {
-	left: -4px;
-	clip-path: inset(0 0 4px 0);
+	left: calc(-1 * var(--arrow-size));
+	clip-path: inset(0 0 var(--arrow-size) 0);
 }
 
 
