@@ -85,6 +85,69 @@ body {
 	text-decoration: line-through;
 }
 
+#troubleshoot-midi-input-button {
+	margin-top: 1em;
+}
+.popover-button {
+	/* link-style button */
+	border: 0;
+	padding: 0;
+	background: transparent;
+	color: white;
+	font-size: 1em;
+	cursor: pointer;
+	/* text-decoration: underline; applied to child with <u> to avoid underlined whitespace */
+}
+.popover {
+	z-index: 2;
+	background: #173d60;
+	color: white;
+	border: 1px solid white;
+	padding: 0.5em;
+	border-radius: 0.5em;
+	/* box-shadow: 0 0 0.5em 0.5em rgba(0, 0, 0, 0.5); */
+	/* --arrow-size: 4px; */
+}
+.popover-arrow,
+.popover-arrow::before {
+	position: absolute;
+	width: calc(var(--arrow-size) * 2);
+	height: calc(var(--arrow-size) * 2);
+	background: inherit;
+	border: inherit;
+	box-sizing: border-box;
+	/* can't use z-index here, so have to use clip-path below, for a continuous border */
+}
+.popover-arrow {
+	visibility: hidden;
+}
+.popover-arrow::before {
+	visibility: visible;
+	content: '';
+	transform: rotate(45deg);
+}
+/* -100%'s are because the inner shape (.popover-arrow::before) is rotated,
+so it extends beyond the box of .popover-arrow;
+we don't need sqrt(2) or whatever for the diagonal, just an upper bound so it doesn't clip the corners. */
+.popover[data-popper-placement^='top'] > .popover-arrow {
+	bottom: calc(-1 * var(--arrow-size));
+	clip-path: inset(var(--arrow-size) -100% -100% -100%);
+}
+.popover[data-popper-placement^='bottom'] > .popover-arrow {
+	top: calc(-1 * var(--arrow-size));
+	clip-path: inset(-100% -100% var(--arrow-size) -100%);
+}
+.popover[data-popper-placement^='left'] > .popover-arrow {
+	right: calc(-1 * var(--arrow-size));
+	clip-path: inset(var(--arrow-size) -100% -100% -100%);
+}
+.popover[data-popper-placement^='right'] > .popover-arrow {
+	left: calc(-1 * var(--arrow-size));
+	clip-path: inset(-100% -100% var(--arrow-size) -100%);
+}
+
+
+
 .error-message {
 	background: maroon;
 	color: white;
@@ -213,7 +276,7 @@ li {
 }
 
 button span[aria-hidden],
-button svg {
+button:not(.popover-button) svg {
 	margin-right: 5px;
 }
 button svg {

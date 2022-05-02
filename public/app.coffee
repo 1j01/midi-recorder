@@ -36,6 +36,8 @@ learn_range_text_el = document.getElementById("learn-midi-range-button-text")
 apply_text_el = document.getElementById("apply-midi-range-button-text")
 cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-button")
 midi_devices_table = document.getElementById("midi-devices")
+troubleshoot_midi_input_button = document.getElementById("troubleshoot-midi-input-button")
+troubleshoot_midi_input_popover = document.getElementById("troubleshoot-midi-input-popover")
 demo_button = document.getElementById("demo-button")
 demo_button_stop_span = document.getElementById("demo-button-stop-text")
 demo_button_start_span = document.getElementById("demo-button-start-text")
@@ -1388,6 +1390,46 @@ fullscreen_button.onclick = ->
 		fullscreen_target_el.mozRequestFullScreen()
 	else if fullscreen_target_el.webkitRequestFullScreen
 		fullscreen_target_el.webkitRequestFullScreen()
+
+
+arrow_size = 10
+troubleshoot_midi_input_popover.style.setProperty("--arrow-size", "#{arrow_size}px")
+troubleshooting_popper = Popper.createPopper(troubleshoot_midi_input_button, troubleshoot_midi_input_popover,
+	modifiers: [
+		{
+			name: 'offset'
+			options: {
+				offset: [0, arrow_size + 5]
+			}
+		}
+	]
+)
+
+troubleshoot_midi_input_button.onclick = ->
+	if troubleshoot_midi_input_button.getAttribute("aria-expanded") is "false"
+		troubleshoot_midi_input_button.setAttribute("aria-expanded", "true")
+		troubleshoot_midi_input_popover.hidden = false
+		troubleshooting_popper.update()
+	else
+		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
+		troubleshoot_midi_input_popover.hidden = true
+
+# close the popover when the user clicks outside of it
+window.addEventListener "click", (event)->
+	if troubleshoot_midi_input_button.getAttribute("aria-expanded") is "true" and not (
+		troubleshoot_midi_input_button.contains(event.target) or
+		troubleshoot_midi_input_popover.contains(event.target)
+	)
+		event.preventDefault() # won't prevent much, would need an overlay to prevent clicks from going through
+		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
+		troubleshoot_midi_input_popover.hidden = true
+
+# close popover when user presses escape
+window.addEventListener "keydown", ->
+	if event.key is "Escape" and troubleshoot_midi_input_button.getAttribute("aria-expanded") is "true"
+		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
+		troubleshoot_midi_input_popover.hidden = true
+
 
 end_learn_range = ->
 	# in case of apply button, selected_range is already set to learning_range
