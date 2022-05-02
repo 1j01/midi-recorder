@@ -53,12 +53,6 @@ body {
 	pointer-events: none;
 }
 
-@media (max-width: 75em) and (max-height: 55em), print {
-	#fork-me-on-github {
-		display: none;
-	}
-}
-
 #midi-devices-area {
 	/* Prevent layout shift when devices connect, for up to a couple devices. */
 	/* Applying to a wrapper so that:
