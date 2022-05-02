@@ -1399,11 +1399,13 @@ troubleshoot_midi_input_button.onclick = ->
 
 # close the popover when the user clicks outside of it
 window.addEventListener "click", (event)->
-	if event.target not in [troubleshoot_midi_input_button, troubleshoot_midi_input_popover]
-		if troubleshoot_midi_input_button.ariaExpanded
-			event.preventDefault() # won't prevent much, would need an overlay to prevent clicks from going through
-			troubleshoot_midi_input_button.ariaExpanded = false
-			troubleshoot_midi_input_popover.hidden = true
+	if troubleshoot_midi_input_button.ariaExpanded and not (
+		troubleshoot_midi_input_button.contains(event.target) or
+		troubleshoot_midi_input_popover.contains(event.target)
+	)
+		event.preventDefault() # won't prevent much, would need an overlay to prevent clicks from going through
+		troubleshoot_midi_input_button.ariaExpanded = false
+		troubleshoot_midi_input_popover.hidden = true
 
 # close popover when user presses escape
 window.addEventListener "keydown", ->
