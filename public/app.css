@@ -97,6 +97,7 @@ body {
 	text-decoration: underline;
 }
 .popover {
+	z-index: 2;
 	background: #45453c;
 	color: white;
 	padding: 1em;
