@@ -311,9 +311,9 @@ button:disabled .fill-cc-if-disabled {
 	color: gray;
 }
 
-#no-notes-recorded-message {
-	/* need space against the Clear button */
-	margin-right: 1em;
+#name-or-message {
+	/* for space against the Clear button, and a consistent size between these two UI states */
+	min-width: 220px;
 }
 
 #recording-name-input {
