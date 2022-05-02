@@ -1425,18 +1425,15 @@ learn_range_or_apply_button.onclick = ->
 
 cancel_learn_range_button.onclick = end_learn_range
 
-KEYCODE_ESC = 27
-KEYCODE_S = 83
-
 # supposedly keydown doesn't work consistently in all browsers
 document.body.addEventListener "keydown", (event)->
-	if event.keyCode is KEYCODE_ESC
+	if event.key is "Escape"
 		end_learn_range()
-	if event.keyCode is KEYCODE_S and (event.ctrlKey or event.metaKey)
+	if (event.key is "s" or event.key is "S") and (event.ctrlKey or event.metaKey)
 		export_midi_file("saved")
 		event.preventDefault()
 document.body.addEventListener "keyup", (event)->
-	if event.keyCode is KEYCODE_ESC
+	if event.key is "Escape"
 		end_learn_range()
 
 ##############################
