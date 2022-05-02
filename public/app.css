@@ -124,21 +124,24 @@ body {
 	content: '';
 	transform: rotate(45deg);
 }
+/* -100%'s are because the inner shape (.popover-arrow::before) is rotated,
+so it extends beyond the box of .popover-arrow;
+we don't need sqrt(2) or whatever for the diagonal, just an upper bound so it doesn't clip the corners. */
 .popover[data-popper-placement^='top'] > .popover-arrow {
 	bottom: calc(-1 * var(--arrow-size));
-	clip-path: inset(var(--arrow-size) 0 0 0);
+	clip-path: inset(var(--arrow-size) -100% -100% -100%);
 }
 .popover[data-popper-placement^='bottom'] > .popover-arrow {
 	top: calc(-1 * var(--arrow-size));
-	clip-path: inset(0 0 var(--arrow-size) 0);
+	clip-path: inset(-100% -100% var(--arrow-size) -100%);
 }
 .popover[data-popper-placement^='left'] > .popover-arrow {
 	right: calc(-1 * var(--arrow-size));
-	clip-path: inset(var(--arrow-size) 0 0 0);
+	clip-path: inset(var(--arrow-size) -100% -100% -100%);
 }
 .popover[data-popper-placement^='right'] > .popover-arrow {
 	left: calc(-1 * var(--arrow-size));
-	clip-path: inset(0 0 var(--arrow-size) 0);
+	clip-path: inset(-100% -100% var(--arrow-size) -100%);
 }
 
 
