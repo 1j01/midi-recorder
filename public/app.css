@@ -22,9 +22,18 @@ body {
 #buttons-overlay-right {
 	right: 0;
 }
+.buttons-overlay .button-visual {
+	transition: width 0.5s;
+}
+.buttons-overlay .button-visual .text-label {
+	transition: opacity 0.5s, max-width 0.5s;
+	overflow: hidden;
+	max-width: 300px;
+}
 @media (max-width: 700px) {
 	.buttons-overlay .button-visual .text-label {
-		display: none;
+		opacity: 0;
+		max-width: 0;
 	}
 	.buttons-overlay .button-visual {
 		width: 32px;
@@ -286,9 +295,10 @@ button span[aria-hidden],
 button:not(.popover-button) svg {
 	margin-right: 5px;
 }
-button svg {
+.button-visual svg {
 	height: 1.5em;
 	width: 1.5em;
+	flex: 0 0 auto;
 }
 #setup-3d-button svg {
 	height: 1.5em;
