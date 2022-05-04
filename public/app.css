@@ -52,6 +52,9 @@ body {
 	flex: 1;
 	/*overflow-y: scroll;*/ /* always visible so page doesn't shift horizontally when scrollbar appears or disappears */
 	overflow-y: auto; /* scrollbar only visible when needed */
+
+	/* reserve space for the top buttons */
+	margin-top: 3em;
 }
 
 .app-main {

@@ -25,8 +25,6 @@ MIT-licensed. See [LICENSE.md](LICENSE.md)
 
 ### TODO
 
-* Improve layout on mobile / small viewport size
-
 * Fade out overlay when playing (unless viz is disabled), with a button to show info again?
     - But there's a fullscreen button now (for the viz), is that good enough?
 
