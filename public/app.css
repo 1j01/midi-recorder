@@ -224,10 +224,10 @@ fieldset.ui-section:not(:first-of-type) {
 	#midi-exporting-clearing-controls {
 		flex-wrap: wrap;
 	}
-	#clear-button,
-	#undo-clear-button {
-		margin-left: auto;
-	}
+}
+#clear-button,
+#undo-clear-button {
+	margin-left: auto;
 }
 
 ul.bullets-in-items {
