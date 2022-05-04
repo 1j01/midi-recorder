@@ -214,6 +214,27 @@ fieldset.ui-section:not(:first-of-type) {
 	margin-top: 0.5em;
 }
 
+#midi-exporting-clearing-controls {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+@media (max-width: 600px) {
+	/* allow the controls to wrap, so that the whole UI can shrink */
+	/* switching to `display: block;` layout model looks better than `flex-wrap: wrap;` */
+	#midi-exporting-clearing-controls {
+		display: block;
+	}
+	/* don't just let it totally flow like text though; it looks ugly when none of buttons line up */
+	/* that said, this makes them line up in a different pairing, so might be a little confusing */
+	#clear-button,
+	#undo-clear-button {
+		display: block;
+		margin-top: 1em;
+		/* float: right; */
+	}
+}
+
 ul.bullets-in-items {
 	list-style-type: none;
 	padding: 0;
