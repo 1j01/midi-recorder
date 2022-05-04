@@ -291,8 +291,8 @@ li {
 	outline: 2px auto -webkit-focus-ring-color;
 }
 
-button span[aria-hidden],
-button:not(.popover-button) svg {
+.button-visual span[aria-hidden],
+.button-visual:not(.popover-button) svg {
 	margin-right: 5px;
 }
 .button-visual svg {
@@ -316,7 +316,6 @@ button:not(.popover-button) svg {
 #github-button svg {
 	height: 1.3em;
 	width: 1.3em;
-	margin-right: 5px;
 }
 #undo-clear-button svg {
 	height: 1.3em;
