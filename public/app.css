@@ -12,14 +12,15 @@ body {
 	overflow: hidden;
 }
 
-#buttons-overlay-left {
-	position: absolute;
-	top: 0;
-	left: 0;
-}
+#buttons-overlay-left,
 #buttons-overlay-right {
 	position: absolute;
 	top: 0;
+}
+#buttons-overlay-left {
+	left: 0;
+}
+#buttons-overlay-right {
 	right: 0;
 }
 
