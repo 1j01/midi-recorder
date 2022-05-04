@@ -446,6 +446,12 @@ a {
 	color: white;
 }
 
+/* Settings modal should be allowed to be a little bigger than a11y-modal's default,
+so that the Learn Range and (usually invisible) Cancel button can fit on one row with the label and inputs. */
+#settings-modal-content {
+	max-width: 700px;
+}
+
 /* Align info dialog's heading with logo icon */
 @media (min-width: 520px) {
 	/* App name and tagline both beside icon */
