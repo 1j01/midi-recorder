@@ -12,10 +12,15 @@ body {
 	overflow: hidden;
 }
 
-#buttons-overlay {
+#buttons-overlay-left {
 	position: absolute;
 	top: 0;
 	left: 0;
+}
+#buttons-overlay-right {
+	position: absolute;
+	top: 0;
+	right: 0;
 }
 
 .outer-container {
