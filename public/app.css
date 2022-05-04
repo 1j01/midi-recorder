@@ -416,6 +416,8 @@ a {
 .a11y-modal {
 	background: #111;
 	color: white;
+	/* Ensures modal's close button is accessible when viewport is narrow */
+	box-sizing: border-box;
 }
 
 .is-icon-btn:hover [data-modal-x],
