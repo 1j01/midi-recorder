@@ -23,6 +23,16 @@ body {
 #buttons-overlay-right {
 	right: 0;
 }
+@media (max-width: 700px) {
+	#buttons-overlay-left .button-visual .text-label,
+	#buttons-overlay-right .button-visual .text-label {
+		display: none;
+	}
+	#buttons-overlay-left .button-visual,
+	#buttons-overlay-right .button-visual {
+		width: 32px;
+	}
+}
 
 .outer-container {
 	display: flex;
