@@ -12,8 +12,7 @@ body {
 	overflow: hidden;
 }
 
-#buttons-overlay-left,
-#buttons-overlay-right {
+.buttons-overlay {
 	position: absolute;
 	top: 0;
 }
@@ -24,12 +23,10 @@ body {
 	right: 0;
 }
 @media (max-width: 700px) {
-	#buttons-overlay-left .button-visual .text-label,
-	#buttons-overlay-right .button-visual .text-label {
+	.buttons-overlay .button-visual .text-label {
 		display: none;
 	}
-	#buttons-overlay-left .button-visual,
-	#buttons-overlay-right .button-visual {
+	.buttons-overlay .button-visual {
 		width: 32px;
 	}
 }
