@@ -443,6 +443,36 @@ a {
 	color: white;
 }
 
+/* Align info dialog's heading with logo icon */
+@media (min-width: 520px) {
+	/* App name and tagline both beside icon */
+	#info-modal-content h1,
+	#info-modal-content h2 {
+		margin: 0;
+	}
+}
+@media (max-width: 519px) {
+	/* Tagline on a separate row */
+	#info-modal-content h2 {
+		clear: both;
+	}
+}
+@media (max-width: 519px) and (min-width: 360px) {
+	/* App name not wrapped; center it vertically with the icon */
+	/* This is an inexact approach, using media queries, as it depends on the font, so there's an edge case or two where it won't look as nice. */
+	#info-modal-content h1 {
+		/* using rem to match img size style defined in HTML, given that the h1 has a different em scale */
+		line-height: 4rem;
+	}
+}
+@media (max-width: 270px) {
+	/* App name on a separate row */
+	#info-modal-content h1 {
+		clear: both;
+	}
+}
+
+
 /* animation taken from https://projects.lukehaas.me/css-loaders/ */
 .loading-indicator {
 	color: #ffffff;
