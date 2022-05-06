@@ -1,4 +1,4 @@
-# [MIDI Recorder][app]
+# ![](public/favicon-32x32.png) [MIDI Recorder][app]
 
 The simplest way to record MIDI.
 
