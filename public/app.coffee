@@ -733,7 +733,7 @@ save_chunk = ->
 	saving_chunk_id = "chunk_#{saving_chunk_n.toString().padStart(5, "0")}"
 	localforage.setItem("#{active_recording_session_id}:#{saving_chunk_id}", active_chunk_events)
 	.catch (error)->
-		# TODO: maybe restore active_chunk_events/active_chunk_n in case it was a a fluke (disk busy etc.)?
+		# TODO: maybe restore active_chunk_events/active_chunk_n in case it was a fluke (disk busy etc.)?
 		# but what if some specific event caused it to fail? in that case it would be better to save further chunks
 		# maybe try again once or twice and then give up on the chunk(s)?
 		recovery_error_message_el.hidden = false
