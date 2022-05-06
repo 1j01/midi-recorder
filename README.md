@@ -25,31 +25,6 @@ MIT-licensed. See [LICENSE.md](LICENSE.md)
 
 ### TODO
 
-* Fade out overlay when playing (unless viz is disabled), with a button to show info again?
-    - But there's a fullscreen button now (for the viz), is that good enough?
-
-* Stress test the length of recording
-
-* Record + show aftertouch pressure
-    - I don't have a keyboard that supports this.
-
-* Support Pitch Bend Range selection
-    - How often is this sent? Probably only when you change it, if at all.
-    - Might have to be a manual setting.
-
-* Record miscellaneous MIDI events, maybe even SysEx (optionally)?
-    - It'd be nice if I could just take a MIDI stream and append it to a header to get a MIDI file, but it's probably a lot more complicated.
-    - Probably want to drop SimpleMIDIInput to do this... altho if it gives the raw data for all events, maybe I don't need to.
-
-* Maybe allow scrolling back (pausing automatically (not pausing recording, just the view))
-    - But the UI can also scroll, so how should you indicate to scroll the visualization versus the UI?
-
-* Color notes by channel or instrument?
-    - Doesn't matter much with a single keyboard
-
-* Offline support with a service worker
-    - Service workers are a serious footgun.
-
-* (Little visual bug: if zoomed out, opening recovery modal has a bad transition, the whole overlay flickers out for a bit)
+See the [issue tracker](https://github.com/1j01/midi-recorder/issues), and `TODO` comments in the source code.
 
 [app]: https://midi-recorder.web.app/
