@@ -944,8 +944,10 @@ do animate = ->
 
 	for instrument_select in global_instrument_selects
 		y = (instrument_select.time - now) / 1000 * px_per_second
-		# text = "Instrument: #{instrument_select.value}"
-		text = JZZ.MIDI.programName(instrument_select.value)
+		instrument_name = JZZ.MIDI.programName(instrument_select.value)
+			.replace(/\s*\*$/, "") # I'm not sure why it has an asterisk at the end
+			.replace(/:$/, "") # I'm also not sure why some names have a colon at the end
+		text = "#{instrument_select.value}. #{instrument_name}"
 
 		# bar line
 		bar_thickness = 2
