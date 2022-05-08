@@ -318,7 +318,11 @@ global_pitch_bends = []
 current_sustain_active = off
 global_sustain_periods = []
 current_instrument = undefined
+current_bank_msb = undefined
+current_bank_lsb = undefined
 global_instrument_selects = []
+global_bank_msb_selects = []
+global_bank_lsb_selects = []
 active_recording_session_id = "recording_#{nanoid()}"
 active_chunk_n = 1
 active_chunk_events = []
@@ -338,6 +342,8 @@ save_state = ->
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
+		global_bank_msb_selects
+		global_bank_lsb_selects
 		recording_name: recording_name_input.value
 		last_note_datetime
 		active_recording_session_id
@@ -361,6 +367,8 @@ restore_state = (state)->
 		global_sustain_periods
 		current_instrument
 		global_instrument_selects
+		global_bank_msb_selects
+		global_bank_lsb_selects
 		last_note_datetime
 		active_recording_session_id
 		active_chunk_n
@@ -569,7 +577,7 @@ smi.on 'pitchWheel', ({event, value, time})->
 
 smi.on 'programChange', ({program, time})->
 	current_instrument = program
-	global_instrument_selects.push({time, value: program})
+	global_instrument_selects.push({time, value: program, bank_msb: current_bank_msb, bank_lsb: current_bank_lsb})
 	enable_clearing()
 
 smi.on 'global', ({event, cc, value, time, data})->
@@ -577,6 +585,16 @@ smi.on 'global', ({event, cc, value, time, data})->
 		# console.log({event, cc, value, time, data})
 
 		active_chunk_events.push {data, time}
+
+	if event is "cc" and cc is 0
+		current_bank_msb = value
+		global_bank_msb_selects.push({time, value: value})
+		enable_clearing()
+	
+	if event is "cc" and cc is 32
+		current_bank_lsb = value
+		global_bank_lsb_selects.push({time, value: value})
+		enable_clearing()
 
 	if event is "cc" and cc is 64
 		active = value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
@@ -944,7 +962,7 @@ do animate = ->
 
 	for instrument_select in global_instrument_selects
 		y = (instrument_select.time - now) / 1000 * px_per_second
-		instrument_name = JZZ.MIDI.programName(instrument_select.value)
+		instrument_name = JZZ.MIDI.programName(instrument_select.value, instrument_select.bank_msb, instrument_select.bank_lsb)
 			.replace(/\s*\*$/, "") # I'm not sure why it has an asterisk at the end
 			.replace(/:$/, "") # I'm also not sure why some names have a colon at the end
 		text = "#{instrument_select.value}. #{instrument_name}"
@@ -1126,6 +1144,26 @@ export_midi_file = (delete_later_reason, file_name)->
 			subtype: MIDIEvents.EVENT_MIDI_PROGRAM_CHANGE
 			channel: 0
 			param1: instrument_select.value
+		})
+
+	for bank_msb_select in global_bank_msb_selects
+		events.push({
+			# delta: <computed later>
+			_time: bank_msb_select.time
+			type: MIDIEvents.EVENT_MIDI
+			subtype: 0, # Bank Select Coarse (MSB) (Most Significant Byte)
+			channel: 0
+			param1: bank_msb_select.value
+		})
+	
+	for bank_lsb_select in global_bank_lsb_selects
+		events.push({
+			# delta: <computed later>
+			_time: bank_lsb_select.time
+			type: MIDIEvents.EVENT_MIDI
+			subtype: 32, # Bank Select Fine (LSB) (Least Significant Byte)
+			channel: 0
+			param1: bank_lsb_select.value
 		})
 
 	for sustain_period in global_sustain_periods
