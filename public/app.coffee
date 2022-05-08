@@ -966,6 +966,11 @@ do animate = ->
 			.replace(/\s*\*$/, "") # I'm not sure why it has an asterisk at the end
 			.replace(/:$/, "") # I'm also not sure why some names have a colon at the end
 		text = "#{instrument_select.value}. #{instrument_name}"
+		if instrument_select.bank_msb or instrument_select.bank_lsb
+			# Bank Select LSB is rarely used in practice, so don't show it unless it's set
+			if instrument_select.bank_lsb
+				text = "#{instrument_select.bank_lsb}:#{text}"
+			text = "#{instrument_select.bank_msb or 0}:#{text}"
 
 		# bar line
 		bar_thickness = 2
