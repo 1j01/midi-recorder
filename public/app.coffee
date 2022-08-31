@@ -354,9 +354,9 @@ save_state = ->
 	state
 
 restore_state = (state)->
-	# need to make data copy when restoring as well,
-	# so that if you restore initial_state it's not going to then mutate that state
-	# so that if you clear a second recording it'll work (play notes, clear, play notes, clear)
+	# Need to clone when restoring as well (not set by reference),
+	# so that if you restore initial_state it's not going to then mutate initial_state.
+	# This way it should work if you clear a second time (play notes, clear, play notes, clear.)
 
 	# NOTE: these variables must all be declared ABOVE! else they will be local here
 	{
