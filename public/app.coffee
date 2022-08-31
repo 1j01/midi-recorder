@@ -5,7 +5,7 @@ for el in document.querySelectorAll("noscript")
 fullscreen_target_el = document.getElementById("fullscreen-target")
 canvas = document.getElementById("midi-viz-canvas")
 export_midi_file_button = document.getElementById("export-midi-file-button")
-recording_name_input = document.getElementById("recording-name-input")
+song_name_input = document.getElementById("song-name-input")
 clear_button = document.getElementById("clear-button")
 undo_clear_button = document.getElementById("undo-clear-button")
 fullscreen_button = document.getElementById("fullscreen-button")
@@ -243,7 +243,7 @@ save_state = ->
 		global_instrument_selects
 		global_bank_msb_selects
 		global_bank_lsb_selects
-		recording_name: recording_name_input.value
+		song_name: song_name_input.value
 		last_note_datetime
 		active_chunk_n
 		active_chunk_events
@@ -272,7 +272,7 @@ restore_state = (state)->
 		active_chunk_events
 	} = JSON.parse(JSON.stringify(state))
 	current_notes = new Map(state.current_notes)
-	recording_name_input.value = state.recording_name
+	song_name_input.value = state.song_name
 
 initial_state = save_state()
 undo_state = save_state()
@@ -403,7 +403,7 @@ demo = ->
 		# if Math.sin(t * 29) < 0
 		# 	set_pitch_bend(Math.sin(t * 4))
 
-		recording_name_input.hidden = false
+		song_name_input.hidden = false
 		export_midi_file_button.disabled = false
 		enable_clearing()
 
@@ -874,25 +874,25 @@ export_midi_file = ->
 		# but the browser will sanitize reserved characters in a bland way,
 		# such as replacing with underscores.
 		# I want to preserve the intention as much as possible, of the entered name.
-		recording_name = recording_name_input.value
-		recording_name = recording_name.replace(/\//g, "⧸")
-		recording_name = recording_name.replace(/\\/g, "⧹")
-		recording_name = recording_name.replace(/</g, "ᐸ")
-		recording_name = recording_name.replace(/>/g, "ᐳ")
-		recording_name = recording_name.replace(/:/g, "꞉")
-		recording_name = recording_name.replace(/\|/g, "∣")
-		recording_name = recording_name.replace(/\?/g, "？")
-		recording_name = recording_name.replace(/\*/g, "∗")
-		recording_name = recording_name.replace(/(^|[-—\s(\["])'/g, "$1\u2018")  # opening singles
-		recording_name = recording_name.replace(/'/g, "\u2019")                  # closing singles & apostrophes
-		recording_name = recording_name.replace(/(^|[-—/\[(‘\s])"/g, "$1\u201c") # opening doubles
-		recording_name = recording_name.replace(/"/g, "\u201d")                  # closing doubles
-		recording_name = recording_name.replace(/--/g, "\u2014")                 # em-dashes
-		recording_name = recording_name.replace(/\.\.\./g, "…")                  # ellipses
-		recording_name = recording_name.replace(/~/g, "\u301C")                  # Chrome at least doesn't like tildes
-		recording_name = recording_name.trim()
+		song_name = song_name_input.value
+		song_name = song_name.replace(/\//g, "⧸")
+		song_name = song_name.replace(/\\/g, "⧹")
+		song_name = song_name.replace(/</g, "ᐸ")
+		song_name = song_name.replace(/>/g, "ᐳ")
+		song_name = song_name.replace(/:/g, "꞉")
+		song_name = song_name.replace(/\|/g, "∣")
+		song_name = song_name.replace(/\?/g, "？")
+		song_name = song_name.replace(/\*/g, "∗")
+		song_name = song_name.replace(/(^|[-—\s(\["])'/g, "$1\u2018")  # opening singles
+		song_name = song_name.replace(/'/g, "\u2019")                  # closing singles & apostrophes
+		song_name = song_name.replace(/(^|[-—/\[(‘\s])"/g, "$1\u201c") # opening doubles
+		song_name = song_name.replace(/"/g, "\u201d")                  # closing doubles
+		song_name = song_name.replace(/--/g, "\u2014")                 # em-dashes
+		song_name = song_name.replace(/\.\.\./g, "…")                  # ellipses
+		song_name = song_name.replace(/~/g, "\u301C")                  # Chrome at least doesn't like tildes
+		song_name = song_name.trim()
 
-		file_name = "#{iso_date_string}#{if recording_name.length then " - #{recording_name}" else ""}.midi"
+		file_name = "#{iso_date_string}#{if song_name.length then " - #{song_name}" else ""}.midi"
 
 	saveAs(blob, file_name)
 

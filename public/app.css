@@ -260,7 +260,7 @@ button:disabled .fill-cc-if-disabled {
 	fill: currentColor;
 }
 
-#recording-name-input {
+#song-name-input {
 	margin-left: 7px;
 	width: auto;
 }
