@@ -356,7 +356,7 @@ save_state = ->
 restore_state = (state)->
 	# Need to clone when restoring as well (not set by reference),
 	# so that if you restore initial_state it's not going to then mutate initial_state.
-	# This way it should work if you clear a second time (play notes, clear, play notes, clear.)
+	# This way it should work if you clear a second time (modify, clear, modify, clear.)
 
 	# NOTE: these variables must all be declared ABOVE! else they will be local here
 	{
