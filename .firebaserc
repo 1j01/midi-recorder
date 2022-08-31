@@ -1,5 +1,5 @@
 {
   "projects": {
-    "default": "midi-recorder"
+    "default": "ascii-to-midi"
   }
 }

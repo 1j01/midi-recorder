@@ -1,7 +1,7 @@
 {
-    "name": "MIDI Recorder",
-    "short_name": "MIDI Recorder",
-    "description": "The easiest way to record MIDI.",
+    "name": "ASCII To MIDI",
+    "short_name": "ASCII To MIDI",
+    "description": "Turn text into MIDI.",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

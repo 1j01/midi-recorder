@@ -56,7 +56,7 @@ nanoid = (length = 21) ->
 	id
 
 localforage.config({
-	name: "MIDI Recorder"
+	name: "ASCII To MIDI"
 })
 
 # for filename

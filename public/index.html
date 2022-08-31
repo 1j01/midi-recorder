@@ -3,7 +3,7 @@
 
 <head>
 	<meta charset="utf-8" />
-	<title>MIDI Recorder</title>
+	<title>ASCII To MIDI</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 	<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -11,8 +11,8 @@
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 	<link rel="manifest" href="/site.webmanifest">
 	<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#d30000">
-	<meta name="apple-mobile-web-app-title" content="MIDI Recorder">
-	<meta name="application-name" content="MIDI Recorder">
+	<meta name="apple-mobile-web-app-title" content="ASCII To MIDI">
+	<meta name="application-name" content="ASCII To MIDI">
 	<meta name="msapplication-TileColor" content="#b91d47">
 	<meta name="theme-color" content="#ff0">
 
@@ -27,63 +27,62 @@
 		<div data-modal-document>
 			<!-- 4rem should match CSS -->
 			<img src="./favicon.svg" alt="Logo" style="float: left; height: 4rem; margin-right: 1em;" />
-			<h1>MIDI Recorder</h1>
-			<h2>The easiest way to record MIDI.</h2>
+			<h1>ASCII To MIDI</h1>
+			<h2>Convert textual scores to MIDI files.</h2>
 			<h3>Features:</h3>
 			<span class="visually-hidden">.</span> <!-- so ChromeVox pronounces "Live" with an I sound -->
 			<ul class="bullets-in-items">
+				<!-- <li class="supported">
+					<span>✓</span>
+					<span>Input as ASCII grid of notes</span>
+				</li> -->
+				<!-- <li class="supported">
+					<span>✓</span>
+					<span>Input as image</span>
+				</li> -->
+				<!-- <li class="supported">
+					<span>✓</span>
+					<span>Input as guitar/bass tablature</span>
+				</li> -->
+				<!-- <li class="supported">
+					<span>✓</span>
+					<span>Input as ABC notation</span>
+				</li> -->
+				<!-- <li class="supported">
+					<span>✓</span>
+					<span>Input as RTTTL (ringtone format)</span>
+				</li> -->
 				<li class="supported">
 					<span>✓</span>
-					<span>Live MIDI visualization</span>
+					<span>Preview MIDI with visualization</span>
 				</li>
 				<li class="supported">
 					<span>✓</span>
 					<span>Standard MIDI file export</span>
 				</li>
-				<li class="supported">
+				<!-- <li class="supported">
 					<span>✓</span>
-					<span>Crash recovery (requires site storage / cookies)</span>
-				</li>
-				<li class="supported">
-					<span>✓</span>
-					<span>Note velocity / loudness</span>
-				</li>
-				<li class="supported">
-					<span>✓</span>
-					<span>Pitch bends</span>
-				</li>
-				<li class="supported">
-					<span>✓</span>
-					<span>Sustain pedal</span>
-				</li>
-				<li class="supported">
-					<span>✓</span>
-					<span>Instrument changes</span>
-				</li>
+					<span>Specify instrument</span>
+				</li> -->
 				<li class="supported">
 					<span>✓</span>
 					<span>No data sent to any server</span>
 				</li>
-				<li class="supported">
+				<!-- <li class="supported">
 					<span>✓</span>
 					<span>Options saved in URL</span>
-				</li>
+				</li> -->
 				<li class="supported">
 					<span>✓</span>
-					<span><a href="https://github.com/1j01/midi-recorder/" target="_blank">Open source</a> (MIT-licensed)</span>
+					<span><a href="https://github.com/1j01/ascii-to-midi/" target="_blank">Open source</a> (MIT-licensed)</span>
 				</li>
 			</ul>
 			<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
-			<h3>Limitations:</h3>
+			<!-- <h3>Limitations:</h3>
 			<ul class="bulleted-list">
-				<li>Aftertouch pressure and miscellaneous MIDI events are not recorded.</li>
-				<li>Instrument is assumed to be piano at start of each recording. If you want to keep playing with a different instrument, change the instrument and change it back to send an instrument change event.</li>
-				<!-- <li>Instrument is assumed to be piano when the app starts up.</li> -->
-				<li>Instrument names may not always match what's shown on your device. Some pianos include voices outside of the GM / GM2 / GS / XG standards. You may want to note the voices used in the file name.</li>
-				<li>Only one channel is supported, so split/dual instrument settings won't work.</li>
-				<li>Pitch bend range is assumed to be ± 2 semitones (a common default).</li>
-			</ul>
-			<h3>Made By</h3>
+				<li></li>
+			</ul> -->
+			<h3>Made By:</h3>
 			<a href="https://isaiahodhner.io" target="_blank">Isaiah Odhner</a>
 		</div>
 	</div>
@@ -255,65 +254,16 @@
 		<noscript>
 			This app requires JavaScript.
 		</noscript>
-		<h2>Plug in a MIDI keyboard and play away!</h2>
+		<h2>Text file in, MIDI out!</h2>
 		<div id="controls">
 			<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
 			<fieldset class="ui-section">
 				<legend>Input</legend>
 				<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
-				<h3>MIDI devices:</h3>
-				<div id="midi-devices-area">
-					<p id="loading-midi-devices-message" hidden>Loading...</p>
-					<p id="no-midi-devices-message" hidden>No MIDI devices detected</p>
-					<table id="midi-devices" aria-live="assertive"></table>
-					<div id="midi-not-supported" hidden>
-						<div class="error-message">
-							This browser doesn't support MIDI access.
-							Try using Chrome, or for other browsers, the
-							<a href="https://jazz-soft.net/download/web-midi/">Jazz-Soft Web MIDI API extension</a>.
-						</div>
-						<button class="button-functional" id="demo-button">
-							<span class="button-visual">
-								<span id="demo-button-stop-text" hidden>
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" height="1em">
-										<polygon points="0,0 0,100 100,100 100,0" fill="#FFF" class="fill-cc"/>
-									</svg>
-									Stop Demo
-								</span>
-								<span id="demo-button-start-text">
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" height="1em">
-										<polygon points="0,0 0,100 100,50" fill="#FFF" class="fill-cc"/>
-									</svg>
-									Demo
-								</span>
-							</span>
-						</button>
-					</div>
-					<div id="midi-access-failed" class="error-message" hidden>
-						Failed to get MIDI access.
-						<pre id="midi-access-failed-pre"></pre>
-					</div>
-				</div>
-				<button id="troubleshoot-midi-input-button" class="popover-button" aria-haspopup="dialog" aria-expanded="false">
-					<svg fill="currentColor" height="1em" viewBox="0 0 40 40" style="vertical-align: bottom;">
-						<path
-							d="m18.4 15v-3.4h3.2v3.4h-3.2z m1.6 18.4c7.3 0 13.4-6.1 13.4-13.4s-6.1-13.4-13.4-13.4-13.4 6.1-13.4 13.4 6.1 13.4 13.4 13.4z m0-30c9.2 0 16.6 7.4 16.6 16.6s-7.4 16.6-16.6 16.6-16.6-7.4-16.6-16.6 7.4-16.6 16.6-16.6z m-1.6 25v-10h3.2v10h-3.2z">
-						</path>
-					</svg>
-					<u>MIDI device not showing up?</u>
-				</button>
-				<div id="troubleshoot-midi-input-popover" class="popover" hidden>
-					<ul class="bulleted-list">
-						<li>Make sure it's plugged into your computer and turned on.</li>
-						<li>Try <a href="JavaScript:location.reload();">refreshing the page</a>.</li>
-						<li>If that doesn't work, try unplugging it and plugging it back in.</li>
-						<li>Try restarting your computer.</li>
-					</ul>
-					<div class="popover-arrow" data-popper-arrow></div>
-				</div>
+				<input type="file">				
 			</fieldset>
 			<fieldset id="midi-exporting" class="ui-section">
-				<legend>Export</legend>
+				<legend>Output</legend>
 				<div id="midi-exporting-clearing-controls">
 					<button class="button-functional" id="export-midi-file-button" disabled aria-keyshortcuts="Ctrl+S Meta+S">
 						<span class="button-visual">
@@ -331,7 +281,6 @@
 						</span>
 					</button>
 					<span id="name-or-message">
-						<span id="no-notes-recorded-message" tabindex="0">&nbsp;- No notes recorded</span>
 						<input type="text" id="recording-name-input" hidden/>
 					</span>
 					<span style="flex: 1"></span>
@@ -354,67 +303,11 @@
 						</span>
 					</button>
 				</div>
-				<br>
-				<div class="error-message" hidden id="recovery-error-message"></div>
-				<!-- Modal libraries like to replace your buttons' id attributes apparently... -->
-				<!-- Also there's no equivalent data-modal-hidden to make it not unhide the button if it's hidden -->
-				<button class="button-functional show-recovery-button" disabled data-modal-disabled data-modal-open="recovery-modal-content">
-					<span class="button-visual">
-						<span class="loading-indicator"></span>
-						Recover Recordings
-					</span>
-				</button>
-				<div id="recovery-modal-content" hidden data-modal>
-					<div data-modal-document>
-						<h3>Recover Recordings</h3>
-						<ul id="recoverables"></ul>
-						<p id="recovery-empty-message" hidden>
-							No more recordings to recover.
-						</p>
-					</div>
-				</div>
-
 			</fieldset>
-			<!-- <div id="perspective-registration-container">
-				<video id="perspective-registration-video">Video stream not available.</video>
-				
-				<svg id="perspective-registration-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-					<defs>
-						<g id="point-handle">
-							<circle
-								r="10" x="0" y="0"
-								stroke-width="2"
-								fill="#000"
-								fill-opacity="0.3"
-								stroke="#fff"
-							/>
-							<line
-								x1="0" y1="-10"
-								x2="0" y2="10"
-								stroke="white"
-							/>
-							<line
-								x1="-10" y1="0"
-								x2="10" y2="0"
-								stroke="white"
-							/>
-						</g>
-					</defs>
-					<polygon
-						id="perspective-registration-polygon"
-						stroke="#29e"
-						opacity="0.9"
-						stroke-width="2"
-						stroke-linejoin="round"
-						fill="none"
-						points="123,144 0,200 400,200 273,144"
-					/>
-				</svg> -->
 
-				<div id="fullscreen-target">
-					<canvas id="midi-viz-canvas" class="element-to-transform"></canvas>
-				</div>
-			<!-- </div> -->
+			<div id="fullscreen-target">
+				<canvas id="midi-viz-canvas" class="element-to-transform"></canvas>
+			</div>
 		</div>
 	</main>
 	</div>
@@ -455,7 +348,7 @@
 				<span class="text-label">Info</span>
 			</span>
 		</button>
-		<a href="https://github.com/1j01/midi-recorder/" target="_blank" class="button-functional" id="github-button" style="text-decoration: none;">
+		<a href="https://github.com/1j01/ascii-to-midi/" target="_blank" class="button-functional" id="github-button" style="text-decoration: none;">
 			<span class="button-visual">
 				<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" height="1em"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
 				<span class="text-label">GitHub</span>
@@ -473,8 +366,6 @@
 	<script>JZZ={MIDI:{noteValue(){}}}</script>
 	<script src="lib/JZZ.midi.GM.js"></script>
 	<script src="lib/localforage.js"></script>
-	<!-- <script src="lib/interact.min.js"></script> -->
 	<script src="compiled/app.js"></script>
-	<!-- <script src="compiled/3d.js"></script> -->
 </body>
 </html>

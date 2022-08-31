@@ -1,7 +1,7 @@
 {
-	"name": "midi-recorder",
-	"description": "The easiest way to record MIDI.",
-	"homepage": "https://midi-recorder.web.app",
+	"name": "ascii-to-midi",
+	"description": "Turn text into MIDI.",
+	"homepage": "https://ascii-to-midi.web.app",
 	"author": "Isaiah Odhner <isaiahodhner@gmail.com>",
 	"scripts": {
 		"start": "run-p live-server coffee",

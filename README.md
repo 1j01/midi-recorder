@@ -1,14 +1,8 @@
-# ![](public/favicon-32x32.png) [MIDI Recorder][app]
+# ![](public/favicon-32x32.png) [ASCII To MIDI][app]
 
-The simplest way to record MIDI.
+[Try out the app!][app]
 
-- **Records right away**, no install or setup required. Automatically connects to new MIDI devices.
-- **Visualizes** notes, pitch bends, and instrument changes, as you play.
-- **Recovers recordings** in case the browser crashes, or you close the tab by accident, or refresh the page, or there's a power outage.
-
-If you've got a MIDI keyboard, plug it in and [try out the app!][app]
-
-Built with [SimpleMidiInput.js](https://github.com/kchapelier/SimpleMidiInput.js) and [MidiFile.js](https://github.com/nfroidure/midifile), and written in [CoffeeScript](https://coffeescript.org/).
+Built with [MidiFile.js](https://github.com/nfroidure/midifile), and written in [CoffeeScript](https://coffeescript.org/).
 
 
 ### License
@@ -25,6 +19,6 @@ MIT-licensed. See [LICENSE.md](LICENSE.md)
 
 ### TODO
 
-See the [issue tracker](https://github.com/1j01/midi-recorder/issues), and `TODO` comments in the source code.
+See the [issue tracker](https://github.com/1j01/ascii-to-midi/issues), and `TODO` comments in the source code.
 
-[app]: https://midi-recorder.web.app/
+[app]: https://ascii-to-midi.web.app/
