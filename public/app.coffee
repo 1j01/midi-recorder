@@ -318,6 +318,7 @@ set_pitch_bend = (value, time=performance.now())->
 # Demonstration Mode
 ##############################
 
+###
 demo_iid = null
 stop_demo = ->
 	clearInterval demo_iid
@@ -412,6 +413,7 @@ demo = ->
 window.demo = demo
 window.stop_demo = stop_demo
 demo_button.onclick = demo
+###
 
 ##############################
 # Rendering (Visualization)
