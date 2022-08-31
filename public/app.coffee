@@ -1307,45 +1307,6 @@ fullscreen_button.onclick = ->
 		fullscreen_target_el.webkitRequestFullScreen()
 
 
-arrow_size = 10
-troubleshoot_midi_input_popover.style.setProperty("--arrow-size", "#{arrow_size}px")
-troubleshooting_popper = Popper.createPopper(troubleshoot_midi_input_button, troubleshoot_midi_input_popover,
-	modifiers: [
-		{
-			name: 'offset'
-			options: {
-				offset: [0, arrow_size + 5]
-			}
-		}
-	]
-)
-
-troubleshoot_midi_input_button.onclick = ->
-	if troubleshoot_midi_input_button.getAttribute("aria-expanded") is "false"
-		troubleshoot_midi_input_button.setAttribute("aria-expanded", "true")
-		troubleshoot_midi_input_popover.hidden = false
-		troubleshooting_popper.update()
-	else
-		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
-		troubleshoot_midi_input_popover.hidden = true
-
-# close the popover when the user clicks outside of it
-window.addEventListener "click", (event)->
-	if troubleshoot_midi_input_button.getAttribute("aria-expanded") is "true" and not (
-		troubleshoot_midi_input_button.contains(event.target) or
-		troubleshoot_midi_input_popover.contains(event.target)
-	)
-		event.preventDefault() # won't prevent much, would need an overlay to prevent clicks from going through
-		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
-		troubleshoot_midi_input_popover.hidden = true
-
-# close popover when user presses escape
-window.addEventListener "keydown", ->
-	if event.key is "Escape" and troubleshoot_midi_input_button.getAttribute("aria-expanded") is "true"
-		troubleshoot_midi_input_button.setAttribute("aria-expanded", "false")
-		troubleshoot_midi_input_popover.hidden = true
-
-
 end_learn_range = ->
 	# in case of apply button, selected_range is already set to learning_range
 	# in case of cancel button, selected_range is not set to learning_range so this does a reset
