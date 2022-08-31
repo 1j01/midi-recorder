@@ -457,7 +457,8 @@ do animate = ->
 	if canvas.style.filter isnt filter
 		canvas.style.filter = filter
 
-	now = performance.now()
+	# now = performance.now()
+	now = notes[notes.length - 1]?.end_time ? performance.now()
 
 	canvas.width = innerWidth if canvas.width isnt innerWidth
 	canvas.height = innerHeight if canvas.height isnt innerHeight
