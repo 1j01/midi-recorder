@@ -260,39 +260,9 @@ button:disabled .fill-cc-if-disabled {
 	fill: currentColor;
 }
 
-#no-notes-recorded-message,
-#loading-midi-devices-message,
-#no-midi-devices-message {
-	color: gray;
-}
-
-#name-or-message {
-	/* for space against the Clear button, and a consistent size between these two UI states */
-	min-width: 220px;
-}
-
 #recording-name-input {
 	margin-left: 7px;
 	width: auto;
-}
-
-.show-recovery-button {
-	float: right;
-}
-
-#recoverables {
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-}
-.recoverable-recording {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-.recoverable-recording-name {
-	margin-left: 10px;
-	margin-right: auto;
 }
 
 input[type="text"],
@@ -390,104 +360,6 @@ so that the Learn Range and (usually invisible) Cancel button can fit on one row
 	#info-modal-content h1 {
 		clear: both;
 	}
-}
-
-
-/* animation taken from https://projects.lukehaas.me/css-loaders/ */
-.loading-indicator {
-	color: #ffffff;
-	font-size: 20px;
-	margin: 100px auto;
-	width: 1em;
-	height: 1em;
-	border-radius: 50%;
-	position: relative;
-	text-indent: -9999em;
-	-webkit-animation: load4 1.3s infinite linear;
-	animation: load4 1.3s infinite linear;
-	-webkit-transform: translateZ(0) scale(0.2);
-	-ms-transform: translateZ(0) scale(0.2);
-	transform: translateZ(0) scale(0.2);
-}
-@-webkit-keyframes load4 {
-	0%,
-	100% {
-		box-shadow: 0 -3em 0 0.2em, 2em -2em 0 0em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 0;
-	}
-	12.5% {
-		box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em, 3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
-	}
-	25% {
-		box-shadow: 0 -3em 0 -0.5em, 2em -2em 0 0, 3em 0 0 0.2em, 2em 2em 0 0, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
-	}
-	37.5% {
-		box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em, -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
-	}
-	50% {
-		box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em, -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
-	}
-	62.5% {
-		box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0, -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
-	}
-	75% {
-		box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
-	}
-	87.5% {
-		box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
-	}
-}
-@keyframes load4 {
-	0%,
-	100% {
-		box-shadow: 0 -3em 0 0.2em, 2em -2em 0 0em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 0;
-	}
-	12.5% {
-		box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em, 3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
-	}
-	25% {
-		box-shadow: 0 -3em 0 -0.5em, 2em -2em 0 0, 3em 0 0 0.2em, 2em 2em 0 0, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
-	}
-	37.5% {
-		box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em, -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
-	}
-	50% {
-		box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em, -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
-	}
-	62.5% {
-		box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0, -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
-	}
-	75% {
-		box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
-	}
-	87.5% {
-		box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
-	}
-}
-
-
-#perspective-registration-container,
-#perspective-registration-svg,
-#perspective-registration-video {
-	width: 100%;
-}
-#perspective-registration-svg,
-#perspective-registration-video {
-	position: absolute;
-	left: 0;
-	top: 0;
-}
-#perspective-registration-video {
-	z-index: -5;
-}
-#perspective-registration-svg {
-	display: block;
-	margin: auto;
-	touch-action: none;
-	pointer-events: none;
-	z-index: 5;
-}
-.point-handle {
-	pointer-events: all;
 }
 
 #element-to-transform {

@@ -2,23 +2,12 @@
 for el in document.querySelectorAll("noscript")
 	el.remove() # for screenreaders
 
-midi_not_supported = document.getElementById("midi-not-supported")
-midi_access_failed = document.getElementById("midi-access-failed")
-midi_access_failed_pre = document.getElementById("midi-access-failed-pre")
 fullscreen_target_el = document.getElementById("fullscreen-target")
 canvas = document.getElementById("midi-viz-canvas")
-no_notes_recorded_message_el = document.getElementById("no-notes-recorded-message")
-no_midi_devices_message_el = document.getElementById("no-midi-devices-message")
-loading_midi_devices_message_el = document.getElementById("loading-midi-devices-message")
 export_midi_file_button = document.getElementById("export-midi-file-button")
 recording_name_input = document.getElementById("recording-name-input")
 clear_button = document.getElementById("clear-button")
 undo_clear_button = document.getElementById("undo-clear-button")
-show_recovery_button = document.querySelector(".show-recovery-button")
-show_recovery_button_loading_indicator = document.querySelector(".show-recovery-button .loading-indicator")
-recoverables_list = document.getElementById("recoverables")
-recovery_empty_message_el = document.getElementById("recovery-empty-message")
-recovery_error_message_el = document.getElementById("recovery-error-message")
 fullscreen_button = document.getElementById("fullscreen-button")
 visualization_enabled_checkbox = document.getElementById("visualization-enabled")
 px_per_second_input = document.getElementById("note-gravity-pixels-per-second-input")
@@ -35,12 +24,6 @@ learn_range_or_apply_button = document.getElementById("learn-range-or-apply-butt
 learn_range_text_el = document.getElementById("learn-midi-range-button-text")
 apply_text_el = document.getElementById("apply-midi-range-button-text")
 cancel_learn_range_button = document.getElementById("cancel-learn-midi-range-button")
-midi_devices_table = document.getElementById("midi-devices")
-troubleshoot_midi_input_button = document.getElementById("troubleshoot-midi-input-button")
-troubleshoot_midi_input_popover = document.getElementById("troubleshoot-midi-input-popover")
-demo_button = document.getElementById("demo-button")
-demo_button_stop_span = document.getElementById("demo-button-stop-text")
-demo_button_start_span = document.getElementById("demo-button-start-text")
 
 debounce = (func, timeout = 300)->
 	tid = null
@@ -55,16 +38,6 @@ nanoid = (length = 21) ->
 		id += if n < 36 then n.toString(36) else if n < 62 then (n - 26).toString(36).toUpperCase() else if n < 63 then '_' else '-'
 	id
 
-localforage.config({
-	name: "ASCII To MIDI"
-})
-
-# for filename
-# - first note would be easier to keep track of but if you record more without clearing, it should be a new filename
-# - time-of-save would be easiest, but then it's harder to know if you've already saved something
-# - END of last note would cause problems if you hit save before releasing a note, or if a note gets stuck
-# - so use START of last note
-# - Date.now() is more performant than new Date()
 last_note_datetime = Date.now()
 
 # options are initialized from the URL & HTML later
@@ -242,72 +215,6 @@ addEventListener "hashchange", ->
 	hashchange_is_new_history_entry = false
 
 ##############################
-# Connecting to Devices
-##############################
-
-midi_device_ids_to_rows = new Map
-
-smi = new SimpleMidiInput()
-
-loading_midi_devices_message_el.hidden = false
-
-connected_port_ids = new Set
-
-on_success = (midi)->
-	smi.attach(midi)
-#	console.log 'smi: ', smi
-#	console.log 'inputs (as a Map): ', new Map(midi.inputs)
-
-	loading_midi_devices_message_el.hidden = true
-	no_midi_devices_message_el.hidden = false
-	midi.onstatechange = (e)->
-		if e.port.type is "input"
-			no_midi_devices_message_el.hidden = true
-
-			connected = e.port.state is "connected" and e.port.connection is "open"
-			if connected then connected_port_ids.add(e.port.id) else connected_port_ids.delete(e.port.id)
-
-			tr = midi_device_ids_to_rows.get(e.port.id)
-			unless tr
-				tr = document.createElement("tr")
-				midi_devices_table.appendChild(tr)
-				midi_device_ids_to_rows.set(e.port.id, tr)
-			tr.innerHTML = ""
-			tr.className = "midi-port midi-device-is-#{e.port.state}#{if connected then " midi-port-is-open" else ""}"
-
-			td = document.createElement("td")
-			td.setAttribute("aria-label", (if connected then "connected" else "disconnected"))
-			td.className = "midi-port-status"
-			tr.appendChild(td)
-
-			td = document.createElement("td")
-			td.textContent = e.port.name
-			tr.appendChild(td)
-
-			# auto detect range based on device
-			# not sure if I should do this, considering there are instruments that transpose up or down an octave
-			# as well as user-explicit transposition
-			# if connected
-			# 	unless location.hash.match(/midi-range/)
-			# 		if e.port.name is "Yamaha Portable G-1"
-			# 			set_selected_range([28, 103])
-
-#			console.log(e.port, e.port.name, e.port.state, e.port.connection)
-
-
-on_error = (error)->
-	loading_midi_devices_message_el.hidden = true
-	midi_access_failed_pre.textContent = error
-	midi_access_failed.hidden = false
-	console.log "requestMIDIAccess failed:", error
-
-if navigator.requestMIDIAccess
-	navigator.requestMIDIAccess().then on_success, on_error
-else
-	loading_midi_devices_message_el.hidden = true
-	midi_not_supported.hidden = false
-
-##############################
 # State Handling
 ##############################
 
@@ -384,8 +291,6 @@ clear_notes = ->
 	try localStorage["to_delete:#{active_recording_session_id}"] = "cleared #{new Date().toISOString()}"
 
 	undo_state = save_state()
-	# TODO: keep current instrument and include instrument select at start of next recording
-	# (and update caveat in caveats list)
 	restore_state(initial_state)
 
 	export_midi_file_button.disabled = true
@@ -515,7 +420,6 @@ demo = ->
 		# if Math.sin(t * 29) < 0
 		# 	set_pitch_bend(Math.sin(t * 4))
 
-		no_notes_recorded_message_el.hidden = true
 		recording_name_input.hidden = false
 		export_midi_file_button.disabled = false
 		enable_clearing()
@@ -525,282 +429,6 @@ demo = ->
 window.demo = demo
 window.stop_demo = stop_demo
 demo_button.onclick = demo
-
-##############################
-# Recording
-##############################
-
-cancel_deletion_soon = debounce ->
-	try delete localStorage["to_delete:#{active_recording_session_id}"]
-
-smi.on 'noteOn', ({event, key, velocity, time})->
-	# Note: noteOn with velocity of 0 is supposed to be equivalent to noteOff in MIDI,
-	# but SimpleMidiInput abstracts that away for us, sending a noteOff instead,
-	# so we don't need to handle noteOn of 0.
-	old_note = current_notes.get(key)
-	start_time = time
-	return if old_note
-	note = {
-		key, velocity, start_time,
-		pitch_bends: [{
-			time: start_time,
-			value: current_pitch_bend_value,
-		}],
-	}
-	current_notes.set(key, note)
-	notes.push(note)
-
-	no_notes_recorded_message_el.hidden = true
-	recording_name_input.hidden = false
-	export_midi_file_button.disabled = false
-	enable_clearing()
-
-	if is_learning_range
-		learning_range[0] = Math.min(learning_range[0] ? key, key)
-		learning_range[1] = Math.max(learning_range[1] ? key, key)
-		[midi_range_left_input.value, midi_range_right_input.value] = learning_range
-	
-	last_note_datetime = Date.now()
-
-	# clear delete flag in case you already exported and are playing more
-	cancel_deletion_soon()
-
-smi.on 'noteOff', ({event, key, time})->
-	note = current_notes.get(key)
-	if note
-		note.end_time = time
-		note.length = note.end_time - note.start_time
-	current_notes.delete(key)
-
-smi.on 'pitchWheel', ({event, value, time})->
-	set_pitch_bend(value / 0x2000, time)
-
-smi.on 'programChange', ({program, time})->
-	current_instrument = program
-	global_instrument_selects.push({time, value: program, bank_msb: current_bank_msb, bank_lsb: current_bank_lsb})
-	enable_clearing()
-
-smi.on 'global', ({event, cc, value, time, data})->
-	if event not in ['clock', 'activeSensing']
-		# console.log({event, cc, value, time, data})
-
-		active_chunk_events.push {data, time}
-
-	if event is "cc" and cc is 0
-		current_bank_msb = value
-		global_bank_msb_selects.push({time, value: value})
-		enable_clearing()
-	
-	if event is "cc" and cc is 32
-		current_bank_lsb = value
-		global_bank_lsb_selects.push({time, value: value})
-		enable_clearing()
-
-	if event is "cc" and cc is 64
-		active = value >= 64 # ≤63 off, ≥64 on https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
-		if current_sustain_active and not active
-			global_sustain_periods[global_sustain_periods.length - 1]?.end_time = time
-		else if active and not current_sustain_active
-			global_sustain_periods.push({
-				start_time: time
-				end_time: undefined
-			})
-			enable_clearing()
-		current_sustain_active = active
-
-##############################
-# Recording Recovery
-##############################
-
-save_chunk = ->
-	# console.log "saving chunk", active_chunk_events
-	if active_chunk_events.length is 0
-		return
-	saving_chunk_n = active_chunk_n
-	saving_chunk_id = "chunk_#{saving_chunk_n.toString().padStart(5, "0")}"
-	localforage.setItem("#{active_recording_session_id}:#{saving_chunk_id}", active_chunk_events)
-	.catch (error)->
-		# TODO: maybe restore active_chunk_events/active_chunk_n in case the error was a fluke (disk busy etc.)?
-		# but what if some specific event caused it to fail? in that case it would be better if it could still save further chunks,
-		# even if it has to drop some chunks; maybe try again once or twice and then give up on the chunk(s)?
-		# That's probably too complicated to handle, creating more bugs than it solves.
-		recovery_error_message_el.hidden = false
-		recovery_error_message_el.textContent = "Failed to save recording chunk #{saving_chunk_n} (for recovery)"
-		console.log "Failed to save recording chunk #{saving_chunk_n}"
-	# Note: CANNOT do active_chunk_events.length = 0,
-	# because localforage.setItem uses the object asynchronously
-	# and would save chunks with no notes/events in them!
-	active_chunk_events = []
-	active_chunk_n += 1
-	# DON'T CHANGE THIS without also changing code that assumes "name" is an iso datetime string
-	try localStorage["name:#{active_recording_session_id}"] = new Date(last_note_datetime).toISOString()#.replace(/:/g, "").replace(/\..*Z/, "Z")
-
-setInterval save_chunk, 1000
-
-recover = (recoverable)->
-	# TODO: separate concerns, avoid affecting app state
-	# maybe ditch SimpleMidiInput.js
-	original_state = save_state()
-	original_focus = document.activeElement
-	original_clear_button_hidden                 = clear_button.hidden
-	original_clear_button_disabled               = clear_button.disabled
-	original_undo_clear_button_hidden            = undo_clear_button.hidden
-	original_no_notes_recorded_message_el_hidden = no_notes_recorded_message_el.hidden
-	original_recording_name_input_hidden         = recording_name_input.hidden
-	original_export_midi_file_button_disabled    = export_midi_file_button.disabled
-	restore_state(initial_state)
-
-	try
-		# console.log "saved state; starting recover"
-		active_recording_session_id = recoverable.recoverable_id
-
-		recoverable.chunks.sort((a, b)-> a.n - b.n)
-
-		# TODO: optimize with https://github.com/localForage/localForage-getItems
-		# but make sure to keep order of chunks
-		recovered_events = []
-		for chunk in recoverable.chunks
-			recovered_chunk_events = await localforage.getItem(chunk.key)
-			recovered_events = recovered_events.concat(recovered_chunk_events)
-			chunk.events = recovered_chunk_events
-			for event in recovered_chunk_events
-				event.timeStamp ?= event.time
-		
-		for event in recovered_events
-			smi.processMidiMessage(event)
-
-		# recording_name_input.value = "recovered"
-		export_midi_file("recovered", (recoverable.name or "recording").replace(/:/g, "").replace(/\..*Z/, "Z") + " [recovered].midi")
-
-	finally
-		# console.log "restoring state from recover"
-
-		# all of this could be avoided if UI concerns were separated from MIDI input and export
-		restore_state(original_state)
-		clear_button.hidden                 = original_clear_button_hidden
-		clear_button.disabled               = original_clear_button_disabled
-		undo_clear_button.hidden            = original_undo_clear_button_hidden
-		no_notes_recorded_message_el.hidden = original_no_notes_recorded_message_el_hidden
-		recording_name_input.hidden         = original_recording_name_input_hidden
-		export_midi_file_button.disabled    = original_export_midi_file_button_disabled
-		original_focus?.focus()
-		# console.log "restored state from recover"
-
-list_recoverable_recording = (recoverable)->
-	li = document.createElement("li")
-	li.classList.add("recoverable-recording")
-	span = document.createElement("span")
-	span.classList.add("recoverable-recording-name")
-	span.textContent = recoverable.name ? recoverable.recoverable_id
-	recoverables_list.appendChild(li)
-	recover_button = document.createElement("button")
-	recover_button.classList.add("button-functional")
-	recover_button.innerHTML = """
-		<span class="button-visual">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-				<g stroke-width="48.857" transform="translate(-3.631 -5.26) scale(.02225)">
-					<path class="fill-cc" d="M301.429 312.422l372.684-76v103.929l-372.684 76z"/>
-					<path class="fill-cc" d="M301.429 312.342h60v388.5h-60z"/>
-					<ellipse class="fill-cc" cx="-165" cy="470.362" rx="125" ry="78" transform="matrix(.77274 -.20706 .24886 .92877 273.331 240.338)"/>
-					<path class="fill-cc" d="M614.113 248.877h60v388.5h-60z"/>
-					<ellipse class="fill-cc" cx="-165" cy="470.362" rx="125" ry="78" transform="matrix(.77274 -.20706 .24886 .92877 586.016 176.873)"/>
-				</g>
-				<path class="fill-cc" fill-rule="evenodd" d="M12.613 9.426c-.125.561-.347 1.012-1.258 1.585v1.165H9.033l3.485 3.838L16 12.176h-2.322v-2.75z"/>
-			</svg>
-			Save MIDI File
-		</span>
-	"""
-	dismiss_button = document.createElement("button")
-	dismiss_button.classList.add("button-functional")
-	dismiss_button.innerHTML = """
-		<span class="button-visual">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-				<path class="fill-cc" d="M39.294 63.922c-5.91-.629-11.383-2.047-16.826-4.362-1.553-.66-4.626-2.198-5.977-2.99-4.008-2.35-7.353-4.936-10.39-8.035-1.735-1.77-3.048-3.3-3.357-3.91-.179-.353-.194-.438-.194-1.068 0-.613.018-.722.177-1.046.253-.513.57-.856 1.008-1.09.475-.252.926-.324 2.336-.373 3.303-.113 6.816-.77 10.27-1.922 4.89-1.63 8.196-3.606 10.903-6.513.618-.663 1.02-1.184 1.91-2.475.359-.52.69-.953.69-.953l4.228 2.034s-1.344 2.408-2.02 3.307c-4.042 5.372-11.416 9.262-20.634 10.885-.538.095-1.033.195-1.101.222-.104.042-.01.155.62.743 1.15 1.075 4.54 3.748 4.994 3.94.338.141.788.103 1.687-.143 1.986-.544 3.686-1.4 5.189-2.614.564-.455.587-.438.266.204-.452.905-1.627 2.507-2.997 4.088-.333.384-.605.716-.605.738 0 .023.609.336 1.353.696.744.36 1.808.9 2.364 1.2 1.165.63 1.74.81 2.58.81 1.035 0 2.04-.292 3.53-1.023 2.286-1.122 4.338-2.58 7.467-5.306l.309-.268-.127.368c-.446 1.296-1.746 3.565-3.897 6.802-.626.944-1.129 1.726-1.116 1.738.14.134 6.29 1.275 6.87 1.275.363 0 .552-.184 1.181-1.147 2.265-3.465 4.403-7.518 6.223-11.797.612-1.438.874-2.117 1.927-4.981.48-1.306.9-2.712.921-2.733.021-.022 4.55 1.83 4.58 1.856.067.058-1.255 3.727-2.134 5.923-2.08 5.193-4.356 9.659-7.103 13.94-.827 1.289-1.915 2.807-2.283 3.187-.646.667-1.569.926-2.822.793z"/>
-				<path class="fill-cc-if-disabled" fill="red" d="M43.467 30.744c-6.402-2.85-11.665-5.19-11.696-5.202-.08-.028.23-.628.663-1.282 1.021-1.545 2.807-2.714 4.856-3.178.674-.153 2.13-.153 2.852 0 .852.181 1.344.37 3.945 1.513 4.675 2.054 7.29 3.248 7.909 3.61a7.62 7.62 0 013.693 5.22c.13.69.132 1.969.002 2.715-.099.563-.474 1.789-.548 1.787-.02-.001-5.274-2.333-11.676-5.183z"/>
-				<path class="fill-cc" d="M47.999 20.662c-2.008-.897-3.687-1.666-3.731-1.709-.063-.06.954-2.015 4.703-9.043C51.8 4.608 53.853.83 53.996.665c.382-.44.681-.565 1.339-.56a4 4 0 012.68 1.052c.494.457.71.89.71 1.421 0 .367-.296 1.221-3.45 9.925-3.1 8.556-3.56 9.805-3.61 9.793-.008-.002-1.658-.737-3.666-1.634z"/>
-			</svg>
-			Clear
-		</span>
-	"""
-	li.appendChild(recover_button)
-	li.appendChild(span)
-	li.appendChild(dismiss_button)
-	recover_button.onclick = ->
-		try
-			recover(recoverable)
-			# don't remove if error occurred,
-			# to let you retry and (probably) see there error message again,
-			# and because it'd just be confusing for it to show up later
-			li.remove()
-			if recoverables_list.children.length is 0
-				show_recovery_button.disabled = true
-				recovery_empty_message_el.hidden = false
-		catch error
-			alert "An error occured.\n\n#{error}"
-			console.log "Error during recovery:", error
-	dismiss_button.onclick = ->
-		try
-			localStorage["to_delete:#{recoverable.recoverable_id}"] = "cleared_from_recovery #{new Date().toISOString()}"
-			# don't remove if error occurred,
-			# to let you retry and (probably) see there error message again,
-			# and because it'd just be confusing for it to show up later
-			li.remove()
-			if recoverables_list.children.length is 0
-				show_recovery_button.disabled = true
-				recovery_empty_message_el.hidden = false
-		catch error
-			alert "Failed to dismiss recoverable recording.\n\n#{error}"
-			console.log "Failed to dismiss recoverable recording:", error
-
-# TODO: setTimeout based error handling; promise can neither resolve nor reject (an issue I experienced on Ubuntu, which resolved once I restarted my computer)
-# Update: but it can also take a really long time and succeed :(
-localforage.keys().then (keys)->
-	recoverables = {}
-	for key in keys
-		match = key.match(/(recording_[^:]+):chunk_(\d+)/)
-		if match
-			recoverable_id = match[1]
-			recoverable_chunk_n = parseInt(match[2], 10)
-			recoverables[recoverable_id] ?= {chunks: [], recoverable_id}
-			recoverables[recoverable_id].chunks.push({n: recoverable_chunk_n, key})
-		# else
-		# 	console.log "Not matching key:", key
-	recoverables_to_delete = []
-	for recoverable_id, recoverable of recoverables
-		should_delete = try localStorage["to_delete:#{recoverable_id}"]
-		recoverable.name = try localStorage["name:#{recoverable_id}"]
-		if should_delete
-			recoverables_to_delete.push(recoverable)
-		else
-			show_recovery_button.disabled = false
-			recovery_empty_message_el.hidden = true
-			list_recoverable_recording(recoverable)
-	show_recovery_button_loading_indicator.hidden = true
-	# after we've updated the screen (theoretically),
-	# delete old recordings
-	# TODO: don't delete until after some period after it's marked for deletion, like days maybe?
-	# (note: make sure to consider delete flag clean up when implementing that)
-	for recoverable in recoverables_to_delete
-		for chunk in recoverable.chunks
-			await localforage.removeItem(chunk.key)
-		try delete localStorage["to_delete:#{recoverable_id}"]
-		try delete localStorage["name:#{recoverable_id}"]
-	
-	# In case IndexedDB is cleared but not localStorage, or whatever,
-	# clean up delete flags in localStorage.
-	for key in Object.keys(localStorage)
-		if key.match(/^to_delete:/)
-			delete localStorage[key]
-
-	# TODO: allow recovering all recordings at once? but always recover in serial in case of its too much to store all in memory
-, (error)->
-	show_recovery_button_loading_indicator.hidden = true
-	recovery_error_message_el.hidden = false
-	# recovery_error_message_el.textContent = "Failed to list recoverable recordings. #{error}"
-	recovery_error_message_el.textContent = "Recovery not available. Make sure you have local storage enabled for this site. #{error}"
-	# TODO: test what cases this applies to (disabled storage, etc.)
-	console.error "Failed to list keys to look for recordings to recover", error
-
 
 ##############################
 # Rendering (Visualization)
@@ -1353,56 +981,3 @@ document.body.addEventListener "keydown", (event)->
 document.body.addEventListener "keyup", (event)->
 	if event.key is "Escape"
 		end_learn_range()
-
-##############################
-# Device Discovery Helper
-##############################
-
-midi_discovery_iframe = document.createElement("iframe")
-midi_discovery_iframe.style.position = "absolute"
-midi_discovery_iframe.style.top = "-100%"
-midi_discovery_iframe.style.left = "-100%"
-midi_discovery_iframe.style.opacity = 0
-midi_discovery_iframe.style.pointerEvents = "none"
-midi_discovery_iframe.tabIndex = -1
-midi_discovery_iframe.setAttribute("aria-hidden", "true")
-midi_discovery_iframe.title = "This iframe is for discovering MIDI devices, to work around devices not connecting, or not showing up, until the page is refreshed."
-document.body.appendChild(midi_discovery_iframe)
-midi_discovery_iframe.addEventListener "load", ->
-	try
-		iframe_window = midi_discovery_iframe.contentWindow
-		setTimeout ->
-			iframe_window.location.reload()
-		, 5000
-		on_success = (midi)->
-			midi_inputs = [...new Map(midi.inputs).values()]
-			# console.log 'From MIDI discovery iframe, inputs: ', midi_inputs
-
-			handle_midi_input = (midi_input)->
-				if midi_input.state is "connected"
-					# give some time for the app to connect to the midi device
-					setTimeout ->
-						if not connected_port_ids.has(midi_input.id)
-							# don't reload if notes have been recorded
-							# TODO: now that notes are saved to IndexedDB, maybe reload
-							# as long as you're not actively playing?
-							if not notes.length
-								location.reload() # reload the whole app so it'll get the new MIDI device
-					, 500
-
-			midi_inputs.forEach(handle_midi_input)
-
-			midi.onstatechange = (e)->
-				if e.port.type is "input"
-					handle_midi_input(e.port)
-
-		on_error = (error)->
-			console.log "requestMIDIAccess for MIDI discovery iframe failed:", error
-
-		if iframe_window.navigator.requestMIDIAccess
-			iframe_window.navigator.requestMIDIAccess().then on_success, on_error
-		# else
-			# a message should already be shown
-
-	catch error
-		console.log "Failed to access iframe for MIDI discovery"
