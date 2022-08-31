@@ -260,7 +260,12 @@
 			<fieldset class="ui-section">
 				<legend>Input</legend>
 				<span class="visually-hidden">.</span> <!-- for screen readers, or at least ChromeVox -->
-				<input type="file">				
+				<div class="control-row">
+					<input type="file" id="file-input">
+				</div>
+				<div class="control-row">
+					<textarea id="textarea"></textarea>
+				</div>
 			</fieldset>
 			<fieldset id="midi-exporting" class="ui-section">
 				<legend>Output</legend>

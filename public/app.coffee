@@ -5,6 +5,8 @@ for el in document.querySelectorAll("noscript")
 fullscreen_target_el = document.getElementById("fullscreen-target")
 canvas = document.getElementById("midi-viz-canvas")
 export_midi_file_button = document.getElementById("export-midi-file-button")
+file_input = document.getElementById("file-input")
+textarea = document.getElementById("textarea")
 song_name_input = document.getElementById("song-name-input")
 clear_button = document.getElementById("clear-button")
 undo_clear_button = document.getElementById("undo-clear-button")
@@ -315,105 +317,51 @@ set_pitch_bend = (value, time=performance.now())->
 	enable_clearing()
 
 ##############################
-# Demonstration Mode
+# ASCII To MIDI (Parsing)
 ##############################
 
-###
-demo_iid = null
-stop_demo = ->
-	clearInterval demo_iid
-	demo_iid = null
-	current_notes.forEach (note, note_key)->
-		note.end_time = performance.now()
-		note.length = note.end_time - note.start_time
-		current_notes.delete(note_key)
-	demo_button_stop_span.hidden = true
-	demo_button_start_span.hidden = false
-demo = ->
-	if demo_iid
-		stop_demo()
-		return
-	demo_button_stop_span.hidden = false
-	demo_button_start_span.hidden = true
-	demo_iid = setInterval ->
-		velocity = 127 # range is 0-127, with 0 being equivalent to noteOff
+ascii_to_midi = (text)->
 
-		start_time = performance.now()
+	restore_state(initial_state)
 
-		# keys_to_be_held = [
-		# 	Math.round(((+Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) * 128)
-		# 	Math.round(((-Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) * 128)
-		# ]
-		# keys_to_be_held =
-			# n for n in [0...128] when (start_time / 500 % n) < 4
-			# n for n in [0...128] when ((start_time / 100) % (n * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 4
-			# n for n in [0...128] when ((start_time / 100) % (n * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 4 and (Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) > 0)
-			# n for n in [0...128] when ((start_time / 100) % (n * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 4 and (Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) > ((n / 128) - 0.5))
-			# n for n in [0...128] when ((start_time / 100) % (((n / 128) - 0.5) * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 0.1
-			# n for n in [0...128] when ((start_time / 1000) % (((n / 128) - 0.5) * Math.sin(start_time / 64000 + Math.sin(start_time / 23450)) + 1) / 2) < 0.1
-			# n for n in [0...128] when (
-			# 	((start_time / 100) % (((n / 128) - 0.5) * Math.sin(start_time / 6400 + Math.sin(start_time / 2345)) + 1) / 2) < 0.1 and
-			# 	Math.abs(Math.sin(start_time / 640 + Math.sin(start_time / 250)) - ((n / 128) - 0.5)) < 0.5
-			# )
-		# t = start_time / 1000
-		# keys_to_be_held =
-			# n for n in [0...128] when (
-			# 	((t / 1) % (((n / 128) - 0.5) * Math.sin(t / 64 + Math.sin(t / 23)) + 1) / 2) < 0.1 and
-			# 	Math.abs(Math.sin(t / 6 + Math.sin(t / 2)) - ((n / 128) - 0.5)) < 0.5
-			# )
-		t = start_time / 1000
-		# t = t % 4 if t % 16 < 4
-		# root = 60 + Math.floor(t / 4) % 4
-		# root = 60 + [0, 5, 3, 6][(Math.floor(t / 4) % 4)]
-		root = 60 + [0, 5, 3, 6][(Math.floor(t / 4) % 4)]
-		keys_to_be_held =
-			# n for n in [0...128] when (
-			# 	((t / 1) % (((n / 128) - 0.5) * Math.sin(t / 64 + Math.sin(t / 24)) + 1) / 2) < 0.1 and
-			# 	Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) < 0.5
-			# )
-			n for n in [0...128] when (
-				# (n - root) %% 12 < 1
-				# (n - root) %% 12 < Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5))
-				# ((n - root) %% 12) % Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) > 1
+	lines = text.split(/\r?\n/g)
+	# TODO: use grapheme splitter
+	# TODO: option to interpret horizontally vs vertically
+	grid = (line.split("") for line in lines)
+	grid.push([]) # so notes will all end
+	# Pad the grid to even width (column count)
+	column_count = 0
+	for	row in grid
+		if row.length > column_count
+			column_count = row.length
+	for	row in grid
+		while row.length < column_count
+			row.push(" ")
 
-				# ((n - root) %% 12) % Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) %% 0.5 < 0.1 and
-				# ((n - root)) % Math.abs(Math.sin(t / 8 + Math.sin(t / 2)) - ((n / 128) - 0.5)) %% 0.5 < 0.1
-
-				# ((n - root) %% 12) %% (n - t) %% 0.5 < 0.1
-				# ((n - root) %% 12) %% (-n + t) %% 0.5 < 0.1
-				((n - root) %% 12) %% (n & (t / 4)) < (t / 16) %% 1 and
-				((n - root)) % Math.abs(Math.sin(t / 80 + Math.sin(t / 20)) - ((n / 128) - 0.5)) %% 0.5 < 0.1
-			)
-
-		current_notes.forEach (note, note_key)->
-			unless note_key in keys_to_be_held
-				note.end_time = performance.now()
-				note.length = note.end_time - note.start_time
-				current_notes.delete(note_key)
-
-		for key in keys_to_be_held
+	for row, row_index in grid
+		for char, column_index in row
+			note_here = Boolean char.trim()
+			# TODO: option for note offset of first column
+			key = column_index + 100
+			t = row_index * 400
 			old_note = current_notes.get(key)
-			unless old_note
-				note = {key, velocity, start_time, pitch_bends: [{
-					time: start_time,
+
+			if old_note and not note_here
+				old_note.end_time = t
+				old_note.length = old_note.end_time - old_note.start_time
+				current_notes.delete(key)
+			else if note_here and not old_note
+				note = {key, velocity: 127, start_time: t, pitch_bends: [{
+					time: t,
 					value: current_pitch_bend_value,
 				}]}
 				current_notes.set(key, note)
 				notes.push(note)
 
-		# if Math.sin(t * 29) < 0
-		# 	set_pitch_bend(Math.sin(t * 4))
+	song_name_input.hidden = false
+	export_midi_file_button.disabled = false
+	enable_clearing()
 
-		song_name_input.hidden = false
-		export_midi_file_button.disabled = false
-		enable_clearing()
-
-	, 10
-
-window.demo = demo
-window.stop_demo = stop_demo
-demo_button.onclick = demo
-###
 
 ##############################
 # Rendering (Visualization)
@@ -957,3 +905,10 @@ document.body.addEventListener "keydown", (event)->
 document.body.addEventListener "keyup", (event)->
 	if event.key is "Escape"
 		end_learn_range()
+
+file_input.onchange = ->
+	textarea.value = await file_input.files[0].text()
+	ascii_to_midi(textarea.value)
+
+textarea.oninput = ->
+	ascii_to_midi(textarea.value)
