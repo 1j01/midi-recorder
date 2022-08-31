@@ -31,13 +31,6 @@ debounce = (func, timeout = 300)->
 		clearTimeout(tid)
 		tid = setTimeout((-> func(...args)), timeout)
 
-nanoid = (length = 21) ->
-	id = ''
-	for n in crypto.getRandomValues(new Uint8Array(length))
-		n = 63 & n
-		id += if n < 36 then n.toString(36) else if n < 62 then (n - 26).toString(36).toUpperCase() else if n < 63 then '_' else '-'
-	id
-
 last_note_datetime = Date.now()
 
 # options are initialized from the URL & HTML later
@@ -230,7 +223,6 @@ current_bank_lsb = undefined
 global_instrument_selects = []
 global_bank_msb_selects = []
 global_bank_lsb_selects = []
-active_recording_session_id = "recording_#{nanoid()}"
 active_chunk_n = 1
 active_chunk_events = []
 
@@ -253,7 +245,6 @@ save_state = ->
 		global_bank_lsb_selects
 		recording_name: recording_name_input.value
 		last_note_datetime
-		active_recording_session_id
 		active_chunk_n
 		active_chunk_events
 	}))
@@ -277,7 +268,6 @@ restore_state = (state)->
 		global_bank_msb_selects
 		global_bank_lsb_selects
 		last_note_datetime
-		active_recording_session_id
 		active_chunk_n
 		active_chunk_events
 	} = JSON.parse(JSON.stringify(state))
@@ -288,8 +278,6 @@ initial_state = save_state()
 undo_state = save_state()
 
 clear_notes = ->
-	try localStorage["to_delete:#{active_recording_session_id}"] = "cleared #{new Date().toISOString()}"
-
 	undo_state = save_state()
 	restore_state(initial_state)
 
@@ -298,7 +286,6 @@ clear_notes = ->
 	undo_clear_button.hidden = false
 	undo_clear_button.focus()
 
-	active_recording_session_id = "recording_#{nanoid()}"
 	active_chunk_n = 1
 
 undo_clear_notes = ->
@@ -308,10 +295,6 @@ undo_clear_notes = ->
 	clear_button.hidden = false
 	undo_clear_button.hidden = true
 	clear_button.focus()
-
-	# delete deletion flag to cancel deletion
-	# TODO: what about if you already saved it? maybe I should get rid of the separate saving vs clearing?
-	try delete localStorage["to_delete:#{active_recording_session_id}"]
 
 enable_clearing = ->
 	clear_button.disabled = false
@@ -717,18 +700,13 @@ do animate = ->
 ##############################
 
 export_midi_file_button.onclick = ->
-	export_midi_file("saved")
+	export_midi_file()
 
-export_midi_file = (delete_later_reason, file_name)->
+export_midi_file = ->
 	midi_file = new MIDIFile()
 
 	if notes.length is 0
-		if delete_later_reason is "recovered"
-			# setTimeout to avoid current recording's notes gone while alert is shown
-			setTimeout -> alert "No notes in recording!"
-		else
-			alert "No notes have been recorded!"
-		try localStorage["to_delete:#{active_recording_session_id}"] = "no_notes #{new Date().toISOString()}"
+		alert "No notes to output!"
 		return
 
 	events = []
@@ -918,10 +896,6 @@ export_midi_file = (delete_later_reason, file_name)->
 
 	saveAs(blob, file_name)
 
-	# TODO: timeout?? I wish there was a way to tell if and when the file was actually saved!
-	# probably a multi-tier recovery system is needed, where possibly-saved/recovered recordings are hidden, but still recoverable, for some number of days
-	try localStorage["to_delete:#{active_recording_session_id}"] = "#{delete_later_reason} #{new Date().toISOString()}"
-
 ##############################
 # User Interface
 ##############################
@@ -976,7 +950,7 @@ document.body.addEventListener "keydown", (event)->
 	if event.key is "Escape"
 		end_learn_range()
 	if (event.key is "s" or event.key is "S") and (event.ctrlKey or event.metaKey)
-		export_midi_file("saved")
+		export_midi_file()
 		event.preventDefault()
 document.body.addEventListener "keyup", (event)->
 	if event.key is "Escape"
