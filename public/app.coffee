@@ -361,9 +361,7 @@ set_pitch_bend = (value, time=performance.now())->
 # ASCII To MIDI (Parsing)
 ##############################
 
-ascii_to_midi = (text)->
-
-	restore_state(initial_state)
+parse_grid_notes = (text)->
 
 	lines = text.split(/\r?\n/g)
 	# TODO: use grapheme splitter
@@ -397,6 +395,39 @@ ascii_to_midi = (text)->
 				}]}
 				current_notes.set(key, note)
 				notes.push(note)
+
+
+ascii_to_midi = (text)->
+
+	restore_state(initial_state)
+
+	try
+		ringtone = RTTTL.parse(text)
+	catch error
+		# TODO: handle unexpected errors vs format errors (should change parser to throw special errors)
+		console.log "Parsing as RTTTL failed:", error
+
+	if ringtone
+		# TODO: pull out BPM, song name information
+		console.log ringtone
+		t = 0
+		for note in ringtone.notes
+			if not note.rest
+				notes.push({
+					key: note.midiPitch
+					velocity: 127
+					start_time: t
+					end_time: t + note.seconds * 1000
+					length: note.seconds * 1000
+					pitch_bends: [{
+						time: t,
+						value: 0,
+					}]
+				})
+			t += note.seconds * 1000
+	else
+		parse_grid_notes(text) # mutates `notes` (and `current_notes`, which should be empty before and after hopefully)
+	
 
 	song_name_input.hidden = false
 	export_midi_file_button.disabled = false

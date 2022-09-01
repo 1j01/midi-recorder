@@ -111,8 +111,8 @@ do ->
 					#seconds = (duration / ringtone.controls.defaultNoteDuration) * (60 / ringtone.controls.beatsPerMinute)
 					
 					unless rest
-						n = scale - 4 + pitches.indexOf(name) / 12
-						frequency = 440 * 2 ** n
+						pitchNumber = (scale - 4) * 12 + pitches.indexOf(name)
+						frequency = 440 * 2 ** (pitchNumber / 12)
 					
 					ringtone.notes.push {
 						name
@@ -121,6 +121,7 @@ do ->
 						rest
 						
 						seconds
+						midiPitch: pitchNumber + 69
 						frequency
 						
 						original
