@@ -255,14 +255,8 @@ addEventListener "hashchange", ->
 ##############################
 
 notes = []
-current_notes = new Map
-current_pitch_bend_value = 0
 global_pitch_bends = []
-current_sustain_active = off
 global_sustain_periods = []
-current_instrument = undefined
-current_bank_msb = undefined
-current_bank_lsb = undefined
 global_instrument_selects = []
 global_bank_msb_selects = []
 global_bank_lsb_selects = []
@@ -274,15 +268,10 @@ clear_button.disabled = true
 
 save_state = ->
 	# use JSON to (inefficiently) copy state so that it's not just saving references to mutable data structures
-	# Map can't be JSON-stringified
 	state = JSON.parse(JSON.stringify({
 		notes
-		current_notes: "placeholder for non-serializable Map object"
-		current_pitch_bend_value
 		global_pitch_bends
-		current_sustain_active
 		global_sustain_periods
-		current_instrument
 		global_instrument_selects
 		global_bank_msb_selects
 		global_bank_lsb_selects
@@ -291,7 +280,6 @@ save_state = ->
 		active_chunk_n
 		active_chunk_events
 	}))
-	state.current_notes = new Map(current_notes)
 	state
 
 restore_state = (state)->
@@ -302,11 +290,8 @@ restore_state = (state)->
 	# NOTE: these variables must all be declared ABOVE! else they will be local here
 	{
 		notes
-		current_pitch_bend_value
 		global_pitch_bends
-		current_sustain_active
 		global_sustain_periods
-		current_instrument
 		global_instrument_selects
 		global_bank_msb_selects
 		global_bank_lsb_selects
@@ -314,7 +299,6 @@ restore_state = (state)->
 		active_chunk_n
 		active_chunk_events
 	} = JSON.parse(JSON.stringify(state))
-	current_notes = new Map(state.current_notes)
 	song_name_input.value = state.song_name
 
 initial_state = save_state()
@@ -349,14 +333,6 @@ enable_clearing = ->
 clear_button.onclick = clear_notes
 undo_clear_button.onclick = undo_clear_notes
 
-set_pitch_bend = (value, time=performance.now())->
-	current_pitch_bend_value = value
-	pitch_bend = {time, value}
-	global_pitch_bends.push(pitch_bend)
-	current_notes.forEach (note, key)->
-		note.pitch_bends.push(pitch_bend)
-	enable_clearing()
-
 ##############################
 # ASCII To MIDI (Parsing)
 ##############################
@@ -377,6 +353,7 @@ parse_grid_notes = (text)->
 		while row.length < column_count
 			row.push(" ")
 
+	current_notes = new Map
 	for row, row_index in grid
 		for char, column_index in row
 			note_here = Boolean char.trim()
@@ -391,7 +368,7 @@ parse_grid_notes = (text)->
 			else if note_here and not old_note
 				note = {key, velocity: 127, start_time: t, pitch_bends: [{
 					time: t,
-					value: current_pitch_bend_value,
+					value: 0,
 				}]}
 				current_notes.set(key, note)
 				notes.push(note)
@@ -426,7 +403,7 @@ ascii_to_midi = (text)->
 				})
 			t += note.seconds * 1000
 	else
-		parse_grid_notes(text) # mutates `notes` (and `current_notes`, which should be empty before and after hopefully)
+		parse_grid_notes(text) # mutates `notes`
 	
 
 	song_name_input.hidden = false
