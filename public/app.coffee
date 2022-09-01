@@ -7,6 +7,10 @@ canvas = document.getElementById("midi-viz-canvas")
 export_midi_file_button = document.getElementById("export-midi-file-button")
 file_input = document.getElementById("file-input")
 textarea = document.getElementById("textarea")
+# format_select = document.getElementById("format-select")
+lowest_note_input = document.getElementById("lowest-note-input")
+# bpm_input = document.getElementById("bpm-input")
+# arpeggiation_input = document.getElementById("arpeggiation-input")
 song_name_input = document.getElementById("song-name-input")
 clear_button = document.getElementById("clear-button")
 undo_clear_button = document.getElementById("undo-clear-button")
@@ -36,6 +40,12 @@ debounce = (func, timeout = 300)->
 last_note_datetime = Date.now()
 
 # options are initialized from the URL & HTML later
+
+# format = "auto"
+lowest_note = 100
+# bpm = 120
+# arpeggiation = 0
+
 visualization_enabled = true
 theme = "white-and-accent-color"
 hue_rotate_degrees = 0
@@ -71,6 +81,10 @@ hashchange_is_new_history_entry = false
 save_options_immediately = ({update_even_focused_inputs}={})->
 	[from_midi_val, to_midi_val] = selected_range
 	data =
+		# "format": format
+		"lowest-note": lowest_note
+		# "bpm": bpm
+		# "arpeggiation": arpeggiation
 		"viz": if visualization_enabled then "on" else "off"
 		"layout": layout
 		"gravity-direction": note_gravity_direction
@@ -124,6 +138,22 @@ load_options = ({update_even_focused_inputs}={})->
 	# TODO: reset to original defaults when not in URL, in case you hit the back button
 	# (maybe merge load_options and update_options_from_inputs in some way?)
 
+	# if data["format"]
+	# 	format = data["format"].toLowerCase()
+	# 	format_select.value = format
+	if data["lowest-note"]
+		lowest_note = parseFloat(data["lowest-note"])
+		if update_even_focused_inputs or document.activeElement isnt lowest_note_input
+			lowest_note_input.value = lowest_note
+	# if data["bpm"]
+	# 	bpm = parseFloat(data["bpm"])
+	# 	if update_even_focused_inputs or document.activeElement isnt bpm_input
+	# 		bpm_input.value = bpm
+	# if data["arpeggiation"]
+	# 	arpeggiation = parseFloat(data["arpeggiation"])
+	# 	if update_even_focused_inputs or document.activeElement isnt arpeggiation_input
+	# 		arpeggiation_input.value = arpeggiation
+	
 	if data["viz"]
 		visualization_enabled = data["viz"].toLowerCase() in ["on", "true", "1"]
 		visualization_enabled_checkbox.checked = visualization_enabled
@@ -160,6 +190,13 @@ load_options = ({update_even_focused_inputs}={})->
 			hue_rotate_degrees_input.value = hue_rotate_degrees
 
 update_options_from_inputs = ->
+	# format = format_select.value
+	lowest_note = parseFloat(lowest_note_input.value)
+	lowest_note = 100 if isNaN(lowest_note)
+	# bpm = parseFloat(bpm_input.value) || 120
+	# arpeggiation = parseFloat(arpeggiation_input.value)
+	# arpeggiation = 100 if isNaN(arpeggiation)
+
 	visualization_enabled = visualization_enabled_checkbox.checked
 	set_selected_range([midi_range_left_input.value, midi_range_right_input.value], true)
 	px_per_second = parseFloat(px_per_second_input.value) || 20
@@ -177,8 +214,11 @@ update_options_from_inputs = ->
 	canvas.style.transformOrigin = "50% 0%"
 
 	save_options_soon()
+	ascii_to_midi(textarea.value)
 
 for control_element in [
+	# format_select
+
 	visualization_enabled_checkbox
 	note_gravity_direction_select
 	theme_select
@@ -186,6 +226,10 @@ for control_element in [
 ]
 	control_element.onchange = update_options_from_inputs
 for input_element in [
+	lowest_note_input
+	# bpm_input
+	# arpeggiation_input
+
 	midi_range_left_input
 	midi_range_right_input
 	px_per_second_input
@@ -201,9 +245,6 @@ for input_element in [
 		# otherwise you'd need to wait for the debounce timer before unfocusing the input for the change to take
 		save_options_immediately()
 		load_options({update_even_focused_inputs: true}) # update_even_focused_inputs is probably not needed here
-
-load_options({update_even_focused_inputs: true})
-update_options_from_inputs()
 
 addEventListener "hashchange", ->
 	load_options({update_even_focused_inputs: not hashchange_is_new_history_entry})
@@ -341,8 +382,7 @@ ascii_to_midi = (text)->
 	for row, row_index in grid
 		for char, column_index in row
 			note_here = Boolean char.trim()
-			# TODO: option for note offset of first column
-			key = column_index + 100
+			key = column_index + lowest_note
 			t = row_index * 400
 			old_note = current_notes.get(key)
 
@@ -913,3 +953,10 @@ file_input.onchange = ->
 
 textarea.oninput = ->
 	ascii_to_midi(textarea.value)
+
+##############################
+# Initialize options
+##############################
+
+load_options({update_even_focused_inputs: true})
+update_options_from_inputs()

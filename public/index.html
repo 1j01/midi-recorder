@@ -266,6 +266,35 @@
 				<div class="control-row">
 					<textarea id="textarea"></textarea>
 				</div>
+				<!-- <div class="control-row">
+					<label>
+						Format:
+						<select id="format-select">
+							<option value="grid-tb">ASCII Grid, Time = Top To Bottom</option>
+							<option value="grid-lr">ASCII Grid, Time = Left To Right</option>
+							<option value="abc">ABC Notation</option>
+							<option value="rtttl">RTTTL Notation</option>
+							<option value="tabs">Guitar/Bass Tablature</option>
+							<option value="auto" selected>Auto Detect</option>
+						</select>
+					</label>
+				</div> -->
+				<div class="control-row">
+					<label>
+						Lowest note: <input type="number" id="lowest-note-input" min="0" max="255" value="100">
+					</label>
+				</div>
+				<!-- <div class="control-row">
+					<label>
+						<input type="number" id="bpm-input" min="1" max="9001" value="120">
+						BPM
+					</label>
+				</div>
+				<div class="control-row">
+					<label>
+						Stagger (arpeggiate / roll) chords by <input type="number" id="arpeggiation-input" min="0" max="100" value="0">% of a beat
+					</label>
+				</div> -->
 			</fieldset>
 			<fieldset id="midi-exporting" class="ui-section">
 				<legend>Output</legend>
