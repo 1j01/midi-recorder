@@ -351,9 +351,13 @@ parse_grid_notes = (text, format_id)->
 		while row.length < column_count
 			row.push(" ")
 
-	# Swap columns and rows (transpose) if needed
+	# Rotate grid if needed
 	if format_id is "grid-lr"
+		# Swap columns and rows (transpose)
 		grid = Object.keys(grid[0]).map (c)-> grid.map (r)-> r[c]
+		# Reverse columns (reverse each row), making high rows in the text correspond to high notes
+		for row in grid
+			row.reverse()
 
 	# Make it so all notes end
 	grid.push(new Array(column_count).fill(" "))
