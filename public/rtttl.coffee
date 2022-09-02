@@ -5,6 +5,8 @@ do ->
 	
 	pitches = "c, c#, d, d#, e, f, f#, g, g#, a, a#, b".split ", "
 	
+	class RTTTL.RTTTLParseError extends Error
+
 	RTTTL.parse = (str)->
 		
 		ringtone =
@@ -17,7 +19,7 @@ do ->
 			warnings: []
 		
 		warn = (message)-> ringtone.warnings.push message
-		error = (message)-> e = new Error message; e.sourceRTTTL = str; throw e
+		error = (message)-> e = new RTTTL.RTTTLParseError message; e.sourceRTTTL = str; throw e
 		
 		sections = str.split ":"
 		

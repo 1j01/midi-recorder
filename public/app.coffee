@@ -7,7 +7,7 @@ canvas = document.getElementById("midi-viz-canvas")
 export_midi_file_button = document.getElementById("export-midi-file-button")
 file_input = document.getElementById("file-input")
 textarea = document.getElementById("textarea")
-# format_select = document.getElementById("format-select")
+format_select = document.getElementById("format-select")
 lowest_note_input = document.getElementById("lowest-note-input")
 # bpm_input = document.getElementById("bpm-input")
 # arpeggiation_input = document.getElementById("arpeggiation-input")
@@ -41,7 +41,7 @@ last_note_datetime = Date.now()
 
 # options are initialized from the URL & HTML later
 
-# format = "auto"
+format = "auto"
 lowest_note = 100
 # bpm = 120
 # arpeggiation = 0
@@ -81,7 +81,7 @@ hashchange_is_new_history_entry = false
 save_options_immediately = ({update_even_focused_inputs}={})->
 	[from_midi_val, to_midi_val] = selected_range
 	data =
-		# "format": format
+		"format": format
 		"lowest-note": lowest_note
 		# "bpm": bpm
 		# "arpeggiation": arpeggiation
@@ -138,9 +138,9 @@ load_options = ({update_even_focused_inputs}={})->
 	# TODO: reset to original defaults when not in URL, in case you hit the back button
 	# (maybe merge load_options and update_options_from_inputs in some way?)
 
-	# if data["format"]
-	# 	format = data["format"].toLowerCase()
-	# 	format_select.value = format
+	if data["format"]
+		format = data["format"].toLowerCase()
+		format_select.value = format
 	if data["lowest-note"]
 		lowest_note = parseFloat(data["lowest-note"])
 		if update_even_focused_inputs or document.activeElement isnt lowest_note_input
@@ -190,7 +190,7 @@ load_options = ({update_even_focused_inputs}={})->
 			hue_rotate_degrees_input.value = hue_rotate_degrees
 
 update_options_from_inputs = ->
-	# format = format_select.value
+	format = format_select.value
 	lowest_note = parseFloat(lowest_note_input.value)
 	lowest_note = 100 if isNaN(lowest_note)
 	# bpm = parseFloat(bpm_input.value) || 120
@@ -217,7 +217,7 @@ update_options_from_inputs = ->
 	ascii_to_midi(textarea.value)
 
 for control_element in [
-	# format_select
+	format_select
 
 	visualization_enabled_checkbox
 	note_gravity_direction_select
@@ -373,38 +373,62 @@ parse_grid_notes = (text)->
 				current_notes.set(key, note)
 				notes.push(note)
 
+parse_rtttl = (text)->
+	ringtone = RTTTL.parse(text)
+
+	# TODO: pull out BPM, song name information
+	console.log ringtone
+	
+	t = 0
+	for note in ringtone.notes
+		if not note.rest
+			notes.push({
+				key: note.midiPitch
+				velocity: 127
+				start_time: t
+				end_time: t + note.seconds * 1000
+				length: note.seconds * 1000
+				pitch_bends: [{
+					time: t,
+					value: 0,
+				}]
+			})
+		t += note.seconds * 1000
+
+# this object specifies the ORDER of parsers to try
+format_parsers = {
+	# "abc": TODO
+	"rtttl": parse_rtttl
+	# "tabs": TODO
+	"grid-tb": parse_grid_notes
+	# "grid-lr": parse_grid_notes
+}
 
 ascii_to_midi = (text)->
 
 	restore_state(initial_state)
 
-	try
-		ringtone = RTTTL.parse(text)
-	catch error
-		# TODO: handle unexpected errors vs format errors (should change parser to throw special errors)
-		console.log "Parsing as RTTTL failed:", error
+	formats_to_try =
+		if format is "auto"
+			Object.keys(format_parsers)
+		else
+			[format]
 
-	if ringtone
-		# TODO: pull out BPM, song name information
-		console.log ringtone
-		t = 0
-		for note in ringtone.notes
-			if not note.rest
-				notes.push({
-					key: note.midiPitch
-					velocity: 127
-					start_time: t
-					end_time: t + note.seconds * 1000
-					length: note.seconds * 1000
-					pitch_bends: [{
-						time: t,
-						value: 0,
-					}]
-				})
-			t += note.seconds * 1000
-	else
-		parse_grid_notes(text) # mutates `notes`
-	
+	for format_to_try in formats_to_try
+		try
+			# parsers mutate `notes` and error if they can't parse
+			format_parsers[format_to_try](text, format_to_try)
+			break
+		catch error
+			if error instanceof RTTTL.RTTTLParseError
+				console.log "Parsing as #{format_to_try} failed:", error
+			else
+				console.error "Parsing as #{format_to_try} failed with unexpected", error
+
+	if format is "auto"
+		detected_format = format_to_try
+		detected_format_name = format_select.querySelector("[value=#{detected_format}]").textContent
+		format_select.querySelector("[value=auto]").textContent = "Auto Detect — #{detected_format_name}"
 
 	song_name_input.hidden = false
 	export_midi_file_button.disabled = false
