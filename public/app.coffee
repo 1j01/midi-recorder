@@ -924,7 +924,7 @@ export_midi_file = ->
 		song_name = song_name.replace(/~/g, "\u301C")                  # Chrome at least doesn't like tildes
 		song_name = song_name.trim()
 
-		file_name = "#{iso_date_string}#{if song_name.length then " - #{song_name}" else ""}.midi"
+		file_name = "ASCII to MIDI #{iso_date_string}#{if song_name.length then " - #{song_name}" else ""}.midi"
 
 	saveAs(blob, file_name)
 
