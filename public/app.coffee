@@ -337,13 +337,11 @@ undo_clear_button.onclick = undo_clear_notes
 # ASCII To MIDI (Parsing)
 ##############################
 
-parse_grid_notes = (text)->
+parse_grid_notes = (text, format_id)->
 
 	lines = text.split(/\r?\n/g)
 	# TODO: use grapheme splitter
-	# TODO: option to interpret horizontally vs vertically
 	grid = (line.split("") for line in lines)
-	grid.push([]) # so notes will all end
 	# Pad the grid to even width (column count)
 	column_count = 0
 	for	row in grid
@@ -352,6 +350,13 @@ parse_grid_notes = (text)->
 	for	row in grid
 		while row.length < column_count
 			row.push(" ")
+
+	# Swap columns and rows (transpose) if needed
+	if format_id is "grid-lr"
+		grid = Object.keys(grid[0]).map (c)-> grid.map (r)-> r[c]
+
+	# Make it so all notes end
+	grid.push(new Array(column_count).fill(" "))
 
 	current_notes = new Map
 	for row, row_index in grid
@@ -401,7 +406,7 @@ format_parsers = {
 	"rtttl": parse_rtttl
 	# "tabs": TODO
 	"grid-tb": parse_grid_notes
-	# "grid-lr": parse_grid_notes
+	"grid-lr": parse_grid_notes
 }
 
 ascii_to_midi = (text)->
