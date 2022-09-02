@@ -404,11 +404,43 @@ parse_rtttl = (text)->
 			})
 		t += note.seconds * 1000
 
+
+base_note_names = ['A', 'A#', 'B', 'C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#']
+note_name_to_midi_pitch = (str)->
+	str = str.toUpperCase()
+	i = base_note_names.indexOf str[0...-1]
+	octave = parseInt str[-1..]
+	octave -= 1 if i >= notes.indexOf 'C'
+	octave += 2
+	octave * base_note_names.length + i + 1
+
+parse_tabs = (text)->
+	tabs = Tablature.parse(text)
+
+	tuning = ["E4", "B3", "G3", "D3", "A2", "E2"].map(note_name_to_midi_pitch)
+
+	for chord, index in tabs
+		duration = 200
+		t = index * duration
+		for note in chord
+			console.log note
+			notes.push({
+				key: note.f + tuning[note.s]
+				velocity: 127
+				start_time: t
+				end_time: t + duration
+				length: duration
+				pitch_bends: [{
+					time: t,
+					value: 0,
+				}]
+			})
+
 # this object specifies the ORDER of parsers to try
 format_parsers = {
 	# "abc": TODO
 	"rtttl": parse_rtttl
-	# "tabs": TODO
+	"tabs": parse_tabs
 	"grid-tb": parse_grid_notes
 	"grid-lr": parse_grid_notes
 }
