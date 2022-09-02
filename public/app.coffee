@@ -461,7 +461,7 @@ ascii_to_midi = (text)->
 			format_parsers[format_to_try](text, format_to_try)
 			break
 		catch error
-			if error instanceof RTTTL.RTTTLParseError
+			if error instanceof RTTTL.RTTTLParseError or error instanceof Tablature.TablatureFormatError
 				console.log "Parsing as #{format_to_try} failed:", error
 			else
 				console.error "Parsing as #{format_to_try} failed with unexpected", error

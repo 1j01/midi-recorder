@@ -1,4 +1,6 @@
 
+class TablatureFormatError extends Error
+
 parseTabs = (tablature)->
 	
 	# this goes against the convention of left=low (i.e. EADGBE)
@@ -48,13 +50,13 @@ parseTabs = (tablature)->
 		{lines} = block
 		
 		if lines.length is 4
-			throw new Error "Bass tablature is not supported (yet)"
+			throw new TablatureFormatError "Bass tablature is not supported (yet)"
 		
 		if lines.length isnt 6
-			throw new Error "#{lines.length}-string tablature is not supported (yet)"
+			throw new TablatureFormatError "#{lines.length}-string tablature is not supported (yet)"
 		
 		if block.tuning isnt tuning
-			throw new Error "Alternate tunings such as #{block.tuning} are not supported (yet)"
+			throw new TablatureFormatError "Alternate tunings such as #{block.tuning} are not supported (yet)"
 		
 		min_length = Infinity
 		for line in lines
@@ -73,7 +75,7 @@ parseTabs = (tablature)->
 								"#{line}#{alignment_marker}"
 					).join("\n")
 					message_only = "Tab interpretation failed due to misalignment"
-					error = new Error """
+					error = new TablatureFormatError """
 						#{message_only}:
 						
 						#{misaligned}
@@ -109,7 +111,7 @@ parseTabs = (tablature)->
 			strings[string_name] += some_notes
 	
 	unless blocks[0]?
-		throw new Error "Tab interpretation failed: no music blocks found"
+		throw new TablatureFormatError "Tab interpretation failed: no music blocks found"
 	
 	# heuristically address the ambiguity where
 	# e.g. --12-- can mean either twelve or one then two
@@ -176,6 +178,7 @@ stringifyTabs = (notes, tuning = "eBGDAE")->
 Tablature =
 	parse: parseTabs
 	stringify: stringifyTabs
+	TablatureFormatError: TablatureFormatError
 
 if module?
 	module.exports = Tablature
