@@ -264,7 +264,7 @@ var isFunction = function (value) {
  * @returns {boolean}
  */
 var isIterator = function (value) {
-    return Object.prototype.toString.call(value) === '[object Iterator]';
+    return Symbol.iterator in Object(value);
 };
 
 /**
